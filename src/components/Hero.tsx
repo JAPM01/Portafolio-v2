@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./hero.module.css";
 import { CharRise, WordFade } from "../lib/anim";
 import { px } from "../lib/paths";
@@ -9,11 +9,14 @@ import HeroBackground from "./HeroBackground";
 /** Hero 1:1 — fondo fluido (mesh gradient animado + fluted glass waves),
     título gigante por caracteres, pitch a la derecha y meta abajo. El fade
     del fondo y el parallax del ratón se gobiernan con variables CSS
-    (--hero-fade). */
+    (--hero-fade). Título, pitch y meta son celdas de UNA retícula
+    (12×12 desktop, 4×12 móvil, base 8): el botón flotante muestra la
+    retícula para verificar que cada elemento cae en su lugar. */
 export default function Hero() {
   const rootRef = useRef<HTMLElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const imgWrapRef = useRef<HTMLDivElement>(null);
+  const [showGrid, setShowGrid] = useState(true);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -67,24 +70,50 @@ export default function Hero() {
       </div>
 
       <div className={`container ${styles.inner}`}>
-        <div className={styles.body} data-hero-focus-box="">
-          <div className={styles.titleWrap} data-ripple-target="">
-            <h1
-              id="hero-title"
-              className={`${styles.titleBase} ${styles.title55} clipped`}
-              style={{ textShadow: "0px 2px 28px rgba(0, 0, 0, 0.45)" }}
-            >
-              <span style={{ "--anim-base": "0ms" } as React.CSSProperties}>
-                <span className="sr-only">Diseñar con</span>
-                <CharRise word="Diseñar" base="0ms" />{" "}
-                <CharRise word="con" base="0ms" />
-              </span>
-              <span style={{ "--anim-base": "0ms" } as React.CSSProperties}>
-                <span className="sr-only">intención</span>
-                <CharRise word="intención" base="0ms" />
-              </span>
-            </h1>
+        {showGrid && (
+          <div className={styles.gridOverlay} aria-hidden="true">
+            {Array.from({ length: 144 }, (_, i) => (
+              <div key={i} className={styles.gridOverlayCell} />
+            ))}
           </div>
+        )}
+        <div className={styles.titleWrap} data-hero-focus-box="" data-ripple-target="">
+          <h1
+            id="hero-title"
+            className={`${styles.titleBase} ${styles.title55} clipped`}
+            style={{ textShadow: "0px 2px 28px rgba(0, 0, 0, 0.45)" }}
+          >
+            <span style={{ "--anim-base": "0ms" } as React.CSSProperties}>
+              <span className="sr-only">Diseñar con</span>
+              <CharRise word="Diseñar" base="0ms" />{" "}
+              <CharRise word="con" base="0ms" />
+            </span>
+            <span style={{ "--anim-base": "0ms" } as React.CSSProperties}>
+              <span className="sr-only">intención</span>
+              <CharRise word="intención" base="0ms" />
+            </span>
+          </h1>
+        </div>
+
+        <div className={styles.pitch}>
+          <p className={styles.role}>
+            <span>Product design UXUI Branding</span>
+            <svg
+              className={styles.roleIcon}
+              viewBox="0 0 24 24"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M7 7l10 10M17 8v9H8"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </p>
+          <p className={styles.sub}>Cuestiono lo habitual para crear soluciones con enfoque humano.</p>
         </div>
 
         <div className={styles.meta} data-parallax-pitch="">
@@ -115,26 +144,21 @@ export default function Hero() {
           </div>
       </div>
 
-      <div className={styles.pitch}>
-        <p className={styles.role}>
-          <span>Product design UXUI Branding</span>
-          <svg
-            className={styles.roleIcon}
-            viewBox="0 0 24 24"
-            fill="none"
-            aria-hidden="true"
-          >
-            <path
-              d="M7 7l10 10M17 8v9H8"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </p>
-        <p className={styles.sub}>Cuestiono lo habitual para crear soluciones con enfoque humano.</p>
-      </div>
+      <button
+        type="button"
+        className={styles.gridToggle}
+        aria-pressed={showGrid}
+        onClick={() => setShowGrid((v) => !v)}
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path
+            d="M1 1h5v5H1zM8 1h5v5H8zM1 8h5v5H1zM8 8h5v5H8z"
+            stroke="currentColor"
+            strokeWidth="1.2"
+          />
+        </svg>
+        {showGrid ? "Ocultar retícula" : "Ver retícula"}
+      </button>
     </section>
   );
 }

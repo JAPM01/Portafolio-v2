@@ -23,12 +23,28 @@ const GlassLayer = memo(function GlassLayer({ frame }: { frame: string | null })
     <div style={{ position: "absolute", inset: 0, opacity: 0.62 }} aria-hidden="true">
       <FlutedGlass
         {...wavesPreset.params}
+        // Barras verticales, no diagonales: leí el shader (fluted-glass.js).
+        // El shape 'wave' suma curve = 4·sin(0.23·y/aspect) a la coordenada
+        // x; en pantalla vertical (aspect ~0.5) esa onda balancea cada
+        // barra ±4 unidades — más que el ancho de una banda — y las
+        // convierte en rayas diagonales, por más que se suba size o se
+        // baje distortion. 'linesIrregular' no depende de y: las barras
+        // quedan verticales, con anchos irregulares orgánicos como la
+        // referencia. size 0.99 ≈ 7 bandas anchas; distortion 0.3 y
+        // blur 0.35 las suavizan; stretch 0 no las alarga; 3M px = el
+        // glass a resolución real (antes el tope de 1.2M px lo bajaba de
+        // resolución y las rayas se volvían moiré al reescalar).
+        shape="linesIrregular"
+        size={0.99}
+        distortion={0.3}
+        blur={0.35}
+        stretch={0}
         image={frame}
         width="100%"
         height="100%"
         fit="cover"
         minPixelRatio={1}
-        maxPixelCount={1200000}
+        maxPixelCount={3000000}
       />
     </div>
   );
@@ -79,8 +95,16 @@ function MeshLayer({ reducedMotion }: { reducedMotion: boolean }) {
         grainMixer={0.08}
         grainOverlay={0.04}
         speed={reducedMotion ? 0 : 0.8}
-        scale={0.7}
-        rotation={25}
+        // rotation 0 (antes 25) y scale 0.85 (antes 0.7): la captura del
+        // canvas del mesh mostró que con rotation 25° las fronteras de
+        // color salen diagonales y el glass las amplifica en rayas
+        // diagonales; con rotation 0 los campos fluyen verticales como
+        // en la referencia. Con scale 0.7 los blobs eran tan grandes que
+        // la mitad inferior quedaba negra; a 0.85 son más chicos y los
+        // colores cubren más parejo la pantalla. El resto de la config
+        // del playground se mantiene exacta.
+        scale={0.85}
+        rotation={0}
         // width/height son CSS: "100%" llena el hero (con números quedaba
         // un canvas fijo de 1280×720 que no cubría todo el hero). Y sin
         // preserveDrawingBuffer el canvas WebGL se vacía tras componer y
