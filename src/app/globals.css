@@ -60,6 +60,12 @@
   --border-strong: var(--neutral-8);
   --text-primary: var(--neutral-12);
   --text-secondary: var(--neutral-11);
+  /* Escala de blancos: principal y secundario. Nunca blanco puro: en
+     tema oscuro son #e7e7eb (neutral-12) y #bababe (neutral-11); en
+     tema claro siguen a --text-primary/--text-secondary. El hero usaba
+     #fff directo y se saltaba la escala. */
+  --white-primary: var(--text-primary);
+  --white-secondary: var(--text-secondary);
   --text-disabled: var(--neutral-8);
   --text-inverse: var(--neutral-1);
   --text-link: var(--primary-9);

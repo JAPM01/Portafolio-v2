@@ -84,20 +84,24 @@ export default function Hero() {
             style={{ textShadow: "0px 2px 28px rgba(0, 0, 0, 0.45)" }}
           >
             <span style={{ "--anim-base": "0ms" } as React.CSSProperties}>
-              <span className="sr-only">Diseñar con</span>
-              <CharRise word="Diseñar" base="0ms" />{" "}
-              <CharRise word="con" base="0ms" />
+              <span className="sr-only">Diseñando</span>
+              <CharRise word="Diseñando" base="0ms" />
             </span>
             <span style={{ "--anim-base": "0ms" } as React.CSSProperties}>
-              <span className="sr-only">intención</span>
-              <CharRise word="intención" base="0ms" />
+              <span className="sr-only">con sentido</span>
+              <CharRise word="con" base="0ms" />{" "}
+              <CharRise word="sentido" base="0ms" />
+            </span>
+            <span style={{ "--anim-base": "0ms" } as React.CSSProperties}>
+              <span className="sr-only">humano.</span>
+              <CharRise word="humano." base="0ms" />
             </span>
           </h1>
         </div>
 
         <div className={styles.pitch}>
           <p className={styles.role}>
-            <span>Product design UXUI Branding</span>
+            <span>UX/UI · Product Design · Branding</span>
             <svg
               className={styles.roleIcon}
               viewBox="0 0 24 24"

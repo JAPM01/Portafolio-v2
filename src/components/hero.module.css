@@ -200,14 +200,19 @@
 
 .titleWrap {
   z-index: 1;
-  grid-column: 1 / 8;
-  grid-row: 2 / 7;
+  /* Cols 1-11 (no 1-8): la línea larga del título ("con sentido") mide
+     ~1100px a ×0.95 y no cabe en las 8 columnas (921px); con 11 columnas
+     (1158px) el texto queda DENTRO de su caja sin invadir los gutters de
+     las columnas 8-11. Filas 2-11: 3 líneas a ×0.95 miden ~570px y las
+     filas 2-7 (341px) ya no las contienen. */
+  grid-column: 1 / 11;
+  grid-row: 2 / 11;
   align-self: start;
   position: relative;
 }
 .titleBase {
   font-optical-sizing: auto;
-  color: #fff;
+  color: var(--white-primary);
   text-wrap: nowrap;
   flex-direction: column;
   max-width: 22ch;
@@ -220,16 +225,21 @@
   --rise-o: 1;
   font-family: var(--font-display);
   font-size: var(--text-heading-5-5xl);
-  /* El título ya no es un nombre corto ("Arshawn", 7 caracteres) sino la
-     frase "Diseñar con intención": la línea larga tiene 11 caracteres. A
-     ×0.68 (anterior) el título quedaba chico y perdía jerarquía frente al
-     rol (2.2× vs 3.6× en la referencia); ×0.88 es lo máximo que cabe en
-     una línea en 390px y recupera la jerarquía (2.9×). El line-height y
-     el tracking son relativos (0.95 / -0.036em), así que escalan solos. */
-  font-size: calc(var(--text-heading-5-5xl) * 0.88);
+  /* Título nuevo "Diseñando con sentido humano." en 3 líneas
+     ("Diseñando" / "con sentido" / "humano."): la línea larga es
+     "con sentido" (11 caracteres). A ×0.88 cabía en una línea en 390px;
+     ahora es más grande: ×0.95 en desktop y ×0.88 en móvil (lo máximo
+     que cabe en 390px — en móvil no puede crecer más sin partir la
+     línea). El tamaño se redondea a múltiplos de 8px con round() (la
+     primera línea es el fallback para navegadores sin round()). Peso
+     regular (400): solo regular en ambas tipografías, nada de bold. El
+     line-height y el tracking son relativos (0.95 / -0.036em), así que
+     escalan solos. */
+  font-size: calc(var(--text-heading-5-5xl) * 0.95);
+  font-size: round(calc(var(--text-heading-5-5xl) * 0.95), 8px);
   line-height: var(--leading-heading-5-5xl);
   letter-spacing: var(--tracking-heading-5-5xl);
-  font-weight: var(--weight-heading-5-5xl);
+  font-weight: 400;
 }
 :global(html:not([data-perf-off~="title-layer"])) .titleBase {
   will-change: transform;
@@ -242,8 +252,9 @@
   align-self: end;
   gap: calc(var(--space-16) * var(--ui-scale-desktop, 1));
   width: fit-content;
-  font-size: calc(var(--text-body-sm) * var(--ui-scale-desktop, 1));
-  line-height: var(--leading-body-sm);
+  /* 12px/16px: múltiplos de 4. El meta es más chico que el rol (16px). */
+  font-size: 12px;
+  line-height: 16px;
   letter-spacing: var(--tracking-body-sm, 0);
   display: flex;
   text-shadow: 0px 2px 20px rgba(0, 0, 0, 1);
@@ -254,10 +265,10 @@
   display: flex;
 }
 .metaLabel {
-  color: #ffffffb3;
+  color: var(--white-secondary);
 }
 .metaValue {
-  color: #fff;
+  color: var(--white-primary);
 }
 a.metaValue {
   transition: opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1);
@@ -269,7 +280,7 @@ a.metaValue:hover {
 }
 /* CTA "Conectemos" en lugar del correo: píldora con borde, no texto plano. */
 a.metaValue.ctaButton {
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  border: 1px solid color-mix(in oklch, var(--white-primary) 45%, transparent);
   border-radius: 999px;
   padding: var(--space-3) var(--space-5);
   margin-block: 0;
@@ -279,12 +290,15 @@ a.metaValue.ctaButton {
 }
 a.metaValue.ctaButton:hover {
   opacity: 1;
-  background: rgba(255, 255, 255, 0.12);
+  background: color-mix(in oklch, var(--white-primary) 12%, transparent);
 }
 
 .pitch {
   z-index: 1;
-  font-size: var(--text-heading-lg);
+  /* Rol y párrafo a 16px/20px (múltiplos de 8 y 4): más chicos que antes
+     (26-32px). El párrafo llena todo lo ancho del pitch. */
+  font-size: 16px;
+  line-height: 20px;
   flex-direction: column;
   gap: 0;
   display: flex;
@@ -294,27 +308,31 @@ a.metaValue.ctaButton:hover {
   align-self: center;
 }
 .role {
-  font-size: var(--text-heading-lg);
-  line-height: var(--leading-heading-lg);
+  font-size: 16px;
+  line-height: 20px;
   letter-spacing: var(--tracking-heading-lg, -0.015em);
-  color: #fff;
+  color: var(--white-primary);
   align-items: center;
-  gap: max(var(--text-to-icon-inline), calc(var(--text-heading-lg) * 0.25));
-  margin-block-end: max(var(--space-8), var(--text-heading-lg));
+  gap: var(--space-2);
+  /* Un solo gutter de separación con el párrafo (24px desktop / 16px
+     móvil): antes eran 32px (desktop) y 80px (móvil), una caja entera. */
+  margin-block-end: var(--space-6);
   display: inline-flex;
 }
 .roleIcon {
-  --role-icon-size: max(24px, calc(var(--text-heading-lg) * 0.75));
+  /* La flecha ↘ más grande: 32px fijos (múltiplo de 8), antes 24px y
+     encima escalaba con el texto, que ahora es más chico (16px). */
+  --role-icon-size: 32px;
   inline-size: var(--role-icon-size);
   block-size: var(--role-icon-size);
   translate: 0 calc(var(--role-icon-size) / 24);
   flex: none;
 }
 .sub {
-  font-size: var(--text-heading-lg);
-  line-height: var(--leading-heading-lg);
+  font-size: 16px;
+  line-height: 20px;
   letter-spacing: var(--tracking-heading-lg, -0.015em);
-  color: #fff;
+  color: var(--white-primary);
   /* Sin max-width ni balance: el texto llena las columnas del pitch y la
      línea larga llega al margen derecho, como en la referencia. Antes el
      límite de 34ch lo partía en líneas cortas y dejaba ~210px vacíos a la
@@ -336,31 +354,35 @@ a.metaValue.ctaButton:hover {
     grid-column: 1 / 5;
     grid-row: 2 / 5;
   }
+  /* En móvil el título es ×0.88 (lo máximo que cabe "con sentido" en
+     una línea en 390px); en desktop es ×0.95. */
+  .title55 {
+    font-size: calc(var(--text-heading-5-5xl) * 0.88);
+    font-size: round(calc(var(--text-heading-5-5xl) * 0.88), 8px);
+  }
   .pitch {
     grid-column: 1 / 5;
     grid-row: 6 / 9;
     align-self: center;
   }
   .role {
-    margin-block-end: var(--space-20);
-    /* "Product design UXUI Branding" (29 caracteres) no cabe en una línea
-       a tamaño completo en 390px; en la referencia el rol es una sola
-       línea, así que se reduce un poco para que quepa. */
-    font-size: calc(var(--text-heading-lg) * 0.85);
+    /* Un solo gutter de separación con el párrafo (16px en móvil). */
+    margin-block-end: var(--space-4);
   }
-  /* En móvil el cuerpo va al mismo tamaño que el rol (como en la
-     referencia, donde rol y cuerpo son iguales): a tamaño completo el
-     texto partía en 3 líneas; a ×0.85 parte en 2 y la línea larga llega
-     al margen derecho. */
-  .sub {
-    font-size: calc(var(--text-heading-lg) * 0.85);
-  }
+  /* El rol y el párrafo ya son 16px en base (múltiplo de 8): a 16px el
+     rol nuevo ("UX/UI · Product Design · Branding") cabe en una línea
+     en 390px y el párrafo parte en 2 líneas llenando todo lo ancho.
+     Sin reducción en móvil. */
   .meta {
     grid-column: 1 / 5;
     grid-row: 11 / 13;
     align-self: end;
-    gap: var(--space-6);
-    flex-direction: column;
+    /* Dos columnas en móvil: "Portafolio de trabajo / Jafet Pérez" a la
+       izquierda y "Contact / Conectemos" a la derecha, con un gutter de
+       separación — antes quedaban apilados, Contact debajo del nombre. */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
     width: auto;
   }
 }
@@ -401,10 +423,10 @@ a.metaValue.ctaButton:hover {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid color-mix(in oklch, var(--white-primary) 40%, transparent);
   border-radius: 999px;
   background: rgba(10, 10, 14, 0.85);
-  color: #fff;
+  color: var(--white-primary);
   font-size: 13px;
   line-height: 1;
   padding: 10px 14px;
@@ -427,9 +449,10 @@ a.metaValue.ctaButton:hover {
   }
 }
 @media (max-width: 360px) {
-  /* En pantallas muy angostas "Diseñar con" a ×0.88 ya no cabe en una
+  /* En pantallas muy angostas "con sentido" a ×0.88 ya no cabe en una
      línea; se baja a ×0.78 para que siga entrando. */
   .title55 {
     font-size: calc(var(--text-heading-5-5xl) * 0.78);
+    font-size: round(calc(var(--text-heading-5-5xl) * 0.78), 8px);
   }
 }

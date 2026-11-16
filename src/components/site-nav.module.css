@@ -58,7 +58,8 @@
   --wm-ratio: 7.06;
   --mk-ratio: 1.48;
   --mk-h: calc((32px + (24px - 32px) * var(--nav-shrink, 0)) * var(--ui-scale-desktop, 1));
-  font-size: calc(var(--text-body-lg) * var(--ui-scale-desktop, 1));
+  /* 16px: múltiplo de 8 (antes --text-body-lg = 18px). */
+  font-size: calc(16px * var(--ui-scale-desktop, 1));
   inline-size: calc(
     var(--mk-h) * var(--mk-ratio) +
       (1em * var(--wm-ratio) - var(--mk-h) * var(--mk-ratio)) * var(--wm-out)
@@ -75,7 +76,8 @@
   mask-image: linear-gradient(to right, #000 calc(100% - 26% * var(--edge)), transparent 100%);
   place-items: center start;
   margin-inline-start: calc(var(--nav-cta-inset) * max(0, var(--nav-p, 0)));
-  font-weight: 600;
+  /* Peso regular (400): solo regular en ambas tipografías, nada de bold. */
+  font-weight: 400;
   text-decoration: none;
   display: grid;
   -webkit-mask-clip: no-clip;
@@ -133,8 +135,9 @@
   display: flex;
 }
 .item {
+  /* 20px: múltiplo de 4 (antes --text-body-xl = 21px). */
   font-size: calc(
-    (var(--text-body-xl) + (var(--text-body-base) - var(--text-body-xl)) * var(--nav-shrink, 0)) *
+    (20px + (var(--text-body-base) - 20px) * var(--nav-shrink, 0)) *
       var(--ui-scale-desktop, 1)
   );
   line-height: var(--leading-body-xl);
@@ -174,8 +177,9 @@
   white-space: nowrap;
   padding-inline: var(--nav-cta-inset);
   border-radius: var(--radius-sm2);
+  /* 20px: múltiplo de 4 (antes --text-body-xl = 21px). */
   font-size: calc(
-    (var(--text-body-xl) + (var(--text-body-base) - var(--text-body-xl)) * var(--nav-shrink, 0)) *
+    (20px + (var(--text-body-base) - 20px) * var(--nav-shrink, 0)) *
       var(--ui-scale-desktop, 1)
   );
   line-height: var(--leading-body-xl);
@@ -324,9 +328,11 @@
 }
 .sheetItem {
   font-family: var(--font-body);
-  font-size: var(--text-heading-lg);
+  /* 32px: múltiplo de 8 (antes --text-heading-lg, 26-32px fluido). */
+  font-size: 32px;
   line-height: var(--leading-heading-lg);
-  font-weight: var(--weight-heading-lg);
+  /* Peso regular (400). */
+  font-weight: 400;
   letter-spacing: var(--tracking-heading-lg, -0.01em);
   color: var(--text-primary);
   -webkit-tap-highlight-color: transparent;
@@ -342,12 +348,14 @@
   background: var(--text-primary);
   color: var(--text-inverse);
   font-family: var(--font-body);
-  font-size: var(--text-body-xl);
+  /* 20px: múltiplo de 4 (antes --text-body-xl = 21px). */
+  font-size: 20px;
   -webkit-tap-highlight-color: transparent;
   justify-content: center;
   align-items: center;
   margin-block-start: var(--space-4);
-  font-weight: 500;
+  /* Peso regular (400). */
+  font-weight: 400;
   text-decoration: none;
   display: inline-flex;
 }
@@ -391,6 +399,12 @@
     gap: var(--space-4);
     flex-wrap: nowrap;
     block-size: 56px;
+    /* Los textos del header apoyan su parte baja en la parte baja de la
+       fila 1 del hero (56px de barra + 12px de margen = 68px, la fila 1
+       termina a 69px): antes iban centrados y flotaban en medio del box
+       de la fila. */
+    align-items: flex-end;
+    padding-block-end: 0;
   }
 }
 
@@ -409,7 +423,9 @@
     --ramp: var(--nav-m, 0);
     padding-inline: calc((var(--page-indent) - var(--page-margin)) * var(--nav-m, 0));
     inset-block-start: var(--page-margin);
-    block-size: var(--phone-bar-h);
+    /* Barra de 56px (no 48px): con el margen de 12px la parte baja de
+       la barra queda a 68px, en la parte baja de la fila 1 del hero. */
+    block-size: 56px;
   }
 
   .nav[data-menu-open] {
@@ -439,7 +455,8 @@
     background: color-mix(in oklch, var(--surface-canvas) calc(55% * var(--nav-m, 0)), transparent);
     -webkit-backdrop-filter: blur(calc(var(--nav-m, 0) * 12px));
     backdrop-filter: blur(calc(var(--nav-m, 0) * 12px));
-    padding-block: var(--phone-bar-h) 0;
+    /* El contenido del menú empieza debajo de la barra de 56px. */
+    padding-block: 56px 0;
     padding-inline: var(--space-6);
     box-shadow: 0 0 0 100vmax rgb(0 0 0 / calc(0.5 * var(--menu-p, 0)));
     --menu-in: clamp(0, (var(--menu-p, 0) - 0.25) * 1.6, 1);
