@@ -13,7 +13,7 @@ const wavesPreset =
     en vivo, así vidrio y fondo comparten paleta y formas. Si la captura
     falla, el fluted no se monta y queda solo el mesh (que ya se ve bien). */
 
-const MESH_COLORS = ["#0A0A0E", "#0E1B3D", "#1E2F6E", "#2B3FA0", "#7E9BFF"];
+const MESH_COLORS = ["#4275ff", "#000000", "#0044ff", "#000000"];
 const STATIC_FRAME = 12000; // ms: punto de partida determinista (también para reduced-motion)
 const CAPTURE_W = 960;
 const CAPTURE_H = 540;
@@ -81,10 +81,16 @@ export default function HeroBackground() {
           width="100%"
           height="100%"
           colors={MESH_COLORS}
-          distortion={0.75}
-          swirl={0.15}
-          speed={reducedMotion ? 0 : 0.35}
+          distortion={1}
+          swirl={0.5}
+          grainMixer={0.5}
+          grainOverlay={0.5}
+          speed={reducedMotion ? 0 : 0.86}
           frame={STATIC_FRAME}
+          scale={0.5}
+          rotation={100}
+          offsetX={0}
+          offsetY={0}
           fit="cover"
           minPixelRatio={1}
           maxPixelCount={1200000}
