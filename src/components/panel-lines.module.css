@@ -1,0 +1,32 @@
+/* PanelLines 1:1 — reglas exactas de la referencia (Hero .panelLines +
+   PanelLines .field). El orden importa: .field va después para que su
+   opacity:1 y position:fixed ganen sobre .panelLines. */
+
+.panelLines {
+  pointer-events: none;
+  opacity: var(--hero-fade, 0);
+  --flute-color: color-mix(in oklch, var(--neutral-4) 50%, var(--neutral-3));
+  transition: --flute-color var(--theme-ms) linear;
+  background-image: linear-gradient(
+    to right,
+    var(--flute-color) 0 var(--flute-line, 0px),
+    transparent var(--flute-line, 0px)
+  );
+  background-size: var(--flute-tile, 200px) 100%;
+  background-repeat: repeat;
+  background-position-x: var(--flute-offset, 0px);
+  position: absolute;
+  inset: 0;
+}
+
+::global(html[data-theme="dark"]) .panelLines {
+  --flute-color: color-mix(in oklch, var(--neutral-3) 50%, var(--neutral-2));
+}
+
+.field {
+  z-index: -1;
+  pointer-events: none;
+  opacity: 1;
+  position: fixed;
+  inset: 0;
+}

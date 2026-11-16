@@ -1,0 +1,146 @@
+.email {
+  justify-items: start;
+  gap: max(var(--space-6), calc(var(--text-heading-2xl) * 0.375));
+  margin-block-start: max(var(--space-8), calc(var(--text-heading-2xl) * 0.5));
+  display: grid;
+}
+
+.actions {
+  gap: max(var(--space-3), calc(var(--text-heading-lg) * 0.375));
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  display: inline-grid;
+}
+
+.actions .copyWrap {
+  --nav-cta-inset: calc(var(--space-6) * var(--ui-scale-desktop, 1));
+  display: grid;
+}
+
+.actions .copy {
+  block-size: calc(56px * var(--ui-scale-desktop, 1));
+  justify-content: center;
+  gap: calc(var(--space-3) * var(--ui-scale-desktop, 1));
+  inline-size: 100%;
+}
+
+.actions .copyFill {
+  justify-content: center;
+  gap: calc(var(--space-3) * var(--ui-scale-desktop, 1));
+}
+
+.actions .mailto {
+  -webkit-tap-highlight-color: transparent;
+  margin-block-start: 0;
+}
+
+.address {
+  --address-advance: 13.72;
+  font-family: var(--font-body);
+  font-size: min(
+    var(--text-heading-lg),
+    calc((min(100vw, var(--content-cap)) - var(--page-indent) * 2) / var(--address-advance))
+  );
+  line-height: var(--leading-heading-lg);
+  letter-spacing: var(--tracking-heading-lg);
+  font-weight: var(--weight-heading-lg);
+  color: var(--text-primary);
+  white-space: nowrap;
+  margin: 0;
+}
+
+.copyWrap {
+  display: grid;
+}
+
+/* Botón Copy: mismo estilo que el CTA del nav (borde, relleno al hover). */
+.copy {
+  font-family: var(--font-body);
+  font-size: calc(var(--text-body-xl) * var(--ui-scale-desktop, 1));
+  line-height: var(--leading-body-xl);
+  letter-spacing: var(--tracking-body-xl);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1.5px solid color-mix(in oklab, var(--text-primary) 50%, transparent);
+  border-radius: var(--radius-md2);
+  block-size: calc(56px * var(--ui-scale-desktop, 1));
+  padding-inline: calc(var(--space-6) * var(--ui-scale-desktop, 1));
+  justify-content: center;
+  align-items: center;
+  gap: calc(var(--space-3) * var(--ui-scale-desktop, 1));
+  display: inline-flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.copyFill {
+  position: absolute;
+  inset: -1.5px;
+  background: var(--text-primary);
+  color: var(--text-inverse);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-md2);
+  justify-content: center;
+  align-items: center;
+  gap: calc(var(--space-3) * var(--ui-scale-desktop, 1));
+  display: inline-flex;
+  clip-path: inset(0 calc((1 - var(--cta-hover, 0)) * 100%) 0 0);
+  transition: clip-path 0.15s cubic-bezier(0.2, 0, 0, 1);
+  pointer-events: none;
+}
+
+.copy:hover {
+  --cta-hover: 1;
+}
+
+.copy svg {
+  inline-size: 20px;
+  block-size: 20px;
+  flex: none;
+}
+
+.swap {
+  display: inline-grid;
+}
+
+.state {
+  justify-content: center;
+  align-items: center;
+  gap: calc(var(--space-3) * var(--ui-scale-desktop, 1));
+  grid-area: 1 / 1;
+  transition:
+    opacity 0.345s cubic-bezier(0.2, 0, 0, 1),
+    filter 0.345s cubic-bezier(0.2, 0, 0, 1),
+    transform 0.345s cubic-bezier(0.2, 0, 0, 1);
+  display: inline-flex;
+}
+
+.stateDone,
+.copy[data-copied] .stateIdle {
+  opacity: 0;
+  filter: blur(4px);
+  transform: scale(0.92);
+}
+
+.copy[data-copied] .stateDone {
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+.status {
+  clip-path: inset(50%);
+  white-space: nowrap;
+  block-size: 1px;
+  inline-size: 1px;
+  position: absolute;
+  overflow: hidden;
+}
+
+.page {
+  block-size: 100svh;
+  overflow: clip;
+}

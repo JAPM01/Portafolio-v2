@@ -1,0 +1,76 @@
+/* ==========================================================================
+   Motion system — animaciones de entrada de la referencia.
+   charRise: cada carácter sube con retardo escalonado (--i).
+   wordFade: cada palabra aparece con fundido.
+   riseWhole: un bloque entero sube.
+   ========================================================================== */
+
+.charRise,
+.wordFade,
+.riseWhole {
+  opacity: 0;
+  display: inline-block;
+}
+
+.word {
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.clipped .word {
+  clip-path: inset(-0.6em -0.35em -0.2em);
+}
+.clipped .charRise {
+  --rise-y: calc(var(--rise-y-near, 0.45em) + var(--i, 0) * var(--rise-y-ramp, 0.065em));
+}
+
+.wordFade {
+  animation: 0.56s cubic-bezier(0.16, 1, 0.3, 1) both wordFade;
+  animation-delay: calc(var(--reveal-delay) + var(--anim-base, 0s) + var(--i, 0) * 54ms);
+}
+
+.charRise {
+  animation: 0.56s cubic-bezier(0.2, 0.8, 0.2, 1) both charRise;
+  animation-delay: calc(var(--reveal-delay) + var(--anim-base, 0s) + var(--i, 0) * 18ms);
+}
+.clipped .charRise {
+  animation-duration: var(--rise-ms, 0.64s);
+}
+
+.riseWhole:not(.early) {
+  animation: 0.72s cubic-bezier(0.16, 1, 0.3, 1) both riseWhole;
+  animation-delay: calc(var(--reveal-delay) + var(--anim-base, 0s));
+}
+
+@keyframes charRise {
+  0% {
+    opacity: var(--rise-o, 0);
+    transform: translateY(var(--rise-y, 32px));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes wordFade {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes riseWhole {
+  0% {
+    opacity: 0;
+    transform: translateY(var(--rise-y, 32px));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

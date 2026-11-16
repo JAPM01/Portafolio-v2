@@ -1,0 +1,93 @@
+.section {
+  --cap-pull: var(--space-12);
+  padding-block: calc(var(--space-32) - var(--cap-pull)) var(--space-32);
+  z-index: 1;
+  background: transparent;
+  position: relative;
+}
+
+@media (min-width: 1024px) {
+  .section {
+    --cap-pull: var(--space-16);
+    padding-block: calc(var(--space-48) - var(--cap-pull)) var(--space-32);
+  }
+}
+
+.grid {
+  gap: var(--space-12);
+  grid-template-columns: 1fr;
+  align-items: start;
+  display: grid;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    gap: max(var(--space-16), calc(var(--text-heading-lg) * 2));
+    grid-template-columns: minmax(0, 39fr) minmax(0, 61fr);
+  }
+}
+
+.heading {
+  transition: color var(--theme-ms) linear;
+  font-family: var(--font-body);
+  font-size: var(--text-heading-2xl);
+  line-height: var(--leading-heading-2xl);
+  letter-spacing: var(--tracking-heading-2xl);
+  font-weight: var(--weight-heading-2xl);
+  color: var(--text-primary);
+  text-wrap: balance;
+  margin: 0;
+}
+
+.copy {
+  margin: var(--space-6) 0 0;
+  font-family: var(--font-body);
+  font-size: var(--text-heading-lg);
+  line-height: var(--leading-heading-lg);
+  letter-spacing: var(--tracking-heading-lg);
+  font-weight: var(--weight-heading-lg);
+  color: var(--neutral-9);
+  transition: color var(--theme-ms) linear;
+  text-wrap: pretty;
+  max-width: 42ch;
+}
+
+/* Acentos: en "armed" todo el párrafo es un gris medio; al entrar al
+   viewport ("in") transiciona 1.1s a su color final (gris el texto,
+   color primario los acentos). */
+.copy[data-tone="armed"] {
+  --tone-mid: color-mix(in oklch, var(--neutral-9) 50%, var(--text-primary));
+  color: var(--tone-mid);
+}
+
+.copy[data-tone="armed"] .accent {
+  color: var(--tone-mid);
+}
+
+.copy[data-tone="in"],
+.copy[data-tone="in"] .accent {
+  transition-duration: 1.1s;
+  transition-timing-function: ease-out;
+}
+
+.accent {
+  color: var(--text-primary);
+  transition: color var(--theme-ms) linear;
+  font-style: normal;
+}
+
+@media (min-width: 1024px) {
+  .copy {
+    margin-block-start: 0;
+  }
+}
+
+/* Variante móvil de la ref (después de la base): a ≤639px el copy es
+   body-xl (21px), no heading-lg. */
+@media (max-width: 639px) {
+  .copy {
+    font-size: var(--text-body-xl);
+    line-height: var(--leading-body-xl);
+    letter-spacing: var(--tracking-body-xl, -0.008em);
+  }
+}

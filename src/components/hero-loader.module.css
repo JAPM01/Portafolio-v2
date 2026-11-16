@@ -1,0 +1,46 @@
+.overlay {
+  --tile: 118px;
+  --big: min(40vw, 80vh);
+  --ink-on: #fff;
+  --ink-off: color-mix(in oklab, var(--neutral-12) 13%, var(--loader-ground));
+  --rise: linear-gradient(
+    to top,
+    var(--ink-on) 0,
+    var(--ink-on) calc(var(--fill, 0) * 100%),
+    var(--ink-off) calc(var(--fill, 0) * 100%),
+    var(--ink-off) 100%
+  );
+  z-index: 9999;
+  background: var(--loader-ground);
+  place-items: center;
+  display: grid;
+  position: fixed;
+  inset: 0;
+  transition:
+    opacity 0.26s linear,
+    transform 0.3s cubic-bezier(0.3, 0.04, 0.78, 0.72);
+}
+
+.overlayLifting {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.bigMark {
+  z-index: 1;
+  inline-size: var(--big);
+  aspect-ratio: 2175.7 / 1470;
+  background-image: var(--rise);
+  background-repeat: no-repeat;
+  background-size: 100% 100vh;
+  background-position: 0 0;
+  -webkit-mask-image: var(--mark-mask);
+  mask-image: var(--mark-mask);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: var(--big) auto;
+  mask-size: var(--big) auto;
+  -webkit-mask-position: 50%;
+  mask-position: 50%;
+  transition: opacity 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}

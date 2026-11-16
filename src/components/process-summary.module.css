@@ -1,0 +1,211 @@
+.section {
+  padding-block: var(--section-pad-mobile);
+  z-index: 1;
+  background: transparent;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding-block: var(--section-pad-desktop);
+    padding-block-start: var(--space-32);
+    padding-block-end: var(--space-32);
+  }
+}
+
+.grid {
+  gap: max(var(--space-12), calc(var(--text-heading-4xl) * 0.375));
+  --proc-travel: 0px;
+  grid-template-columns: 1fr;
+  align-items: start;
+  display: grid;
+}
+
+.head,
+.body {
+  transform: translateY(calc(var(--proc-travel) * (1 - var(--p, 0))));
+  will-change: transform;
+}
+
+.heading {
+  transition: color var(--theme-ms) linear;
+  font-family: var(--font-body);
+  font-size: var(--text-heading-4xl);
+  line-height: var(--leading-heading-4xl);
+  letter-spacing: var(--tracking-heading-4xl);
+  font-weight: var(--weight-heading-4xl);
+  color: var(--text-primary);
+  text-wrap: balance;
+  margin: 0;
+}
+
+.head {
+  padding-inline: calc(var(--page-indent) - var(--page-margin));
+}
+
+.body {
+  margin: max(var(--space-10), calc(var(--text-heading-4xl) * 0.3125)) 0 0;
+}
+
+.steps {
+  counter-reset: step;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  counter-increment: step;
+  border-block-start: var(--border-width) solid var(--neutral-12);
+  padding-block: max(var(--space-10), calc(var(--text-heading-xl) * 0.8889));
+  align-items: end;
+  row-gap: var(--space-6);
+  grid-template-columns: minmax(0, 1fr);
+  display: grid;
+  transition: border-color var(--theme-ms) linear;
+}
+
+.item:last-child {
+  border-block-end: var(--border-width) solid var(--neutral-12);
+}
+
+@media (min-width: 1024px) {
+  .item {
+    grid-template-columns: minmax(0, 39fr) minmax(0, 61fr);
+    align-items: start;
+  }
+}
+
+.content {
+  --proc-img: calc(var(--text-heading-2xl) * 2.5);
+  row-gap: var(--space-6);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  display: grid;
+}
+
+@media (min-width: 1024px) {
+  .content {
+    grid-template-columns: var(--proc-img) minmax(0, 1fr);
+    column-gap: max(var(--space-8), calc(var(--text-heading-2xl) * 0.5));
+  }
+}
+
+.media {
+  width: var(--proc-img);
+  aspect-ratio: 1;
+  border-radius: var(--radius-xs);
+  background: var(--surface-raised);
+  position: relative;
+  overflow: hidden;
+}
+
+.media[data-reveal] {
+  --reveal-r: var(--radius-xs);
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.media[data-revealed] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.photo {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: var(--text-heading-xl);
+  line-height: var(--leading-heading-xl);
+  letter-spacing: var(--tracking-heading-xl);
+  font-weight: var(--weight-heading-xl);
+  color: var(--text-primary);
+  text-wrap: balance;
+  transition: color var(--theme-ms) linear;
+  align-self: start;
+  margin: 0;
+}
+
+.label::before {
+  content: counter(step) ". ";
+}
+
+.text {
+  font-family: var(--font-body);
+  font-size: var(--text-heading-lg);
+  line-height: var(--leading-heading-lg);
+  letter-spacing: var(--tracking-heading-lg);
+  font-weight: var(--weight-heading-lg);
+  color: var(--neutral-9);
+  text-wrap: pretty;
+  transition: color var(--theme-ms) linear;
+  align-self: start;
+  margin: 0;
+}
+
+.text[data-tone="armed"] {
+  --tone-mid: color-mix(in oklch, var(--neutral-9) 50%, var(--text-primary));
+  color: var(--tone-mid);
+}
+
+.text[data-tone="armed"] .accent {
+  color: var(--tone-mid);
+}
+
+.text[data-tone="in"],
+.text[data-tone="in"] .accent {
+  transition-duration: 1.1s;
+  transition-timing-function: ease-out;
+}
+
+.accent {
+  color: var(--text-primary);
+  transition: color var(--theme-ms) linear;
+  font-style: normal;
+}
+
+@media (pointer: coarse) {
+  .head,
+  .body {
+    transform: none;
+  }
+}
+
+/* Variantes al final (la ref las pone después de la base: si van antes,
+   la base las pisa por orden de cascada con la misma especificidad). */
+@media (max-width: 767px) {
+  .section {
+    padding-block-start: var(--space-20);
+    padding-block-end: var(--space-20);
+  }
+
+  .content {
+    grid-template-columns: var(--proc-img) minmax(0, 1fr);
+    column-gap: var(--space-4);
+  }
+
+  .text {
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-body-lg);
+    letter-spacing: var(--tracking-body-lg);
+    font-weight: var(--weight-body-lg);
+    text-box: trim-start cap alphabetic;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .text {
+    font-size: var(--text-body-xl);
+    line-height: var(--leading-body-xl);
+    letter-spacing: var(--tracking-body-xl);
+    font-weight: var(--weight-body-xl);
+  }
+}

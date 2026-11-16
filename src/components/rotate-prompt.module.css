@@ -1,0 +1,96 @@
+/* RotatePrompt 1:1 — reglas exactas de la referencia. */
+
+.prompt {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s cubic-bezier(0.2, 0, 0, 1),
+    visibility 0s linear 0.3s;
+  display: grid;
+  z-index: 10000;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-6);
+  padding-inline: var(--page-margin);
+  background: var(--surface-canvas);
+  color: var(--text-primary);
+  text-align: center;
+  touch-action: none;
+  position: fixed;
+  inset: 0;
+}
+
+.icon {
+  color: var(--text-secondary);
+  animation: 3.2s cubic-bezier(0.65, 0, 0.35, 1) infinite paused turnUpright;
+  display: grid;
+}
+
+.title {
+  font-family: var(--font-body);
+  font-size: var(--text-heading-lg);
+  line-height: var(--leading-heading-lg);
+  letter-spacing: var(--tracking-heading-lg);
+  font-weight: var(--weight-heading-lg);
+  text-wrap: balance;
+  margin: 0;
+}
+
+@keyframes turnUpright {
+  0%,
+  20% {
+    opacity: 1;
+    transform: rotate(-90deg);
+  }
+  50%,
+  82% {
+    opacity: 1;
+    transform: rotate(0);
+  }
+  90% {
+    opacity: 0;
+    transform: rotate(0);
+  }
+  91% {
+    opacity: 0;
+    transform: rotate(-90deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-90deg);
+  }
+}
+
+@media (pointer: coarse) and (orientation: landscape) and (max-height: 480px) {
+  .prompt {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 0.3s cubic-bezier(0.2, 0, 0, 1),
+      visibility;
+  }
+
+  .prompt .icon {
+    animation-play-state: running;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 480px) {
+  :global(html[data-pointer="coarse"]) .prompt {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 0.3s cubic-bezier(0.2, 0, 0, 1),
+      visibility;
+  }
+
+  :global(html[data-pointer="coarse"]) .prompt .icon {
+    animation-play-state: running;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    animation: none;
+  }
+}

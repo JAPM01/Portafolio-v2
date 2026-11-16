@@ -1,0 +1,253 @@
+.section {
+  padding-block: var(--section-pad-mobile);
+  padding-block-end: var(--space-20);
+  z-index: 1;
+  background: transparent;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding-block: var(--section-pad-desktop);
+    padding-block-end: var(--space-32);
+  }
+}
+
+.heading {
+  font-family: var(--font-body);
+  font-size: min(
+    var(--text-heading-5-5xl),
+    calc((min(100vw, var(--content-cap)) - var(--page-margin) * 2) / 3.9131)
+  );
+  line-height: var(--leading-heading-5-5xl);
+  letter-spacing: var(--tracking-heading-5-5xl);
+  font-weight: var(--weight-heading-5-5xl);
+  color: var(--text-primary);
+  text-wrap: balance;
+  transition: color var(--theme-ms) linear;
+  margin: 0;
+}
+
+.runway {
+  --commit: 140px;
+  --stage-block: min(
+    100svh,
+    calc(var(--work-end-inline) / var(--work-aspect) + var(--space-16) * 2)
+  );
+  block-size: var(--stage-block);
+  --work-overhang: max(0px, calc(var(--work-end-inline) / var(--work-aspect) - var(--stage-block)));
+  margin-block-start: max(
+    0px,
+    var(--space-12) - max(0px, (100svh - var(--work-end-inline) / var(--work-aspect)) / 2)
+  );
+  margin-block-end: var(--work-overhang);
+  position: relative;
+}
+
+@media (min-width: 1024px) {
+  .runway {
+    --stage-block: min(
+      100svh,
+      calc(var(--work-end-inline) / var(--work-aspect) + var(--space-16) * 2)
+    );
+  }
+}
+
+/* La variante space-12 es max-width:1023px en la ref (no min-width:1024):
+   en desktop ambas se recortan a 100svh y coinciden, pero en móvil la
+   base space-16 deja el runway 32px alto. */
+@media (max-width: 1023px) {
+  .runway {
+    --stage-block: min(
+      100svh,
+      calc(var(--work-end-inline) / var(--work-aspect) + var(--space-12) * 2)
+    );
+  }
+}
+
+.stage {
+  --pin-offset: calc((100svh - var(--stage-block)) / 2);
+  block-size: var(--stage-block);
+  place-items: center;
+  display: grid;
+  position: sticky;
+  inset-block-start: var(--pin-offset);
+}
+
+.panel {
+  color: inherit;
+  --work-entry-travel: var(--parallax-travel);
+  transform: translateY(calc(var(--work-entry-travel) * (1 - var(--entry, 0))));
+  will-change: transform;
+  text-decoration: none;
+  display: block;
+  position: relative;
+}
+
+.frame {
+  --feature-inset: clamp(
+    var(--space-6),
+    16.8vw,
+    max(var(--space-48), calc(var(--content-cap) * 0.075))
+  );
+  --rest-inline: min(
+    calc(min(100vw, var(--content-cap)) - var(--feature-inset) * 2),
+    calc((var(--stage-block) - var(--space-10) * 2) * var(--work-aspect))
+  );
+  --rest-block: calc(var(--rest-inline) / var(--work-aspect));
+  --work-aspect: 1.6;
+  --end-inline: var(--work-end-inline);
+  --end-block: calc(var(--work-end-inline) / var(--work-aspect));
+  inline-size: calc(var(--rest-inline) + (var(--end-inline) - var(--rest-inline)) * var(--p, 0));
+  block-size: calc(var(--rest-block) + (var(--end-block) - var(--rest-block)) * var(--p, 0));
+  border-radius: var(--radius-xs);
+  background: var(--surface-raised);
+  transition: background-color var(--theme-ms) linear;
+  margin-inline: auto;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  cursor: none;
+}
+
+.media,
+.stillMedia {
+  background: var(--surface-raised);
+  transition: background-color var(--theme-ms) linear;
+  --work-photo-travel: var(--parallax-travel-photo-work);
+  --ptr-travel: var(--parallax-travel-pointer);
+  inline-size: calc(100% + var(--ptr-travel) * 2);
+  block-size: calc(100% + var(--work-photo-travel) + var(--ptr-travel) * 2);
+  object-fit: cover;
+  max-inline-size: none;
+  transform: translate3d(
+      calc(var(--ptr-travel) * var(--ptr-x, 0)),
+      calc(var(--work-photo-travel) * (0.5 - var(--img-p, 0.5)) + var(--ptr-travel) * var(--ptr-y, 0)),
+      0
+    )
+    scale(calc(1 + 0.1 * (1 - var(--p, 0))));
+  will-change: transform;
+  display: block;
+  position: absolute;
+  inset-block-start: calc((var(--work-photo-travel) * 0.5 + var(--ptr-travel)) * -1);
+  inset-inline-start: calc(var(--ptr-travel) * -1);
+}
+
+.stillMedia {
+  /* Las stills no crecen con --p: su escala es 1. */
+  transform: translate3d(
+      calc(var(--ptr-travel) * var(--ptr-x, 0)),
+      calc(var(--work-photo-travel) * (0.5 - var(--img-p, 0.5)) + var(--ptr-travel) * var(--ptr-y, 0)),
+      0
+    );
+}
+
+.captionAfter {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+
+.stills {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.still {
+  color: inherit;
+  text-decoration: none;
+  display: block;
+}
+
+.stillFrame {
+  inline-size: var(--work-end-inline);
+  block-size: auto;
+  aspect-ratio: var(--work-aspect, 1.6);
+  border-radius: var(--radius-xs);
+  background: var(--surface-raised);
+  transition: background-color var(--theme-ms) linear;
+  margin-inline: auto;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  cursor: none;
+}
+
+/* Cursor flotante "View" sobre los marcos. */
+.cursor {
+  z-index: 40;
+  pointer-events: none;
+  translate: calc(var(--x, -200px) - 50%) calc(var(--y, -200px) - 50%);
+  rotate: var(--rot, 0deg);
+  scale: calc(var(--in, 0.86) * var(--press, 1));
+  opacity: var(--o, 0);
+  filter: blur(calc(var(--bl, 5px) * var(--ui-scale-desktop, 1)));
+  will-change: opacity, scale, rotate, filter;
+  block-size: calc(48px * var(--ui-scale-desktop, 1));
+  align-items: center;
+  gap: calc(var(--space-2) * var(--ui-scale-desktop, 1));
+  padding-inline: calc(18px * var(--ui-scale-desktop, 1));
+  border-radius: var(--radius-sm2);
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-size: calc(var(--text-body-xl) * var(--ui-scale-desktop, 1));
+  line-height: var(--leading-body-xl);
+  letter-spacing: var(--tracking-body-xl, -0.008em);
+  background: var(--text-primary);
+  color: var(--text-inverse);
+  transition:
+    opacity 0.2s cubic-bezier(0.2, 0, 0, 1),
+    scale 0.2s cubic-bezier(0.2, 0, 0, 1),
+    filter 0.2s cubic-bezier(0.2, 0, 0, 1),
+    background-color var(--theme-ms) linear,
+    color var(--theme-ms) linear;
+  display: inline-flex;
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+}
+
+.cursor[data-on] {
+  --o: 1;
+  --in: 1;
+  --bl: 0px;
+}
+
+.cursor[data-press] {
+  --press: 0.92;
+}
+
+.cursorLabel {
+  display: block;
+}
+
+.cursor svg {
+  inline-size: calc(24px * var(--ui-scale-desktop, 1));
+  block-size: calc(24px * var(--ui-scale-desktop, 1));
+  flex: none;
+}
+
+@media (pointer: coarse) {
+  .stage {
+    place-items: end center;
+    padding-block-start: 0;
+    padding-block-end: var(--space-12);
+  }
+  .captionAfter {
+    margin-block-start: calc(var(--space-12) * -1);
+  }
+  .media,
+  .stillMedia {
+    --work-photo-travel: 0px;
+    will-change: auto;
+    transform: none;
+  }
+  .panel {
+    will-change: auto;
+    transform: none;
+  }
+  .cursor {
+    display: none;
+  }
+}

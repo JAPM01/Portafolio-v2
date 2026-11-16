@@ -1,0 +1,193 @@
+.section {
+  padding-block: var(--space-32) var(--space-24);
+  z-index: 1;
+  background: transparent;
+  position: relative;
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding-block: var(--space-32);
+  }
+}
+
+.grid {
+  gap: var(--space-12);
+  --faq-travel: 0px;
+  grid-template-columns: 1fr;
+  align-items: start;
+  display: grid;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    gap: max(var(--space-16), var(--text-heading-2xl));
+  }
+}
+
+.heading,
+.list {
+  inline-size: min(max(1440px, calc(var(--content-cap) * 0.5625)), 100%);
+  transform: translateY(calc(var(--faq-travel) * (1 - var(--p, 0))));
+  will-change: transform;
+  justify-self: center;
+}
+
+.heading {
+  font-family: var(--font-body);
+  font-size: var(--text-heading-2xl);
+  line-height: var(--leading-heading-2xl);
+  letter-spacing: var(--tracking-heading-2xl);
+  font-weight: var(--weight-heading-2xl);
+  color: var(--text-primary);
+  text-align: center;
+  text-wrap: balance;
+  margin: 0;
+  transition: color var(--theme-ms) linear;
+}
+
+.list {
+  margin: 0;
+  display: grid;
+}
+
+.item {
+  --faq-rule: var(--neutral-12);
+  border-block-start: var(--border-width) solid var(--faq-rule);
+  contain: layout;
+  transition: border-color var(--theme-ms) linear;
+}
+
+.item:last-child {
+  border-block-end: var(--border-width) solid var(--faq-rule);
+}
+
+.term {
+  margin: 0;
+}
+
+.trigger {
+  appearance: none;
+  justify-content: space-between;
+  align-items: start;
+  gap: max(var(--space-4), calc(var(--text-heading-lg) * 0.5));
+  --faq-row-pad-end: var(--space-8);
+  inline-size: 100%;
+  text-align: start;
+  font-family: var(--font-body);
+  font-size: var(--text-heading-lg);
+  line-height: var(--leading-heading-lg);
+  letter-spacing: var(--tracking-heading-lg);
+  font-weight: var(--weight-heading-lg);
+  color: var(--text-primary);
+  cursor: pointer;
+  touch-action: manipulation;
+  background: transparent;
+  border: 0;
+  margin: 0;
+  padding-block-start: max(var(--space-4), calc(var(--text-heading-lg) * 0.5));
+  padding-block-end: var(--faq-row-pad-end);
+  padding-inline: 0;
+  display: flex;
+  transition: color var(--theme-ms) linear;
+}
+
+.trigger:focus-visible {
+  outline-offset: -3px;
+}
+
+@media (min-width: 1024px) {
+  .trigger {
+    --faq-row-pad-end: max(var(--space-16), calc(var(--text-heading-lg) * 2));
+  }
+}
+
+.q {
+  transition: color var(--theme-ms) linear;
+  text-wrap: pretty;
+  min-inline-size: 0;
+}
+
+.sign {
+  --faq-sign-size: max(32px, var(--text-heading-lg));
+  --faq-sign-nudge: -1px;
+  inline-size: var(--faq-sign-size);
+  block-size: var(--faq-sign-size);
+  color: var(--text-secondary);
+  flex: none;
+  margin-block-start: calc(
+    (var(--text-heading-lg) * var(--leading-heading-lg) - var(--faq-sign-size)) / 2 +
+      var(--faq-sign-nudge)
+  );
+  transition: color 0.32s cubic-bezier(0.45, 0, 0.55, 1);
+  position: relative;
+}
+
+.signBar {
+  inline-size: var(--faq-sign-size);
+  block-size: var(--faq-sign-size);
+  position: absolute;
+  inset: 0;
+}
+
+.signPivot {
+  transition: transform 0.32s cubic-bezier(0.45, 0, 0.55, 1);
+  transform: rotate(90deg);
+}
+
+.item[data-open] .signPivot {
+  transform: rotate(0);
+}
+
+.trigger:hover .sign,
+.item[data-open] .sign {
+  color: var(--text-primary);
+}
+
+.panel {
+  grid-template-rows: 0fr;
+  margin: 0;
+  transition: grid-template-rows 0.32s cubic-bezier(0.45, 0, 0.55, 1);
+  display: grid;
+  overflow: clip;
+}
+
+.item[data-open] .panel {
+  grid-template-rows: 1fr;
+}
+
+.panelInner {
+  min-block-size: 0;
+  min-inline-size: 0;
+  overflow: clip;
+}
+
+.a {
+  font-family: var(--font-body);
+  font-size: max(var(--text-body-xl), calc(var(--text-heading-lg) * 21 / 32));
+  line-height: var(--leading-body-xl);
+  letter-spacing: var(--tracking-body-xl);
+  color: var(--text-secondary);
+  text-wrap: pretty;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.32s cubic-bezier(0.45, 0, 0.55, 1),
+    visibility 0.32s cubic-bezier(0.45, 0, 0.55, 1),
+    color var(--theme-ms) linear;
+  margin: 0;
+  padding-block-end: max(var(--space-4), calc(var(--text-heading-lg) * 0.5));
+  max-width: 75ch;
+}
+
+.item[data-open] .a {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (pointer: coarse) {
+  .heading,
+  .list {
+    transform: none;
+  }
+}

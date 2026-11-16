@@ -1,0 +1,72 @@
+.section {
+  padding-block: var(--space-32);
+  padding-block: var(--space-20);
+  z-index: 1;
+  background: transparent;
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding-block: calc(var(--section-pad-desktop) * 2 / 3);
+  }
+}
+
+.frame {
+  aspect-ratio: 16/10;
+  --mark-travel: var(--parallax-travel-photo-work);
+  position: relative;
+  overflow: hidden;
+  view-timeline-name: --mark-frame;
+}
+
+.stage {
+  block-size: calc(100% + var(--mark-travel));
+  transform: translateY(calc(var(--mark-travel) * (0.5 - var(--mark-p, 0.5))));
+  will-change: transform;
+  position: absolute;
+  inset-block-start: calc(var(--mark-travel) * -0.5);
+  inset-inline: 0;
+  display: grid;
+  place-items: center;
+  animation: linear both markDrift;
+  animation-timeline: --mark-frame;
+  animation-range: cover;
+}
+
+/* La marca 3D de la referencia es cromo claro (#f0f0f2) sobre blanco:
+   casi invisible. Aproximación: el glifo como máscara con degradado
+   metálico claro. */
+.mark {
+  block-size: 62%;
+  aspect-ratio: 2175.7 / 1470;
+  background: linear-gradient(135deg, #e9e9ed, #f7f7f9 45%, #d4d4da 70%, #f0f0f2);
+  -webkit-mask-image: url(/brand/mark.svg);
+  mask-image: url(/brand/mark.svg);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+@keyframes markDrift {
+  0% {
+    transform: translateY(calc(var(--mark-travel) * 0.5));
+  }
+  to {
+    transform: translateY(calc(var(--mark-travel) * -0.5));
+  }
+}
+
+@media (pointer: coarse) {
+  .frame {
+    view-timeline-name: --mark-frame;
+  }
+  .stage {
+    animation: linear both markDrift;
+    animation-timeline: --mark-frame;
+    animation-range: cover;
+  }
+}
