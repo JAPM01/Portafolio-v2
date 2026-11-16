@@ -13,7 +13,9 @@ const wavesPreset =
     en vivo, así vidrio y fondo comparten paleta y formas. Si la captura
     falla, el fluted no se monta y queda solo el mesh (que ya se ve bien). */
 
-const MESH_COLORS = ["#4275ff", "#000000", "#0044ff", "#000000"];
+/* Paleta de identidad de Jafet (16 Nov 2026): negro y azul como base
+   prioritaria, rojo de acento y cian solo para brillos. */
+const MESH_COLORS = ["#000000", "#1100ff", "#000000", "#1100ff", "#fe0149", "#00d0f0"];
 const STATIC_FRAME = 12000; // ms: punto de partida determinista (también para reduced-motion)
 const CAPTURE_W = 960;
 const CAPTURE_H = 540;
