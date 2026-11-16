@@ -75,12 +75,45 @@ const CURATED_FLAT = CURATED.flatMap((g) => g.fonts);
 // Catálogo completo de Google Fonts (best-effort, con fallback a la curada).
 const CATALOG_URL = "https://gwfh.mranftl.com/api/fonts";
 
-function css2Url(family: string) {
-  const fam = family.trim().replace(/\s+/g, "+");
-  return `https://fonts.googleapis.com/css2?family=${fam}:wght@400;500;600;700;800&display=swap`;
+type CatalogEntry = { family: string; variants: string[] };
+
+const DEFAULT_WEIGHTS = "400;500;600;700;800";
+
+/** Pesos verticales reales de la familia (sin itálicas), hasta 800, que es
+    lo máximo que usa el sitio. Si no hay catálogo, se piden los habituales:
+    la API de Google Fonts ignora los pesos que la familia no tiene. */
+function weightsFor(entry: CatalogEntry | undefined): string {
+  if (!entry) return DEFAULT_WEIGHTS;
+  const weights = new Set<number>();
+  for (const v of entry.variants) {
+    if (v === "regular") weights.add(400);
+    else if (/^\d+$/.test(v)) {
+      const w = parseInt(v, 10);
+      if (w >= 100 && w <= 800) weights.add(w);
+    }
+  }
+  if (weights.size === 0) weights.add(400);
+  return [...weights].sort((a, b) => a - b).join(";");
 }
 
-function applyFontFamily(family: string): Promise<boolean> {
+function css2Url(family: string, weights: string) {
+  const fam = family.trim().replace(/\s+/g, "+");
+  return `https://fonts.googleapis.com/css2?family=${fam}:wght@${weights}&display=swap`;
+}
+
+/** Espera a que la hoja de la fuente se cargue (o falle) antes de comprobar:
+    sin esto, la comprobación podía correr antes de que el navegador conociera
+    las @font-face nuevas y marcar "no encontrada" una fuente válida. */
+function waitForSheet(link: HTMLLinkElement): Promise<void> {
+  return new Promise((resolve) => {
+    const done = () => resolve();
+    link.addEventListener("load", done, { once: true });
+    link.addEventListener("error", done, { once: true });
+    setTimeout(done, 4000);
+  });
+}
+
+async function applyFontFamily(family: string, weights: string): Promise<boolean> {
   if (family === DEFAULT_FONT) {
     document.getElementById("font-preview-link")?.remove();
     document.documentElement.style.removeProperty("--font-body");
@@ -89,7 +122,7 @@ function applyFontFamily(family: string): Promise<boolean> {
     } catch {
       /* sin storage: la vista previa solo vive en esta página */
     }
-    return Promise.resolve(true);
+    return true;
   }
   let link = document.getElementById("font-preview-link") as HTMLLinkElement | null;
   if (!link) {
@@ -98,17 +131,20 @@ function applyFontFamily(family: string): Promise<boolean> {
     link.rel = "stylesheet";
     document.head.appendChild(link);
   }
-  link.href = css2Url(family);
+  link.href = css2Url(family, weights);
   document.documentElement.style.setProperty("--font-body", `"${family}", ${FALLBACKS}`);
   try {
     localStorage.setItem(STORAGE_KEY, family);
   } catch {
     /* sin storage: la vista previa solo vive en esta página */
   }
-  return document.fonts
-    .load(`16px "${family}"`)
-    .then(() => document.fonts.check(`16px "${family}"`))
-    .catch(() => false);
+  await waitForSheet(link);
+  try {
+    await document.fonts.load(`16px "${family}"`);
+  } catch {
+    return false;
+  }
+  return document.fonts.check(`16px "${family}"`);
 }
 
 export default function FontPicker() {
@@ -126,7 +162,7 @@ export default function FontPicker() {
   });
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "not-found">("idle");
-  const [catalog, setCatalog] = useState<string[] | null>(null);
+  const [catalog, setCatalog] = useState<CatalogEntry[] | null>(null);
 
   // Aplicar la elección guardada al montar y cargar el catálogo completo (best-effort).
   useEffect(() => {
@@ -137,14 +173,20 @@ export default function FontPicker() {
       saved = null;
     }
     if (saved && saved !== DEFAULT_FONT) {
-      void applyFontFamily(saved).then((ok) => setStatus(ok ? "ok" : "not-found"));
+      void applyFontFamily(saved, DEFAULT_WEIGHTS).then((ok) =>
+        setStatus(ok ? "ok" : "not-found"),
+      );
     }
     let cancelled = false;
     fetch(CATALOG_URL)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error("catalogo no disponible"))))
-      .then((list: { family: string }[]) => {
+      .then((list: CatalogEntry[]) => {
         if (!cancelled && Array.isArray(list)) {
-          setCatalog(list.map((f) => f.family).sort((a, b) => a.localeCompare(b)));
+          setCatalog(
+            list
+              .filter((f) => typeof f?.family === "string")
+              .sort((a, b) => a.family.localeCompare(b.family)),
+          );
         }
       })
       .catch(() => {
@@ -155,14 +197,31 @@ export default function FontPicker() {
     };
   }, []);
 
-  const suggestions = useMemo(() => catalog ?? CURATED_FLAT, [catalog]);
+  const suggestions = useMemo(
+    () => catalog?.map((f) => f.family) ?? CURATED_FLAT,
+    [catalog],
+  );
+
+  /** Resuelve lo escrito al nombre exacto del catálogo (sin importar
+      mayúsculas ni espacios de más); si no está, se usa tal cual se escribió. */
+  const resolveEntry = (name: string): { family: string; entry?: CatalogEntry } => {
+    const clean = name.trim().replace(/\s+/g, " ");
+    const lower = clean.toLowerCase();
+    const hit = catalog?.find((f) => f.family.toLowerCase() === lower);
+    if (hit) return { family: hit.family, entry: hit };
+    const curated = CURATED_FLAT.find((f) => f.toLowerCase() === lower);
+    if (curated) return { family: curated };
+    return { family: clean };
+  };
 
   const apply = (family: string) => {
-    const name = family.trim();
+    const { family: name, entry } = resolveEntry(family);
     if (!name) return;
     setCurrent(name);
     setStatus("loading");
-    void applyFontFamily(name).then((ok) => setStatus(ok ? "ok" : "not-found"));
+    void applyFontFamily(name, weightsFor(entry)).then((ok) =>
+      setStatus(ok ? "ok" : "not-found"),
+    );
   };
 
   const inCurated = CURATED_FLAT.includes(current);
@@ -275,7 +334,10 @@ export default function FontPicker() {
 
           <p className={styles.note}>
             Vista previa: se aplica a todo el sitio y se guarda en tu navegador hasta que elijas
-            una definitiva.
+            una definitiva.{" "}
+            {catalog
+              ? `Catálogo completo: ${catalog.length.toLocaleString("es-MX")} fuentes.`
+              : "Catálogo básico: 40 fuentes (no se pudo cargar el catálogo completo)."}
           </p>
         </div>
       )}
