@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import styles from "./hero.module.css";
 import { CharRise, WordFade } from "../lib/anim";
+import { px } from "../lib/paths";
 import HeroBackground from "./HeroBackground";
 
 /** Hero 1:1 — fondo fluido (mesh gradient animado + fluted glass waves),
@@ -74,12 +75,13 @@ export default function Hero() {
               style={{ textShadow: "0px 2px 28px rgba(0, 0, 0, 0.45)" }}
             >
               <span style={{ "--anim-base": "0ms" } as React.CSSProperties}>
-                <span className="sr-only">Jafet</span>
-                <CharRise word="Jafet" base="0ms" />
+                <span className="sr-only">Diseñar con</span>
+                <CharRise word="Diseñar" base="0ms" />{" "}
+                <CharRise word="con" base="0ms" />
               </span>
               <span style={{ "--anim-base": "0ms" } as React.CSSProperties}>
-                <span className="sr-only">Pérez</span>
-                <CharRise word="Pérez" base="0ms" />
+                <span className="sr-only">intención</span>
+                <CharRise word="intención" base="0ms" />
               </span>
             </h1>
           </div>
@@ -88,15 +90,12 @@ export default function Hero() {
         <div className={styles.meta} data-parallax-pitch="">
             <div className={styles.metaItem}>
               <span className={styles.metaLabel} style={{ "--anim-base": "560ms" } as React.CSSProperties}>
-                <span className="sr-only">Availability</span>
-                <WordFade words={["Availability"]} base="560ms" />
+                <span className="sr-only">Portafolio de trabajo</span>
+                <WordFade words={["Portafolio", "de", "trabajo"]} base="560ms" />
               </span>
               <span className={styles.metaValue} style={{ "--anim-base": "650ms" } as React.CSSProperties}>
-                <span className="sr-only">I&apos;m taking projects, about a week to start.</span>
-                <WordFade
-                  words={["I'm", "taking", "projects,", "about", "a", "week", "to", "start."]}
-                  base="650ms"
-                />
+                <span className="sr-only">Jafet Pérez</span>
+                <WordFade words={["Jafet", "Pérez"]} base="650ms" />
               </span>
             </div>
             <div className={styles.metaItem}>
@@ -105,12 +104,12 @@ export default function Hero() {
                 <WordFade words={["Contact"]} base="560ms" />
               </span>
               <a
-                className={styles.metaValue}
-                href="mailto:jperez.mond@gmail.com"
+                className={`${styles.metaValue} ${styles.ctaButton}`}
+                href={px("/contact")}
                 style={{ "--anim-base": "650ms" } as React.CSSProperties}
               >
-                <span className="sr-only">jperez.mond@gmail.com</span>
-                <WordFade words={["jperez.mond@gmail.com"]} base="650ms" />
+                <span className="sr-only">Conectemos</span>
+                <WordFade words={["Conectemos"]} base="650ms" />
               </a>
             </div>
           </div>
@@ -118,7 +117,7 @@ export default function Hero() {
 
       <div className={styles.pitch}>
         <p className={styles.role}>
-          <span>Lorem ipsum</span>
+          <span>Product design UXUI Branding</span>
           <svg
             className={styles.roleIcon}
             viewBox="0 0 24 24"
@@ -134,7 +133,7 @@ export default function Hero() {
             />
           </svg>
         </p>
-        <p className={styles.sub}>Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor.</p>
+        <p className={styles.sub}>Cuestiono lo habitual para crear soluciones con enfoque humano.</p>
       </div>
     </section>
   );

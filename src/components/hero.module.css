@@ -196,6 +196,12 @@
   --rise-o: 1;
   font-family: var(--font-display);
   font-size: var(--text-heading-5-5xl);
+  /* El título ya no es un nombre corto ("Arshawn", 7 caracteres) sino la
+     frase "Diseñar con intención": la línea larga tiene 11 caracteres, así
+     que el tamaño se escala ×0.68 para que ocupe el mismo ancho que el
+     nombre de la referencia (móvil ~70% del ancho). El line-height y el
+     tracking son relativos (0.95 / -0.036em), así que escalan solos. */
+  font-size: calc(var(--text-heading-5-5xl) * 0.68);
   line-height: var(--leading-heading-5-5xl);
   letter-spacing: var(--tracking-heading-5-5xl);
   font-weight: var(--weight-heading-5-5xl);
@@ -232,6 +238,20 @@ a.metaValue {
 }
 a.metaValue:hover {
   opacity: 0.7;
+}
+/* CTA "Conectemos" en lugar del correo: píldora con borde, no texto plano. */
+a.metaValue.ctaButton {
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  padding: var(--space-3) var(--space-5);
+  margin-block: 0;
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+}
+a.metaValue.ctaButton:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .pitch {
@@ -293,7 +313,17 @@ a.metaValue:hover {
     inset-inline-start: var(--page-margin);
     inset-inline-end: auto;
     inset-block-start: auto;
-    inset-block-end: calc(var(--space-6) + var(--space-40));
+    /* En la referencia el pitch está más arriba: el rol queda ~46% de la
+       altura del viewport y hay un hueco grande entre el rol y el cuerpo.
+       Se sube el bloque y se agranda el hueco rol→cuerpo (80px). */
+    inset-block-end: calc(var(--space-6) + var(--space-40) + var(--space-16) + var(--space-4));
+  }
+  .role {
+    margin-block-end: var(--space-20);
+    /* "Product design UXUI Branding" (29 caracteres) no cabe en una línea
+       a tamaño completo en 390px; en la referencia el rol es una sola
+       línea, así que se reduce un poco para que quepa. */
+    font-size: calc(var(--text-heading-lg) * 0.85);
   }
   .meta {
     gap: var(--space-6);
