@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { px } from "../lib/paths";
 import styles from "./process-summary.module.css";
 import { useSectionProgress, useReveals, useTone } from "../lib/scroll";
 
@@ -11,7 +12,7 @@ import { useSectionProgress, useReveals, useTone } from "../lib/scroll";
 const STEPS = [
   {
     label: "Lorem",
-    img: "/placeholder.svg",
+    img: px("/placeholder.svg"),
     alt: "Lorem ipsum dolor sit amet consectetur adipiscing elit.",
     text: (
       <>
@@ -28,7 +29,7 @@ const STEPS = [
   },
   {
     label: "Ipsum",
-    img: "/placeholder.svg",
+    img: px("/placeholder.svg"),
     alt: "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod.",
     text: (
       <>
@@ -53,7 +54,7 @@ const STEPS = [
   },
   {
     label: "Dolor",
-    img: "/placeholder.svg",
+    img: px("/placeholder.svg"),
     alt: "Lorem ipsum dolor sit amet consectetur adipiscing elit.",
     text: (
       <>
