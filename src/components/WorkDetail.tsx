@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { px } from "../lib/paths";
 import { useRouter } from "next/navigation";
 import styles from "./work-detail.module.css";
 import { CharRise } from "../lib/anim";
@@ -351,7 +352,7 @@ export default function WorkDetail({ project, next }: { project: Project; next: 
         className={styles.gate}
         data-next-gate=""
         data-armed={armed ? "" : undefined}
-        href={`/work/${project.next}`}
+        href={px(`/work/${project.next}`)}
       >
         <span className={styles.gateLabel}>Next?</span>
         <span className={styles.gateTitle} style={{ "--title-em": next.titleEm } as React.CSSProperties}>

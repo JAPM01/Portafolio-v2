@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { px } from "../lib/paths";
 import styles from "./hero.module.css";
 import { CharRise, WordFade } from "../lib/anim";
 
@@ -53,7 +54,7 @@ export default function Hero() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   className={styles.img}
-                  src="/placeholder.svg"
+                  src={px("/placeholder.svg")}
                   alt=""
                   width={3840}
                   height={2152}
@@ -61,7 +62,7 @@ export default function Hero() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   className={styles.veil}
-                  src="/placeholder-transparent.svg"
+                  src={px("/placeholder-transparent.svg")}
                   alt=""
                   width={3840}
                   height={2152}

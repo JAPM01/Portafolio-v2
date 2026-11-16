@@ -1,4 +1,5 @@
 import SiteNav from "../../components/SiteNav";
+import { px } from "../../lib/paths";
 import HeroLoader from "../../components/HeroLoader";
 import ThemeGate from "../../components/ThemeGate";
 import styles from "../../components/privacy-page.module.css";
@@ -46,7 +47,7 @@ export default function PrivacyPage() {
                 laboris nisi aliquip ex ea commodo consequat.
               </p>
             </div>
-            <a className={styles.back} href="/">
+            <a className={styles.back} href={px("/")}>
               Back to the homepage
             </a>
           </div>

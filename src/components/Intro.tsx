@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { px } from "../lib/paths";
 import styles from "./intro.module.css";
 import { useSectionProgress, usePointerParallax, useReveals } from "../lib/scroll";
 
@@ -116,7 +117,7 @@ export default function Intro() {
             width={877}
             height={877}
             decoding="async"
-            src="/placeholder.svg"
+            src={px("/placeholder.svg")}
           />
         </div>
         <p className={styles.copy} data-intro-copy="" style={{ "--n": 142 } as React.CSSProperties}>

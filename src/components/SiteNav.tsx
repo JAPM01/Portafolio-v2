@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { px } from "../lib/paths";
 import styles from "./site-nav.module.css";
 import { WordFade, RiseWhole } from "../lib/anim";
 import { morphTarget, SETTLED } from "../lib/scroll";
@@ -285,7 +286,7 @@ export default function SiteNav() {
   return (
     <>
       <nav className={styles.nav} aria-label="Primary" ref={navRef} data-menu-open={open || undefined}>
-        <a href="/" className={styles.mark} aria-label="Jafet Pérez">
+        <a href={px("/")} className={styles.mark} aria-label="Jafet Pérez">
           <span className={styles.wordmark} aria-hidden="true">
             <span style={{ "--anim-base": "720ms" } as React.CSSProperties}>
               <span className="sr-only">Jafet Pérez</span>
@@ -302,20 +303,20 @@ export default function SiteNav() {
         </a>
 
         <div className={styles.links} data-nav-links="">
-          <a href="/#work" className={styles.item}>
+          <a href={px("/#work")} className={styles.item}>
             <span style={{ "--anim-base": "820ms" } as React.CSSProperties}>
               <span className="sr-only">Work</span>
               <WordFade words={["Work"]} base="820ms" />
             </span>
           </a>
-          <a href="/#process-summary" className={styles.item}>
+          <a href={px("/#process-summary")} className={styles.item}>
             <span style={{ "--anim-base": "860ms" } as React.CSSProperties}>
               <span className="sr-only">Process</span>
               <WordFade words={["Process"]} base="860ms" />
             </span>
           </a>
           <a
-            href="/contact"
+            href={px("/contact")}
             className={styles.cta}
             data-label="Start a project"
             style={{ "--cta-reveal-delay": "900ms" } as React.CSSProperties}
@@ -365,13 +366,13 @@ export default function SiteNav() {
         aria-label="Menu"
       >
         <div className={styles.sheetInner} ref={sheetInnerRef}>
-          <a href="/#work" className={styles.sheetItem} onClick={() => setOpen(false)}>
+          <a href={px("/#work")} className={styles.sheetItem} onClick={() => setOpen(false)}>
             Work
           </a>
-          <a href="/#process-summary" className={styles.sheetItem} onClick={() => setOpen(false)}>
+          <a href={px("/#process-summary")} className={styles.sheetItem} onClick={() => setOpen(false)}>
             Process
           </a>
-          <a href="/contact" className={styles.sheetCta} onClick={() => setOpen(false)}>
+          <a href={px("/contact")} className={styles.sheetCta} onClick={() => setOpen(false)}>
             Start a project
           </a>
         </div>

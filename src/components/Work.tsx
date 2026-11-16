@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { px } from "../lib/paths";
 import styles from "./work.module.css";
 import WorkCaption from "./WorkCaption";
 import { usePointerParallax, morphTarget, SETTLED } from "../lib/scroll";
@@ -16,8 +17,8 @@ const FEATURE = {
   line: "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud.",
   year: "2026",
   role: "Lorem ipsum dolor sit amet",
-  img: "/placeholder.svg",
-  href: "/work/temperance",
+  img: px("/placeholder.svg"),
+  href: px("/work/temperance"),
 };
 
 const STILLS = [
@@ -26,24 +27,24 @@ const STILLS = [
     line: "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam.",
     year: "2026",
     role: "Lorem ipsum dolor sit amet",
-    img: "/placeholder.svg",
-    href: "/work/bolt",
+    img: px("/placeholder.svg"),
+    href: px("/work/bolt"),
   },
   {
     title: "Sit Amet",
     line: "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi aliquip.",
     year: "2026",
     role: "Lorem ipsum dolor sit amet",
-    img: "/placeholder.svg",
-    href: "/work/neugent",
+    img: px("/placeholder.svg"),
+    href: px("/work/neugent"),
   },
   {
     title: "Consectetur",
     line: "Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi aliquip ex ea commodo consequat duis aute.",
     year: "2025",
     role: "Lorem ipsum dolor sit amet",
-    img: "/placeholder.svg",
-    href: "/work/black-lily",
+    img: px("/placeholder.svg"),
+    href: px("/work/black-lily"),
   },
 ];
 

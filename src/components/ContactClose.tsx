@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { px } from "../lib/paths";
 import styles from "./contact-close.module.css";
 import { useSectionProgress } from "../lib/scroll";
 
@@ -134,15 +135,15 @@ export default function ContactClose({
       <div className={styles.backdrop} aria-hidden="true" data-closer-backdrop="">
         <div className={`${styles.pane} ${styles.paneHaze}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={styles.layer} src="/placeholder-transparent.svg" alt="" />
+          <img className={styles.layer} src={px("/placeholder-transparent.svg")} alt="" />
         </div>
         <div className={`${styles.pane} ${styles.paneSoft}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={styles.layer} src="/placeholder-transparent.svg" alt="" />
+          <img className={styles.layer} src={px("/placeholder-transparent.svg")} alt="" />
         </div>
         <div className={`${styles.pane} ${styles.paneCrisp}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={styles.layer} src="/placeholder-transparent.svg" alt="" />
+          <img className={styles.layer} src={px("/placeholder-transparent.svg")} alt="" />
         </div>
       </div>
 
@@ -177,7 +178,7 @@ export default function ContactClose({
                   Lorem ipsum dolor sit amet consectetur adipiscing elit sed
                   do eiusmod tempor.
                 </p>
-                <a className={styles.cta} href="/contact">
+                <a className={styles.cta} href={px("/contact")}>
                   Start a project
                 </a>
               </>
@@ -223,7 +224,7 @@ export default function ContactClose({
           </p>
           <p className={styles.copyright}>
             <span>© 2026</span>
-            <a className={styles.colophonLink} href="/privacy">
+            <a className={styles.colophonLink} href={px("/privacy")}>
               Privacy
             </a>
             <span className={styles.colophonNote}>Lorem ipsum dolor</span>
