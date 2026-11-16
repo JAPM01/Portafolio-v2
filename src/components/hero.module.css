@@ -374,7 +374,13 @@ a.metaValue.ctaButton:hover {
 .gridOverlay {
   position: absolute;
   inset-block: var(--space-6);
-  inset-inline: 0;
+  /* inset-inline = el margen horizontal (24px): un overlay absoluto se
+     posiciona contra la CAJA DE PADDING del contenedor, así que con
+     inset-inline: 0 abarcaba todo el ancho incluyendo los márgenes y sus
+     celdas tocaban los bordes, desalineadas de las columnas reales (que
+     sí empiezan después del margen). Con el mismo valor que el
+     padding-inline, el overlay cubre exactamente la caja de contenido. */
+  inset-inline: var(--space-6);
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: repeat(12, minmax(0, 1fr));
@@ -414,6 +420,7 @@ a.metaValue.ctaButton:hover {
     column-gap: var(--space-4);
     row-gap: var(--space-4);
     inset-block: var(--space-4);
+    inset-inline: var(--space-4);
   }
   .gridOverlayCell:nth-child(n + 49) {
     display: none;
