@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { px } from "../lib/paths";
 import styles from "./hero.module.css";
 import { CharRise, WordFade } from "../lib/anim";
+import HeroBackground from "./HeroBackground";
 
-/** Hero 1:1 — fondo fluido (aura + veil), título gigante por caracteres,
-    pitch a la derecha y meta abajo. El fade del fondo y el parallax del
-    ratón se gobiernan con variables CSS (--hero-fade). */
+/** Hero 1:1 — fondo fluido (mesh gradient animado + fluted glass waves),
+    título gigante por caracteres, pitch a la derecha y meta abajo. El fade
+    del fondo y el parallax del ratón se gobiernan con variables CSS
+    (--hero-fade). */
 export default function Hero() {
   const rootRef = useRef<HTMLElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -51,23 +52,7 @@ export default function Hero() {
               style={{ transform: "scale(1.0000) translate(0%, 0%)", filter: "brightness(1.01)" }}
             >
               <div className={styles.bgSource} data-hero-bg-source="" aria-hidden="true">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  className={styles.img}
-                  src={px("/placeholder.svg")}
-                  alt=""
-                  width={3840}
-                  height={2152}
-                />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  className={styles.veil}
-                  src={px("/placeholder-transparent.svg")}
-                  alt=""
-                  width={3840}
-                  height={2152}
-                  style={{ opacity: 0.4, filter: "blur(2px)" }}
-                />
+                <HeroBackground />
               </div>
             </div>
             <div className={styles.veil} style={{ background: "#080405", opacity: 0.2 }} />
