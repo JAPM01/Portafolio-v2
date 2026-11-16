@@ -5,6 +5,7 @@
    ========================================================================== */
 
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap");
 
 :root {
   /* ---- Color: escala primaria (rojo) ---- */
@@ -78,6 +79,9 @@
 
   /* ---- Tipografía ---- */
   --font-body: "Manrope", ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Títulos: Google Sans (decisión de Jafet, 16 Nov 2026). */
+  --font-display: "Google Sans", ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
   --text-heading-6xl: clamp(4.5rem, 0.7083rem + 16.85vw, 15.875rem);
@@ -364,6 +368,15 @@ body {
   margin: 0;
   font-size: 1rem;
   line-height: 1.6;
+}
+/* Títulos en Google Sans; todo lo demás hereda Manrope de body. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
 }
 body:has([data-chromeless]) nav {
   display: none;

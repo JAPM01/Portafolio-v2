@@ -94,7 +94,7 @@ a:focus-visible .viewLabel::after {
 }
 
 .title {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: var(--text-heading-xl);
   line-height: var(--leading-heading-xl);
   letter-spacing: var(--tracking-heading-xl);

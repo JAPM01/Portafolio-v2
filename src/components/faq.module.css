@@ -34,7 +34,7 @@
 }
 
 .heading {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: var(--text-heading-2xl);
   line-height: var(--leading-heading-2xl);
   letter-spacing: var(--tracking-heading-2xl);
@@ -74,7 +74,7 @@
   --faq-row-pad-end: var(--space-8);
   inline-size: 100%;
   text-align: start;
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: var(--text-heading-lg);
   line-height: var(--leading-heading-lg);
   letter-spacing: var(--tracking-heading-lg);

@@ -14,7 +14,7 @@
 }
 
 .heading {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: min(
     var(--text-heading-5-5xl),
     calc((min(100vw, var(--content-cap)) - var(--page-margin) * 2) / 3.9131)

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import FontPicker from "../components/FontPicker";
 import RotatePrompt from "../components/RotatePrompt";
 import "./globals.css";
 
@@ -14,7 +13,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         {children}
         <RotatePrompt />
-        <FontPicker />
       </body>
     </html>
   );
