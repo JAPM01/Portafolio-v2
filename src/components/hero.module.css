@@ -10,6 +10,11 @@
   height: 100svh;
   display: flex;
   position: relative;
+  /* Margen horizontal del grid = gutter: el .container del hero usa
+     --page-margin (clamp 12→24px), que NO es el gutter (24px desktop /
+     16px móvil). Se sobreescribe aquí para que las columnas empiecen
+     después de un margen exactamente igual al gutter. */
+  --page-margin: var(--space-6);
 }
 
 /* Fondo fijo con ripple: cubre el viewport y se desvanece al hacer scroll. */
@@ -146,12 +151,16 @@
 
 /* Retícula del hero — mejores prácticas: 12 columnas en desktop, 4 en
    móvil (12 se divide en 2, 3, 4 y 6); gutters fijos 24px / 16px;
-   márgenes = padding del .container; todo el espaciado en múltiplos de 8
-   (medio paso de 4 para detalles). Título, pitch y meta son celdas de
-   ESTE grid: antes cada uno se ubicaba con un mecanismo distinto (flujo /
-   absolute con px fijos / flex) y por eso se movían por separado al
-   cambiar de viewport. Filas: 12 filas iguales; el título va en 2–7, el
-   pitch en 6–10 y el meta en 11–13 (medido contra la referencia). */
+   márgenes = gutter en los 4 lados (el horizontal se fija en .hero con
+   --page-margin, el vertical es el padding-block de .inner) y las
+   columnas empiezan después del margen; gutters horizontales = row-gap
+   (antes no había: las 12 filas iban pegadas). Todo el espaciado en
+   múltiplos de 8 (medio paso de 4 para detalles). Título, pitch y meta
+   son celdas de ESTE grid: antes cada uno se ubicaba con un mecanismo
+   distinto (flujo / absolute con px fijos / flex) y por eso se movían
+   por separado al cambiar de viewport. Filas: 12 filas iguales; el
+   título va en 2–7, el pitch en 6–10 y el meta en 11–13 (medido contra
+   la referencia). */
 .inner {
   z-index: 1;
   padding-block: var(--space-6);
@@ -168,6 +177,7 @@
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: repeat(12, minmax(0, 1fr));
   column-gap: var(--space-6);
+  row-gap: var(--space-6);
   position: relative;
 }
 .inner::before {
@@ -311,11 +321,16 @@ a.metaValue.ctaButton:hover {
      derecha en desktop. */
 }
 
-/* Móvil: retícula de 4 columnas, gutter 16px. */
+/* Móvil: retícula de 4 columnas, gutter 16px, márgenes 16px. */
 @media (max-width: 1023px) {
+  .hero {
+    --page-margin: var(--space-4);
+  }
   .inner {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     column-gap: var(--space-4);
+    row-gap: var(--space-4);
+    padding-block: var(--space-4);
   }
   .titleWrap {
     grid-column: 1 / 5;
@@ -352,7 +367,10 @@ a.metaValue.ctaButton:hover {
 
 /* Retícula visible (botón flotante): muestra las celdas exactas del grid
    del hero — 12×12 en desktop, 4×12 en móvil — para verificar que cada
-   elemento cae en su lugar. */
+   elemento cae en su lugar. Usa los mismos márgenes y gaps que .inner
+   (inset-block = padding-block, mismos column-gap y row-gap) para que
+   cada celda calce con la del grid real. Color verde lima para que se
+   vea bien sobre el fondo oscuro y colorido. */
 .gridOverlay {
   position: absolute;
   inset-block: var(--space-6);
@@ -361,12 +379,13 @@ a.metaValue.ctaButton:hover {
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: repeat(12, minmax(0, 1fr));
   column-gap: var(--space-6);
+  row-gap: var(--space-6);
   pointer-events: none;
   z-index: 0;
 }
 .gridOverlayCell {
-  border: 1px solid rgba(126, 155, 255, 0.32);
-  background: rgba(126, 155, 255, 0.05);
+  border: 1px solid rgba(190, 255, 0, 0.55);
+  background: rgba(190, 255, 0, 0.08);
 }
 .gridToggle {
   position: fixed;
@@ -393,6 +412,8 @@ a.metaValue.ctaButton:hover {
   .gridOverlay {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     column-gap: var(--space-4);
+    row-gap: var(--space-4);
+    inset-block: var(--space-4);
   }
   .gridOverlayCell:nth-child(n + 49) {
     display: none;
