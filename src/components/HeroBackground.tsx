@@ -27,6 +27,7 @@ const GlassLayer = memo(function GlassLayer({ frame }: { frame: string | null })
     <div style={{ position: "absolute", inset: 0, opacity: 0.62 }} aria-hidden="true">
       <FlutedGlass
         {...verticalBarsPreset.params}
+        size={1.0}
         image={frame}
         width="100%"
         height="100%"

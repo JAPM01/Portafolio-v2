@@ -15,7 +15,7 @@ type GL = WebGL2RenderingContext;
 const CONFIG = {
   SIM_RESOLUTION: 144,
   DYE_RESOLUTION: 1024,
-  DENSITY_DISSIPATION: 0.15, // la tinta se desvanece lento: perdura y se arremolina
+  DENSITY_DISSIPATION: 0.02, // el gradiente base casi no se desvanece: persiste y fluye
   VELOCITY_DISSIPATION: 0.2,
   PRESSURE: 0.8,
   PRESSURE_ITERATIONS: 20,
@@ -48,6 +48,12 @@ void main () {
   vB = vUv - vec2(0.0, texelSize.y);
   gl_Position = vec4(aPosition, 0.0, 1.0);
 }`;
+
+const COPY_FRAG = `precision mediump float;
+precision mediump sampler2D;
+varying highp vec2 vUv;
+uniform sampler2D uTexture;
+void main () { gl_FragColor = texture2D(uTexture, vUv); }`;
 
 const CLEAR_FRAG = `precision mediump float;
 precision mediump sampler2D;
@@ -433,6 +439,7 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
     }
 
     const baseVertexShader = compileShader(gl, gl.VERTEX_SHADER, BASE_VERTEX);
+    const copyProgram = createProgram(gl, baseVertexShader, compileShader(gl, gl.FRAGMENT_SHADER, COPY_FRAG));
     const clearProgram = createProgram(gl, baseVertexShader, compileShader(gl, gl.FRAGMENT_SHADER, CLEAR_FRAG));
     const splatProgram = createProgram(gl, baseVertexShader, compileShader(gl, gl.FRAGMENT_SHADER, SPLAT_FRAG));
     const advectionProgram = createProgram(
@@ -579,25 +586,63 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
       blit(null);
     }
 
-    // Composición inicial: los colores van dispersos por todo el campo
-    // (no en franjas por altura) para que la primera impresión ya sea
-    // nubes de tinta entremezcladas sobre el negro, sin zoom ni recorte.
-    function initialComposition() {
-      const spots: Array<{ x: number; y: number; c: [number, number, number]; r: number; a: number; vx: number; vy: number }> = [
-        { x: 0.62, y: 0.45, c: PALETTE[0], r: 0.004, a: 1.0, vx: 60, vy: -20 },
-        { x: 0.28, y: 0.62, c: PALETTE[1], r: 0.0035, a: 0.9, vx: -50, vy: 30 },
-        { x: 0.12, y: 0.3, c: PALETTE[2], r: 0.003, a: 1.0, vx: -30, vy: 45 },
-        { x: 0.85, y: 0.25, c: PALETTE[3], r: 0.003, a: 0.9, vx: 40, vy: 40 },
-        { x: 0.45, y: 0.85, c: PALETTE[0], r: 0.003, a: 0.8, vx: 30, vy: -45 },
-        { x: 0.18, y: 0.8, c: PALETTE[3], r: 0.0028, a: 0.7, vx: -45, vy: -25 },
-        { x: 0.8, y: 0.6, c: PALETTE[2], r: 0.0028, a: 0.8, vx: 45, vy: -30 },
-        { x: 0.85, y: 0.55, c: PALETTE[2], r: 0.003, a: 0.8, vx: -15, vy: -12 },
-        { x: 0.35, y: 0.12, c: PALETTE[2], r: 0.0028, a: 0.8, vx: -35, vy: 30 },
-        { x: 0.55, y: 0.12, c: PALETTE[3], r: 0.0028, a: 0.7, vx: 25, vy: -35 },
-        { x: 0.8, y: 0.15, c: PALETTE[0], r: 0.003, a: 0.8, vx: 35, vy: 20 },
+    // UN solo gradiente continuo (como el mesh que ya estaba): se dibuja en
+    // un canvas 2D — negro de fondo, azul como masa principal, rojo a la
+    // izquierda, cian a la derecha — y se sube como la tinta inicial. El
+    // fluido después lo deforma y lo mueve, pero nunca son manchas
+    // separadas: el campo de color cubre toda la pantalla, sin zoom.
+    function uploadGradient() {
+      const gw = 512;
+      const gh = 288;
+      const g = document.createElement("canvas");
+      g.width = gw;
+      g.height = gh;
+      const ctx = g.getContext("2d");
+      if (!ctx) return;
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, gw, gh);
+      ctx.globalCompositeOperation = "lighter";
+      const radial = (x: number, y: number, r: number, color: string) => {
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+        grad.addColorStop(0, color);
+        grad.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, gw, gh);
+      };
+      radial(gw * 0.55, gh * 0.45, gw * 0.55, "#1100ff"); // azul, masa principal
+      radial(gw * 0.3, gh * 0.8, gw * 0.3, "#1100ff"); // azul abajo
+      radial(gw * 0.1, gh * 0.4, gw * 0.3, "#fe0149"); // rojo a la izquierda
+      radial(gw * 0.75, gh * 0.2, gw * 0.2, "#fe0149"); // rojo arriba a la derecha
+      radial(gw * 0.9, gh * 0.6, gw * 0.25, "#00d0f0"); // cian a la derecha
+      const tex = gl.createTexture();
+      if (!tex) return;
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, g);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+      copyProgram.bind();
+      gl.uniform1i(copyProgram.uniforms.uTexture, 0);
+      blit(dye.write);
+      dye.swap();
+      gl.deleteTexture(tex);
+    }
+
+    // Corriente inicial: remueve el gradiente en grande para que fluya
+    // desde el primer frame (solo velocidad, sin añadir manchas de color).
+    function initialFlow() {
+      const currents: Array<{ x: number; y: number; vx: number; vy: number }> = [
+        { x: 0.3, y: 0.5, vx: 60, vy: 30 },
+        { x: 0.7, y: 0.5, vx: -60, vy: -30 },
+        { x: 0.5, y: 0.3, vx: 30, vy: 60 },
+        { x: 0.5, y: 0.7, vx: -30, vy: -60 },
       ];
-      for (const s of spots) {
-        splat(s.x, s.y, s.vx, s.vy, [s.c[0] * s.a, s.c[1] * s.a, s.c[2] * s.a], s.r);
+      for (const c of currents) {
+        splat(c.x, c.y, c.vx, c.vy, [0, 0, 0], 0.01);
       }
     }
 
@@ -610,7 +655,8 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
 
     resizeCanvas();
     initFramebuffers();
-    initialComposition();
+    uploadGradient();
+    initialFlow();
     render();
 
     // --- puntero: el mouse perturba el líquido ---
@@ -634,7 +680,10 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
       }
       // Solo perturbar si el puntero se movió de verdad.
       if (Math.abs(dx) < 0.0005 && Math.abs(dy) < 0.0005) return;
-      splat(pos.x, pos.y, dx * CONFIG.SPLAT_FORCE, dy * CONFIG.SPLAT_FORCE, nextColor(1.0), CONFIG.SPLAT_RADIUS);
+      // El mouse EMPUJA el gradiente (velocidad fuerte) y deja solo una
+      // estela tenue de color: si pintara a intensidad completa, el tinte
+      // se sumaría sobre un campo ya lleno y saldrían nubes pálidas.
+      splat(pos.x, pos.y, dx * CONFIG.SPLAT_FORCE, dy * CONFIG.SPLAT_FORCE, nextColor(0.3), CONFIG.SPLAT_RADIUS);
       pointer.x = pos.x;
       pointer.y = pos.y;
     };
@@ -642,12 +691,12 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
       const pos = pointerPos(e);
       pointer.x = pos.x;
       pointer.y = pos.y;
-      splat(pos.x, pos.y, 0, 0, nextColor(1.0), CONFIG.SPLAT_RADIUS * 2.5);
+      splat(pos.x, pos.y, 0, 0, nextColor(0.4), CONFIG.SPLAT_RADIUS * 2.5);
     };
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("pointerdown", onPointerDown, { passive: true });
 
-    // --- splats ambientales: el líquido sigue vivo sin interacción ---
+    // --- splats ambientales: remueven el gradiente sin añadir manchas ---
     const ambientTimer = window.setInterval(() => {
       if (document.hidden) return;
       const rect = canvas.getBoundingClientRect();
@@ -656,7 +705,7 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
       const y = 0.2 + Math.random() * 0.6;
       const angle = Math.random() * Math.PI * 2;
       const force = 25 + Math.random() * 40;
-      splat(x, y, Math.cos(angle) * force, Math.sin(angle) * force, nextColor(0.35), 0.003);
+      splat(x, y, Math.cos(angle) * force, Math.sin(angle) * force, nextColor(0.12), 0.004);
     }, 2400);
 
     // --- loop principal ---
@@ -710,7 +759,8 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
       resizeTimer = setTimeout(() => {
         if (resizeCanvas()) {
           initFramebuffers();
-          initialComposition();
+          uploadGradient();
+          initialFlow();
           render();
         }
       }, 200);
