@@ -1,96 +1,24 @@
 "use client";
 
 import { memo, useEffect, useRef, useState } from "react";
-import { MeshGradient, FlutedGlass, flutedGlassPresets } from "@paper-design/shaders-react";
+import { FlutedGlass, flutedGlassPresets } from "@paper-design/shaders-react";
+import FluidBackground from "./FluidBackground";
 
-// El preset "Waves" no se re-exporta por nombre desde el índice del paquete;
-// se toma del arreglo de presets (el índice sí exporta flutedGlassPresets).
-const wavesPreset =
-  flutedGlassPresets.find((p) => p.name === "Waves") ?? flutedGlassPresets[0];
+// El preset por defecto es el de barras verticales (shape "lines", angle 0),
+// como el glass de la referencia. Los presets no se re-exportan por nombre
+// desde el índice del paquete; se toman del arreglo flutedGlassPresets.
+const verticalBarsPreset =
+  flutedGlassPresets.find((p) => p.name === "Default") ?? flutedGlassPresets[0];
 
-/** Fondo del hero: mesh líquido + fluted glass (waves) encima, como la
-    referencia. El mesh se mueve solo (animación) y con el mouse (offset y
-    rotación con seguimiento suave), y el glass distorsiona frames REALES del
-    mesh capturados en vivo cada ~100 ms: el vidrio muestra el mesh
-    moviéndose detrás, no una foto fija. Si la captura falla, el fluted no se
-    monta y queda solo el mesh (que ya se ve bien). */
+/** Fondo del hero: tinta líquida viva (simulación de fluido WebGL) +
+    fluted glass de barras verticales encima, como la referencia. El glass
+    distorsiona frames REALES del fluido capturados en vivo cada ~100 ms: el
+    vidrio muestra la tinta moviéndose detrás. Si la captura falla, el fluted
+    no se monta y queda solo el fluido (que ya se ve bien). */
 
-/* Config del mesh (Jafet, playground de paper.design, 16 Nov 2026). */
-const MESH_COLORS = ["#000000", "#1100ff", "#000000", "#fe0149", "#00d0f0"];
-const STATIC_FRAME = 12000; // ms: punto de partida determinista (también para reduced-motion)
 const CAPTURE_W = 480; // px: el glass no necesita más resolución que esta
 const CAPTURE_MS = 100; // ~10 fps en escritorio
 const CAPTURE_MS_COARSE = 160; // ~6 fps en táctil, para cuidar batería
-const MOUSE_RANGE = 0.12; // desplazamiento máx. del mesh con el mouse
-const MOUSE_ROTATION = 6; // grados extra de rotación con el mouse
-
-/** Mesh con mouse: el gradiente se desplaza con el puntero (offset + leve
-    rotación) con seguimiento suave (lerp). Componente aparte para que sus
-    re-renders a 60 fps no toquen al glass. */
-function MeshLayer({ reducedMotion }: { reducedMotion: boolean }) {
-  const [mouse, setMouse] = useState({ x: 0, y: 0 });
-  const targetRef = useRef({ x: 0, y: 0 });
-  const currentRef = useRef({ x: 0, y: 0 });
-  const renderedRef = useRef({ x: 0, y: 0 });
-
-  useEffect(() => {
-    if (reducedMotion) return;
-    const onMove = (e: PointerEvent) => {
-      targetRef.current = {
-        x: Math.max(-1, Math.min(1, (e.clientX / window.innerWidth) * 2 - 1)),
-        y: Math.max(-1, Math.min(1, (e.clientY / window.innerHeight) * 2 - 1)),
-      };
-    };
-    const onLeave = () => {
-      targetRef.current = { x: 0, y: 0 };
-    };
-    window.addEventListener("pointermove", onMove, { passive: true });
-    document.documentElement.addEventListener("pointerleave", onLeave);
-    window.addEventListener("blur", onLeave);
-    let raf = 0;
-    const tick = () => {
-      const c = currentRef.current;
-      const t = targetRef.current;
-      c.x += (t.x - c.x) * 0.07;
-      c.y += (t.y - c.y) * 0.07;
-      const r = renderedRef.current;
-      if (Math.abs(c.x - r.x) > 0.002 || Math.abs(c.y - r.y) > 0.002) {
-        renderedRef.current = { x: c.x, y: c.y };
-        setMouse({ x: c.x, y: c.y });
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => {
-      window.removeEventListener("pointermove", onMove);
-      document.documentElement.removeEventListener("pointerleave", onLeave);
-      window.removeEventListener("blur", onLeave);
-      cancelAnimationFrame(raf);
-    };
-  }, [reducedMotion]);
-
-  return (
-    <MeshGradient
-      width="100%"
-      height="100%"
-      colors={MESH_COLORS}
-      distortion={0.35}
-      swirl={0.25}
-      grainMixer={0.08}
-      grainOverlay={0.04}
-      speed={reducedMotion ? 0 : 0.8}
-      frame={STATIC_FRAME}
-      scale={0.7}
-      rotation={25 + mouse.x * MOUSE_ROTATION}
-      offsetX={mouse.x * MOUSE_RANGE}
-      offsetY={mouse.y * MOUSE_RANGE}
-      fit="cover"
-      minPixelRatio={1}
-      maxPixelCount={1200000}
-      webGlContextAttributes={{ preserveDrawingBuffer: true }}
-    />
-  );
-}
 
 /** El glass solo se re-renderiza cuando cambia su frame, no con el mouse. */
 const GlassLayer = memo(function GlassLayer({ frame }: { frame: string | null }) {
@@ -98,7 +26,7 @@ const GlassLayer = memo(function GlassLayer({ frame }: { frame: string | null })
   return (
     <div style={{ position: "absolute", inset: 0, opacity: 0.62 }} aria-hidden="true">
       <FlutedGlass
-        {...wavesPreset.params}
+        {...verticalBarsPreset.params}
         image={frame}
         width="100%"
         height="100%"
@@ -111,7 +39,7 @@ const GlassLayer = memo(function GlassLayer({ frame }: { frame: string | null })
 });
 
 export default function HeroBackground() {
-  const meshWrapRef = useRef<HTMLDivElement>(null);
+  const fluidWrapRef = useRef<HTMLDivElement>(null);
   const [frameUrl, setFrameUrl] = useState<string | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
 
@@ -128,15 +56,15 @@ export default function HeroBackground() {
     };
   }, []);
 
-  // Alimenta el glass con frames reales del mesh en vivo: captura el canvas
-  // del mesh (downscaleado a JPEG pequeño) en un intervalo. Con
-  // reduced-motion el mesh es estático: basta una sola captura.
+  // Alimenta el glass con frames reales del fluido en vivo: captura el canvas
+  // del fluido (downscaleado a JPEG pequeño) en un intervalo. Con
+  // reduced-motion el fluido es estático: basta una sola captura.
   useEffect(() => {
     let cancelled = false;
     let interval: ReturnType<typeof setInterval> | undefined;
     const capture = () => {
       if (cancelled || document.hidden) return;
-      const wrap = meshWrapRef.current;
+      const wrap = fluidWrapRef.current;
       if (!wrap) return;
       const rect = wrap.getBoundingClientRect();
       if (rect.bottom < 0 || rect.top > window.innerHeight) return; // hero fuera de vista
@@ -153,7 +81,7 @@ export default function HeroBackground() {
         // Un frame válido pesa varios KB; si sale diminuto, es un canvas vacío.
         if (url.length > 4000) setFrameUrl(url);
       } catch {
-        /* sin fluted: el mesh solo ya se ve bien */
+        /* sin fluted: el fluido solo ya se ve bien */
       }
     };
     const coarse = window.matchMedia("(pointer: coarse)").matches;
@@ -174,11 +102,11 @@ export default function HeroBackground() {
   return (
     <>
       <div
-        ref={meshWrapRef}
+        ref={fluidWrapRef}
         style={{ position: "absolute", inset: 0, background: "#0A0A0E" }}
         aria-hidden="true"
       >
-        <MeshLayer reducedMotion={reducedMotion} />
+        <FluidBackground reducedMotion={reducedMotion} />
       </div>
       <GlassLayer frame={frameUrl} />
     </>
