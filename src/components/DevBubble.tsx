@@ -1,193 +1,214 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  getHeaderPreview,
+  getHeaderPreviewStatus,
+  getServerHeaderPreview,
+  getServerHeaderPreviewStatus,
+  setHeaderPreview,
+  subscribeHeaderPreview,
+  subscribeHeaderPreviewStatus,
+} from "../lib/header-preview";
 import styles from "./dev-bubble.module.css";
 
-/** Clave de localStorage para la posición de la burbuja. */
 const DEV_BUBBLE_POS_KEY = "portafolio-devtools-pos";
 
-/** Mantiene un punto dentro del viewport, con 8px de margen. */
 function clampToViewport(
   el: HTMLElement | null,
   x: number,
   y: number
 ): { x: number; y: number } {
-  const w = el?.offsetWidth ?? 120;
-  const h = el?.offsetHeight ?? 36;
-  const maxX = Math.max(8, window.innerWidth - w - 8);
-  const maxY = Math.max(8, window.innerHeight - h - 8);
-  return { x: Math.min(Math.max(8, x), maxX), y: Math.min(Math.max(8, y), maxY) };
+  const w = el?.offsetWidth ?? 160;
+  const h = el?.offsetHeight ?? 40;
+  return {
+    x: Math.min(Math.max(8, x), Math.max(8, window.innerWidth - w - 8)),
+    y: Math.min(Math.max(8, y), Math.max(8, window.innerHeight - h - 8)),
+  };
 }
 
 export interface DevBubbleProps {
-  /** Si la retícula está visible (el estado vive en el padre). */
   visible: boolean;
-  /** Se llama al hacer clic en la burbuja (sin arrastrar). */
   onToggle: () => void;
 }
 
-/** Burbuja flotante de herramientas de desarrollo (NO es parte del diseño):
-    position fixed, arrastrable con pointer capture, con su posición
-    guardada en localStorage. Es dueña solo de su UI flotante/arrastrable
-    y su posición; el estado de cada herramienta vive en el padre.
-    Hoy contiene solo el toggle de la retícula; más herramientas van como
-    hermanas de .devToolsToggle dentro de este contenedor. */
+/** Movable development menu: comparison modes are mutually exclusive.
+ * Retícula stays independent. No production navigation controls change.
+ */
 export default function DevBubble({ visible, onToggle }: DevBubbleProps) {
   const bubbleRef = useRef<HTMLDivElement>(null);
-  /* pos null = posición por defecto del CSS (abajo a la derecha, elevada
-     sobre el meta). */
+  const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   const posRef = useRef<{ x: number; y: number } | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const dragRef = useRef<{
-    pointerId: number;
+    id: number;
     startX: number;
     startY: number;
     offsetX: number;
     offsetY: number;
-    moved: boolean;
   } | null>(null);
-  const suppressClickRef = useRef(false);
+  const selected = useSyncExternalStore(
+    subscribeHeaderPreview,
+    getHeaderPreview,
+    getServerHeaderPreview
+  );
+  const status = useSyncExternalStore(
+    subscribeHeaderPreviewStatus,
+    getHeaderPreviewStatus,
+    getServerHeaderPreviewStatus
+  );
 
   useEffect(() => {
-    /* Cargar la posición guardada (si existe) y mantenerla en pantalla. */
     try {
-      const raw = window.localStorage.getItem(DEV_BUBBLE_POS_KEY);
+      const raw = localStorage.getItem(DEV_BUBBLE_POS_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as { x?: unknown; y?: unknown };
         if (typeof parsed.x === "number" && typeof parsed.y === "number") {
-          const next = clampToViewport(bubbleRef.current, parsed.x, parsed.y);
-          posRef.current = next;
-          setPos(next);
+          const clamped = clampToViewport(bubbleRef.current, parsed.x, parsed.y);
+          posRef.current = clamped;
+          setPos(clamped);
         }
       }
     } catch {
-      /* localStorage no disponible o dato corrupto: posición por defecto. */
+      // The menu remains usable without storage.
     }
-    const onResize = () => {
-      setPos((prev) => {
-        if (!prev) return prev;
-        const next = clampToViewport(bubbleRef.current, prev.x, prev.y);
+
+    function onResize() {
+      setPos((previous) => {
+        if (!previous) return null;
+        const next = clampToViewport(bubbleRef.current, previous.x, previous.y);
         posRef.current = next;
         return next;
       });
-    };
+    }
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+  function handleGripDown(e: React.PointerEvent<HTMLButtonElement>) {
     if (e.pointerType === "mouse" && e.button !== 0) return;
-    const el = bubbleRef.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
+    const rect = bubbleRef.current?.getBoundingClientRect();
+    if (!rect) return;
     dragRef.current = {
-      pointerId: e.pointerId,
+      id: e.pointerId,
       startX: e.clientX,
       startY: e.clientY,
       offsetX: e.clientX - rect.left,
       offsetY: e.clientY - rect.top,
-      moved: false,
     };
-    /* Pointer capture: los pointermove/up siguen llegando a la burbuja
-       aunque el puntero salga de ella durante el arrastre. */
     e.currentTarget.setPointerCapture(e.pointerId);
-  };
+  }
 
-  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    const drag = dragRef.current;
-    if (!drag || drag.pointerId !== e.pointerId) return;
-    if (!drag.moved && Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) <= 4) {
-      return; /* Umbral de 4px: un clic sin mover no es un arrastre. */
-    }
-    if (!drag.moved) {
-      drag.moved = true;
-      setIsDragging(true);
-    }
+  function handleGripMove(e: React.PointerEvent<HTMLButtonElement>) {
+    const d = dragRef.current;
+    if (!d || d.id !== e.pointerId) return;
+    if (!dragging && Math.hypot(e.clientX - d.startX, e.clientY - d.startY) < 4) return;
+    setDragging(true);
     const next = clampToViewport(
       bubbleRef.current,
-      e.clientX - drag.offsetX,
-      e.clientY - drag.offsetY
+      e.clientX - d.offsetX,
+      e.clientY - d.offsetY
     );
     posRef.current = next;
     setPos(next);
-  };
+  }
 
-  const onPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    const drag = dragRef.current;
-    if (!drag || drag.pointerId !== e.pointerId) return;
+  function handleGripUp(e: React.PointerEvent<HTMLButtonElement>) {
+    const d = dragRef.current;
+    if (!d || d.id !== e.pointerId) return;
     dragRef.current = null;
-    setIsDragging(false);
-    if (drag.moved) {
-      /* Fue un arrastre: no hacer toggle y guardar la posición final.
-         El flag evita que el click que sigue al arrastre haga toggle;
-         se limpia solo por si ese click no llega. */
-      suppressClickRef.current = true;
-      window.setTimeout(() => {
-        suppressClickRef.current = false;
-      }, 500);
+    setDragging(false);
+    if (posRef.current) {
       try {
-        if (posRef.current) {
-          window.localStorage.setItem(DEV_BUBBLE_POS_KEY, JSON.stringify(posRef.current));
-        }
+        localStorage.setItem(DEV_BUBBLE_POS_KEY, JSON.stringify(posRef.current));
       } catch {
-        /* localStorage no disponible: la posición solo vive en la sesión. */
+        // Optional preference.
       }
     }
-    /* Si no se movió, el click del contenedor hace el toggle. */
-  };
-
-  const onClick = () => {
-    if (suppressClickRef.current) {
-      suppressClickRef.current = false;
-      return;
-    }
-    onToggle();
-  };
+  }
 
   return (
     <div
       ref={bubbleRef}
-      className={`${styles.devTools}${isDragging ? ` ${styles.devToolsDragging}` : ""}`}
-      style={
-        pos ? { left: pos.x, top: pos.y, right: "auto", bottom: "auto" } : undefined
-      }
+      className={`${styles.devTools}${dragging ? ` ${styles.devToolsDragging}` : ""}`}
+      style={pos ? { left: pos.x, top: pos.y, right: "auto", bottom: "auto" } : undefined}
       role="group"
+      data-liquid-ignore=""
+      data-liquid-glass-ignore=""
       aria-label="Herramientas de desarrollo"
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
-      onClick={onClick}
     >
-      <span className={styles.devToolsGrip} aria-hidden="true">
-        <svg width="8" height="14" viewBox="0 0 8 14" fill="currentColor">
-          <circle cx="2" cy="2" r="1.2" />
-          <circle cx="6" cy="2" r="1.2" />
-          <circle cx="2" cy="7" r="1.2" />
-          <circle cx="6" cy="7" r="1.2" />
-          <circle cx="2" cy="12" r="1.2" />
-          <circle cx="6" cy="12" r="1.2" />
+      <button
+        type="button"
+        className={styles.devToolsGrip}
+        aria-label="Arrastrar herramientas de desarrollo"
+        title="Arrastrar"
+        onPointerDown={handleGripDown}
+        onPointerMove={handleGripMove}
+        onPointerUp={handleGripUp}
+        onPointerCancel={handleGripUp}
+      >
+        <svg width="8" height="14" viewBox="0 0 8 14" fill="currentColor" aria-hidden="true">
+          {[2, 7, 12].map((y) => (
+            <g key={y}><circle cx="2" cy={y} r="1.2" /><circle cx="6" cy={y} r="1.2" /></g>
+          ))}
         </svg>
-      </span>
+      </button>
       <button
         type="button"
         className={styles.devToolsToggle}
-        data-devtool="grid-toggle"
-        aria-pressed={visible}
-        aria-label={visible ? "Ocultar retícula" : "Ver retícula"}
+        aria-expanded={open}
+        aria-controls="jpm-devtools-panel"
+        onClick={() => setOpen((value) => !value)}
       >
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path
-            d="M1 1h5v5H1zM8 1h5v5H8zM1 8h5v5H1zM8 8h5v5H8z"
-            stroke="currentColor"
-            strokeWidth="1.2"
-          />
+          <path d="M1 1h5v5H1zM8 1h5v5H8zM1 8h5v5H1zM8 8h5v5H8z" stroke="currentColor" strokeWidth="1.2" />
         </svg>
-        <span>Retícula</span>
+        <span>Herramientas</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" className={open ? styles.chevronOpen : ""} aria-hidden="true">
+          <path d="m2.5 4.5 3.5 3 3.5-3" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+        </svg>
       </button>
-      {/* Más herramientas de desarrollo: añadir aquí su propio <button>
-          con aria-pressed, como hermano de .devToolsToggle. */}
+      {open && (
+        <div id="jpm-devtools-panel" className={styles.panel}>
+          <div className={styles.panelHeading}>
+            <span>Desarrollo</span>
+            <span className={styles.panelMeta}>Vista previa</span>
+          </div>
+          <button
+            type="button"
+            className={styles.menuOption}
+            aria-pressed={visible}
+            onClick={onToggle}
+          >
+            <span className={styles.optionCopy}><strong>Retícula</strong><small>Mostrar cuadrícula del hero</small></span>
+            <span className={`${styles.switch}${visible ? ` ${styles.switchOn}` : ""}`} aria-hidden="true" />
+          </button>
+          <div className={styles.separator} />
+          <button
+            type="button"
+            className={styles.menuOption}
+            aria-pressed={selected === "header1"}
+            onClick={() => setHeaderPreview(selected === "header1" ? "original" : "header1")}
+          >
+            <span className={styles.optionCopy}><strong>Header 1</strong><small>liquidGL · WebGPU / WebGL</small></span>
+            <span className={`${styles.switch}${selected === "header1" ? ` ${styles.switchOn}` : ""}`} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className={styles.menuOption}
+            aria-pressed={selected === "header2"}
+            onClick={() => setHeaderPreview(selected === "header2" ? "original" : "header2")}
+          >
+            <span className={styles.optionCopy}><strong>Header 2</strong><small>Simple Liquid Glass · WebGL</small></span>
+            <span className={`${styles.switch}${selected === "header2" ? ` ${styles.switchOn}` : ""}`} aria-hidden="true" />
+          </button>
+          <p className={styles.status} role="status">
+            {selected === "original" ? "Header actual" : status || "Motor pendiente; desplázate para verlo"}
+          </p>
+          <p className={styles.status}>Las cápsulas se activan al hacer scroll.</p>
+        </div>
+      )}
     </div>
   );
 }

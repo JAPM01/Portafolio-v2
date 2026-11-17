@@ -7,12 +7,20 @@ import { ArrowUpRight, Globe, Menu, Moon, Sun, X } from "lucide";
 import { px } from "../lib/paths";
 import styles from "./site-nav.module.css";
 import JpmGlassOptics from "./JpmGlassOptics";
+import {
+  getHeaderPreview,
+  getServerHeaderPreview,
+  hydrateHeaderPreview,
+  subscribeHeaderPreview,
+} from "../lib/header-preview";
 
 // This library reads navigator while rendering, so its glass layer must not
 // be pre-rendered by Next.js during static export.
 const LiquidGlass = dynamic(() => import("liquid-glass-react"), {
   ssr: false,
 });
+const HeaderLiquidGL = dynamic(() => import("./HeaderLiquidGL"), { ssr: false });
+const HeaderSimpleGlass = dynamic(() => import("./HeaderSimpleGlass"), { ssr: false });
 
 const LINKS = [
   { href: px("/"), es: "Inicio", en: "Home" },
@@ -69,6 +77,15 @@ export default function SiteNav() {
   const theme = useSyncExternalStore(subscribeTheme, currentTheme, () => "dark");
   const scrolled = useSyncExternalStore(subscribeScroll, isScrolled, () => false);
   const overHero = useSyncExternalStore(subscribeScroll, isOverHero, () => false);
+  const headerPreview = useSyncExternalStore(
+    subscribeHeaderPreview,
+    getHeaderPreview,
+    getServerHeaderPreview
+  );
+
+  useEffect(() => {
+    hydrateHeaderPreview();
+  }, []);
 
   const [menuOpen, setMenuOpen] = useState(false);
   // The upstream library only listens to mousemove. Feed touch contact
@@ -219,26 +236,41 @@ export default function SiteNav() {
         onPointerUp={() => setTouchPoint(null)}
         onPointerCancel={() => setTouchPoint(null)}
       >
-        {showGlass ? (
-        <LiquidGlass
-          className={styles.glassRoot}
-          style={{ position: "absolute", top: "50%", left: "50%", width: "100%", height: "100%" }}
-          padding="0px"
-          cornerRadius={999}
-          displacementScale={90}
-          blurAmount={0.035}
-          saturation={155}
-          aberrationIntensity={2.8}
-          elasticity={0.26}
-          mode="prominent"
-          overLight={false}
-          globalMousePos={touchPoint?.global}
-          mouseOffset={touchPoint?.offset}
-        >
+        {!showGlass ? (
+          navigation
+        ) : headerPreview === "header1" ? (
+          <HeaderLiquidGL
+            key={overHero ? "hero" : "main"}
+            snapshotSelector={overHero ? "[data-hero-bg-source] canvas" : "#main"}
+          >
             {navigation}
-
-        </LiquidGlass>
-        ) : navigation}
+          </HeaderLiquidGL>
+        ) : headerPreview === "header2" ? (
+          <HeaderSimpleGlass
+            key={overHero ? "hero" : "main"}
+            backdropSelector={overHero ? "[data-hero-bg-source] canvas" : "#main"}
+          >
+            {navigation}
+          </HeaderSimpleGlass>
+        ) : (
+          <LiquidGlass
+            className={styles.glassRoot}
+            style={{ position: "absolute", top: "50%", left: "50%", width: "100%", height: "100%" }}
+            padding="0px"
+            cornerRadius={999}
+            displacementScale={90}
+            blurAmount={0.035}
+            saturation={155}
+            aberrationIntensity={2.8}
+            elasticity={0.26}
+            mode="prominent"
+            overLight={false}
+            globalMousePos={touchPoint?.global}
+            mouseOffset={touchPoint?.offset}
+          >
+            {navigation}
+          </LiquidGlass>
+        )}
       </div>
 
       <div id="jpm-navigation-menu" className={styles.dropdown} hidden={!menuOpen}>
