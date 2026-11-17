@@ -6,6 +6,7 @@ import { MorphIcon } from "morphicons/react";
 import { ArrowUpRight, Globe, Menu, Moon, Sun, X } from "lucide";
 import { px } from "../lib/paths";
 import styles from "./site-nav.module.css";
+import JpmGlassOptics from "./JpmGlassOptics";
 
 // This library reads navigator while rendering, so its glass layer must not
 // be pre-rendered by Next.js during static export.
@@ -211,6 +212,7 @@ export default function SiteNav() {
       className={styles.header + (scrolled ? " " + styles.scrolled : "") + (overHero ? " " + styles.overHero : "") + (!showGlass ? " " + styles.heroResting : "")}
       ref={headerRef}
     >
+      <JpmGlassOptics />
       <div
         className={styles.glassStage}
         onPointerDown={trackTouch}

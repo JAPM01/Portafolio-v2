@@ -32,7 +32,7 @@ const HERO_TEXT = {
     meta2Value: ["Conectemos"],
   },
   en: {
-    title: [["Designing"], ["with", "a", "human"], ["touch."]],
+    title: [["Designing"], ["with", "human"], ["sense."]],
     para: "Challenging the conventional to build simple, useful, and usable solutions.",
     meta1Label: ["Work", "portfolio"],
     meta1Value: ["Jafet", "Pérez"],
