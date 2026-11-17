@@ -1,27 +1,49 @@
 /* Liquid glass (Apple Tahoe) — material del botón de jahed en 21st.dev,
    adaptado a CSS plano. El filtro SVG (LiquidGlassFilter.tsx) refracta el
    fondo en el borde; el CSS añade tinte, saturación y brillo del borde.
-   Chromium usa la refracción; Safari/Firefox caen al blur escarchado. */
+   Chromium usa la refracción; Safari/Firefox caen al blur escarchado.
+   El glass SOLO aparece al hacer scroll: va en un ::before cuya opacidad
+   es var(--ramp) (0 arriba, 1 al bajar). Arriba el botón es solo el icono
+   (sin fondo ni borde), sobre el mesh. El blur en la versión con url es
+   12px (antes 2px, demasiado sutil y se perdía en Android). Los colores
+   son fijos oscuros (el header siempre es oscuro: el mesh no cambia con
+   el tema, así que el icono debe seguir siendo claro en light mode). */
 
 .glass {
-  background: color-mix(in oklab, var(--surface-overlay) 16%, transparent);
+  position: relative;
+  background: transparent;
+  border: 0;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: color-mix(in oklab, #0f0f14 16%, transparent);
   border: 1px solid
-    color-mix(in oklab, var(--white-primary) 16%, transparent);
+    color-mix(in oklab, #e7e7eb 16%, transparent);
   /* Fallback escarchado (Safari/Firefox: sin filtro SVG en backdrop). */
   -webkit-backdrop-filter: blur(16px) saturate(1.6);
   backdrop-filter: blur(16px) saturate(1.6);
   box-shadow:
-    inset 0 1px 0 color-mix(in oklab, var(--white-primary) 30%, transparent),
-    inset 0 -1px 0 color-mix(in oklab, var(--white-primary) 6%, transparent),
-    inset 1px 0 0 color-mix(in oklab, var(--white-primary) 8%, transparent),
-    inset -1px 0 0 color-mix(in oklab, var(--white-primary) 8%, transparent),
+    inset 0 1px 0 color-mix(in oklab, #e7e7eb 30%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, #e7e7eb 6%, transparent),
+    inset 1px 0 0 color-mix(in oklab, #e7e7eb 8%, transparent),
+    inset -1px 0 0 color-mix(in oklab, #e7e7eb 8%, transparent),
     0 12px 32px rgb(0 0 0 / 0.28);
+  /* Solo al hacer scroll (var(--ramp) lo pone el nav: 0 arriba). */
+  opacity: var(--ramp, 0);
+  pointer-events: none;
 }
 
 /* Chromium: refracción del filtro SVG (el doblez líquido del borde). */
 @supports (backdrop-filter: url(#liquid-glass-filter)) {
-  .glass {
-    -webkit-backdrop-filter: url(#liquid-glass-filter) blur(2px) saturate(1.5);
-    backdrop-filter: url(#liquid-glass-filter) blur(2px) saturate(1.5);
+  .glass::before {
+    -webkit-backdrop-filter: url(#liquid-glass-filter) blur(12px) saturate(1.5);
+    backdrop-filter: url(#liquid-glass-filter) blur(12px) saturate(1.5);
   }
 }

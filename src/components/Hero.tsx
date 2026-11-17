@@ -19,9 +19,9 @@ import HeroBackground from "./HeroBackground";
     con su posición en localStorage) muestra la retícula para verificar que
     cada elemento cae en su lugar; NO es parte del diseño.
     Idioma (es/en): el Hero escucha el evento "site-lang" del toggle del
-    header y cambia título, párrafo y meta. En modo claro ([data-theme=
-    "light"]) un velo blanco aclara el mesh para que el texto oscuro se
-    lea. */
+    header y cambia título, párrafo y meta. El hero SIEMPRE es oscuro:
+    el mesh no cambia de color con el tema (sin velo blanco en light
+    mode) y el texto es siempre claro. */
 const HERO_TEXT = {
   es: {
     title: [["Diseñando"], ["con", "sentido"], ["humano."]],
@@ -104,7 +104,6 @@ export default function Hero() {
               </div>
             </div>
             <div className={styles.veil} style={{ background: "#080405", opacity: 0.2 }} />
-            <div className={styles.lightScrim} aria-hidden="true" />
             <div className={styles.topFade} aria-hidden="true">
               <div className={styles.topFadeLayer} />
             </div>

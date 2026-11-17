@@ -61,19 +61,6 @@
   object-fit: cover;
   object-position: center;
 }
-/* Modo claro: velo blanco sobre el mesh para que el texto oscuro se
-   lea (el mesh es oscuro). Solo visible con [data-theme="light"]. */
-.lightScrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(rgb(251 251 255 / 0.8), rgb(251 251 255 / 0.92));
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s linear;
-}
-[data-theme="light"] .lightScrim {
-  opacity: 1;
-}
 .bgSource {
   opacity: 1;
   pointer-events: none;
@@ -120,21 +107,8 @@
     rgb(0 0 0 / 0.8) 100%
   );
 }
-/* Modo claro: los degradados superior e inferior son blancos (el texto
-   es oscuro), no negros. */
-[data-theme="light"] .topFadeLayer {
-  background: linear-gradient(to bottom, rgb(251 251 255 / 0.55) 0%, rgb(251 251 255 / 0) 100%);
-}
-[data-theme="light"] .bottomDark {
-  background: linear-gradient(
-    to bottom,
-    rgb(255 255 255 / 0) 0%,
-    rgb(255 255 255 / 0.094) 35%,
-    rgb(255 255 255 / 0.36) 65%,
-    rgb(255 255 255 / 0.64) 88%,
-    rgb(255 255 255 / 0.8) 100%
-  );
-}
+/* Sin overrides en modo claro: el hero siempre es oscuro (el mesh no
+   cambia de color) y los degradados se quedan negros en ambos temas. */
 :global(html[data-loaded]) .bottomDark {
   animation: bottomDarkIn 0.9s cubic-bezier(0.33, 0, 0.2, 1)
     calc(var(--reveal-delay) + 0.26s) both;
@@ -229,7 +203,8 @@
 }
 .titleBase {
   font-optical-sizing: auto;
-  color: var(--white-primary);
+  /* Color fijo claro (el hero siempre es oscuro, en ambos temas). */
+  color: #e7e7eb;
   text-wrap: nowrap;
   flex-direction: column;
   max-width: 22ch;
@@ -303,10 +278,11 @@
   display: flex;
 }
 .metaLabel {
-  color: var(--white-secondary);
+  /* Color fijo claro (el hero siempre es oscuro). */
+  color: #bababe;
 }
 .metaValue {
-  color: var(--white-primary);
+  color: #e7e7eb;
 }
 a.metaValue {
   transition: opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1);
@@ -357,7 +333,8 @@ a.metaValue.ctaLink:hover {
   font-size: 28px;
   line-height: 35px;
   letter-spacing: var(--tracking-heading-lg, -0.015em);
-  color: var(--white-primary);
+  /* Color fijo claro (el hero siempre es oscuro). */
+  color: #e7e7eb;
   align-items: center;
   gap: var(--space-2);
   /* Un solo gutter de separación con el párrafo (24px desktop / 16px
@@ -377,7 +354,8 @@ a.metaValue.ctaLink:hover {
   font-size: 28px;
   line-height: 35px;
   letter-spacing: var(--tracking-heading-lg, -0.015em);
-  color: var(--white-primary);
+  /* Color fijo claro (el hero siempre es oscuro). */
+  color: #e7e7eb;
   /* Sin max-width ni balance: el texto llena las columnas del pitch y la
      línea larga llega al margen derecho, como en la referencia. Antes el
      límite de 34ch lo partía en líneas cortas y dejaba ~210px vacíos a la
@@ -421,6 +399,15 @@ a.metaValue.ctaLink:hover {
         ) / 2.85
       )
     );
+  }
+  /* Título en inglés en móvil: 56px fijos. La línea "with a human"
+     mide 420px a 70px y la columna solo tiene 358px, así que la página
+     quedaba de 436px de ancho y había que hacer scroll horizontal para
+     ver las últimas letras ("a" y "n" de "human"). A 56px la línea
+     mide ~337px y cabe. En español se mantiene el tamaño aprobado
+     (70px). */
+  :global(html[lang="en"]) .title55 {
+    font-size: 56px;
   }
   .pitch {
     grid-column: 1 / 5;
