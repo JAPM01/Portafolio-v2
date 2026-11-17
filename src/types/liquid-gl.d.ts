@@ -8,6 +8,7 @@ declare module "liquid-gl" {
     snapshot?: string;
     engine?: LiquidGLEngine;
     resolution?: number;
+    magnify?: number;
     zIndex?: number;
     content?: string | false;
     refraction?: number;
