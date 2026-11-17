@@ -216,7 +216,7 @@ export default function SiteNav() {
               onClick={() => setMenuOpen(false)}
             >
               <span className={styles.menuNumber}>0{index + 1}</span>
-              <span>{link[language]}</span>
+              <span>{language === "es" ? link.es : link.en}</span>
               <MorphIcon icon={ArrowUpRight} size={17} strokeWidth={1.75} reducedMotion="user" />
             </a>
           ))}
