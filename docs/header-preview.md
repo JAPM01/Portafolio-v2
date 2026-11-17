@@ -25,3 +25,19 @@ Los motores se cargan solo cuando se seleccionan.
 Estas opciones son experimentales y deben validarse en Chrome Android,
 especialmente el rendimiento, el renderer real y la elasticidad táctil.
 Un build exitoso no demuestra fidelidad visual.
+
+## Corrección de continuidad y óptica
+
+Los motores utilizan una fuente estable `#main` durante todo el scroll.
+Nunca se cambia la `key` ni la fuente de refracción al cruzar el límite
+del hero: la instancia activa permanece montada hasta apagar el selector
+o regresar por completo a la cabecera sin cristal.
+
+- **Header 1:** aberración `0.065`, refracción `0.032`, bisel más
+  estrecho y sin halo cromático intenso; la lente ocupa el contenedor
+  del header y el canvas del hero se registra como contenido dinámico.
+- **Header 2:** perfil `player` (no `loupe`), sin la segunda lente
+  local de `followPointer`, borde único, dispersión y desplazamientos
+  reducidos. Se mantiene la elasticidad y el efecto de clic.
+- Ambos continúan siendo prototipos que deben comprobarse en el Chrome
+  Android donde se observaron los problemas.

@@ -16,21 +16,22 @@ export default function HeaderSimpleGlass({
   backdropSelector: string;
 }) {
   return (
+    <div className={styles.previewGlassRoot}>
     <LiquidGlassInteractive
       className={styles.previewSimpleGlass}
-      style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+      style={{ width: "100%", height: "100%" }}
       backdropSelector={backdropSelector}
       renderer="webgl"
       refraction="lens"
-      lensProfile="loupe"
+      lensProfile="player"
       lensOptions={{
-        strength: 0.2,
-        depth: 0.3,
-        curvature: 0.6,
-        bend: 0.65,
-        bendWidth: 0.28,
-        sheen: 1.4,
-        specular: 1.5,
+        strength: 0.14,
+        depth: 0.18,
+        curvature: 0.38,
+        bend: 0.23,
+        bendWidth: 0.12,
+        sheen: 0.65,
+        specular: 0.75,
         brightness: 0,
       }}
       radius={999}
@@ -38,15 +39,15 @@ export default function HeaderSimpleGlass({
       blur={0}
       frost={0}
       saturation={135}
-      dispersion={62}
-      aberrationIntensity={0.82}
+      dispersion={20}
+      aberrationIntensity={0.18}
       material="clear"
-      glassColor="rgba(206,206,206,0.04)"
+      glassColor="rgba(206,206,206,0.025)"
       liquidTrigger="always"
-      followPointer
+      maxShift={2}
       clickRipple="ripple"
-      rippleIntensity={1.2}
-      elasticity={0.19}
+      rippleIntensity={0.4}
+      elasticity={0.075}
       damping={0.78}
       stiffness={0.18}
       onDiagnosticsChange={({ strategy, reason }) => {
@@ -55,5 +56,6 @@ export default function HeaderSimpleGlass({
     >
       {children}
     </LiquidGlassInteractive>
+    </div>
   );
 }

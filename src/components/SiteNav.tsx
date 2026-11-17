@@ -240,15 +240,13 @@ export default function SiteNav() {
           navigation
         ) : headerPreview === "header1" ? (
           <HeaderLiquidGL
-            key={overHero ? "hero" : "main"}
-            snapshotSelector={overHero ? "[data-hero-bg-source] canvas" : "#main"}
+            snapshotSelector="#main"
           >
             {navigation}
           </HeaderLiquidGL>
         ) : headerPreview === "header2" ? (
           <HeaderSimpleGlass
-            key={overHero ? "hero" : "main"}
-            backdropSelector={overHero ? "[data-hero-bg-source] canvas" : "#main"}
+            backdropSelector="#main"
           >
             {navigation}
           </HeaderSimpleGlass>

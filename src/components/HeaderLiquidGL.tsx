@@ -26,23 +26,23 @@ export default function HeaderLiquidGL({ children, snapshotSelector }: { childre
           target: "#jpm-preview-header1-lens",
           snapshot: snapshotSelector,
           engine: "auto",
-          resolution: window.innerWidth < 768 ? 0.8 : 1.15,
+          resolution: window.innerWidth < 768 ? 1.0 : 1.15,
           zIndex: 9998,
           content: false,
-          refraction: 0.058,
-          aberration: 0.56,
-          bevelDepth: 0.17,
-          bevelWidth: 0.24,
-          frost: 0.65,
+          refraction: 0.032,
+          aberration: 0.065,
+          bevelDepth: 0.085,
+          bevelWidth: 0.13,
+          frost: 0.15,
           shadow: false,
           specular: true,
           reveal: "none",
           draggable: false,
           tilt: false,
           interaction: "fluid",
-          interactionStrength: 0.8,
-          interactionRadius: 0.42,
-          interactionViscosity: 0.72,
+          interactionStrength: 0.48,
+          interactionRadius: 0.34,
+          interactionViscosity: 0.78,
           tint: null,
           on: {
             init() {
@@ -51,8 +51,10 @@ export default function HeaderLiquidGL({ children, snapshotSelector }: { childre
           },
         });
         lens = Array.isArray(result) ? result[0] : result;
-        if (snapshotSelector === "[data-hero-bg-source] canvas") {
+        if (snapshotSelector === "#main") {
           try {
+            // Register the moving hero shader once, while the snapshot root
+            // remains stable throughout scrolling.
             const withDynamics = liquidGL as typeof liquidGL & { registerDynamic?: (selector: string) => void };
             withDynamics.registerDynamic?.("[data-hero-bg-source] canvas");
           } catch {
