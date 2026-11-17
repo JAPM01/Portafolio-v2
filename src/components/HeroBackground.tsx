@@ -17,6 +17,7 @@ export default function HeroBackground() {
     <div style={{ position: "absolute", inset: 0 }} aria-hidden="true">
       <FlowGradientBackground
         colors={["#030403", "#000AFF", "#6FD3FF", "#FF9636", "#E8F7FF"]}
+        follow={0.08}
         className={styles.flowCanvas}
       />
     </div>

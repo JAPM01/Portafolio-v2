@@ -43,6 +43,12 @@ float noise(vec3 p) {
 }
 
 // walk each pixel a few steps along a noise flow field anchored on the cursor
+// Se probó un warp más fuerte (0.028/0.58 y 0.035/0.65) y lavaba la
+// composición en desktop: el óvalo blanco-cian se extendía por media
+// pantalla y tapaba el texto. Se regresa a los valores originales
+// (0.02/0.51) con los que el mesh quedó 1:1 con Sentos; el flujo ya es
+// visible y el "poder WebGL" ahora viene de la interacción (brillo del
+// cursor, reacción al tacto) sin romper la composición.
 vec2 flowUV(vec2 uv) {
   float aspect = u_res.x / u_res.y;
   vec2 ar = vec2(aspect, 1.0);
@@ -101,6 +107,10 @@ float rand(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.545
 
 void main() {
   vec3 c = paint(flowUV(v_uv));
+  // Brillo suave que sigue al cursor/tacto: hace visible que el mesh
+  // reacciona (el cursor "remueve" el líquido). Cian del mesh, pequeño
+  // y sutil para no romper la composición Sentos ni lavar el texto.
+  c += u_body * 0.18 * smoothstep(0.16, 0.0, distance(v_uv, u_mouse));
   c += (rand(gl_FragCoord.xy) - 0.5) / 255.0; // deband
   gl_FragColor = vec4(c, 1.0);
 }`
@@ -174,6 +184,12 @@ export default function FlowGradientBackground({
     const draw = (now: number) => {
       frame = 0
       const s = live.current
+      // Tope de 30 fps: el mesh se mueve lento, 30 fps se ve fluido y
+      // reduce el trabajo de GPU a la mitad (batería + rendimiento).
+      if (now - last < 33 && last !== 0) {
+        if (visible && !still) frame = requestAnimationFrame(draw)
+        return
+      }
       const dt = Math.min(now - last || 16.7, 50)
       last = now
       const k = 1 - Math.pow(1 - s.follow, dt / 16.7)
@@ -193,8 +209,11 @@ export default function FlowGradientBackground({
     }
 
     const resize = () => {
-      canvas.width = Math.max(1, Math.round(canvas.clientWidth * Math.min(devicePixelRatio, 2) * SCALE))
-      canvas.height = Math.max(1, Math.round(canvas.clientHeight * Math.min(devicePixelRatio, 2) * SCALE))
+      // DPR tope 1.5 (antes 2): el mesh es un degradado suave, a 1.5x ya
+      // se ve nítido y el costo de relleno de GPU baja mucho en móviles
+      // con pantalla de alta densidad.
+      canvas.width = Math.max(1, Math.round(canvas.clientWidth * Math.min(devicePixelRatio, 1.5) * SCALE))
+      canvas.height = Math.max(1, Math.round(canvas.clientHeight * Math.min(devicePixelRatio, 1.5) * SCALE))
       gl.viewport(0, 0, canvas.width, canvas.height)
       start()
     }
@@ -213,13 +232,23 @@ export default function FlowGradientBackground({
       mouse.ty = 1 - (e.clientY - r.top) / r.height
       if (still) start()
     }
+    // En touch, un tap debe reaccionar al instante (no solo al arrastrar):
+    // pointerdown mueve el objetivo del brillo al punto tocado de inmediato.
+    const onDown = (e: PointerEvent) => {
+      onMove(e)
+      mouse.x = mouse.tx
+      mouse.y = mouse.ty
+      if (still) start()
+    }
     window.addEventListener('pointermove', onMove, {passive: true})
+    window.addEventListener('pointerdown', onDown, {passive: true})
 
     return () => {
       cancelAnimationFrame(frame)
       ro.disconnect()
       io.disconnect()
       window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerdown', onDown)
       gl.deleteBuffer(buf)
       gl.deleteProgram(prog)
     }
