@@ -1,0 +1,27 @@
+/* Liquid glass (Apple Tahoe) — material del botón de jahed en 21st.dev,
+   adaptado a CSS plano. El filtro SVG (LiquidGlassFilter.tsx) refracta el
+   fondo en el borde; el CSS añade tinte, saturación y brillo del borde.
+   Chromium usa la refracción; Safari/Firefox caen al blur escarchado. */
+
+.glass {
+  background: color-mix(in oklab, var(--surface-overlay) 16%, transparent);
+  border: 1px solid
+    color-mix(in oklab, var(--white-primary) 16%, transparent);
+  /* Fallback escarchado (Safari/Firefox: sin filtro SVG en backdrop). */
+  -webkit-backdrop-filter: blur(16px) saturate(1.6);
+  backdrop-filter: blur(16px) saturate(1.6);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--white-primary) 30%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--white-primary) 6%, transparent),
+    inset 1px 0 0 color-mix(in oklab, var(--white-primary) 8%, transparent),
+    inset -1px 0 0 color-mix(in oklab, var(--white-primary) 8%, transparent),
+    0 12px 32px rgb(0 0 0 / 0.28);
+}
+
+/* Chromium: refracción del filtro SVG (el doblez líquido del borde). */
+@supports (backdrop-filter: url(#liquid-glass-filter)) {
+  .glass {
+    -webkit-backdrop-filter: url(#liquid-glass-filter) blur(2px) saturate(1.5);
+    backdrop-filter: url(#liquid-glass-filter) blur(2px) saturate(1.5);
+  }
+}

@@ -22,8 +22,16 @@
   --nav-tint: var(--surface-canvas);
   --nav-fg: var(--text-primary);
   background: color-mix(in oklch, var(--nav-tint) calc(55% * var(--ramp)), transparent);
-  -webkit-backdrop-filter: blur(calc(var(--ramp) * 12px));
-  backdrop-filter: blur(calc(var(--ramp) * 12px));
+  /* Liquid glass (jahed / Apple Tahoe): el borde y el brillo aparecen
+     con el ramp, cuando el nav se vuelve píldora. */
+  border: 1px solid
+    color-mix(in oklab, var(--white-primary) calc(14% * var(--ramp)), transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--white-primary) calc(28% * var(--ramp)), transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--white-primary) calc(6% * var(--ramp)), transparent),
+    0 12px 32px rgb(0 0 0 / calc(0.28 * var(--ramp)));
+  -webkit-backdrop-filter: blur(calc(var(--ramp) * 12px)) saturate(1.4);
+  backdrop-filter: blur(calc(var(--ramp) * 12px)) saturate(1.4);
   font-family: var(--font-body);
   justify-content: space-between;
   align-items: center;
@@ -31,6 +39,15 @@
   position: fixed;
   inset-block-start: calc(var(--space-6) - var(--space-1) * var(--nav-p, 0));
   inset-inline-start: 50%;
+}
+
+/* Chromium: refracción del filtro SVG (el doblez líquido del borde).
+   Safari/Firefox usan el blur escarchado de arriba. */
+@supports (backdrop-filter: url(#liquid-glass-filter)) {
+  .nav {
+    -webkit-backdrop-filter: url(#liquid-glass-filter) blur(calc(var(--ramp) * 6px)) saturate(1.5);
+    backdrop-filter: url(#liquid-glass-filter) blur(calc(var(--ramp) * 6px)) saturate(1.5);
+  }
 }
 
 /* Solo medido: el ancho interpola entre el estado glifo (settled-0) y
@@ -54,70 +71,76 @@
   inline-size: var(--links-settled);
 }
 
+/* Marca JPM: solo las iniciales (JpmMark.tsx). Sin morph de wordmark:
+   la marca es siempre el SVG, y el ancho del nav se mide del nav real. */
 .mark {
-  --wm-ratio: 7.06;
-  --mk-ratio: 1.48;
-  --mk-h: calc((32px + (24px - 32px) * var(--nav-shrink, 0)) * var(--ui-scale-desktop, 1));
-  /* 16px: múltiplo de 8 (antes --text-body-lg = 18px). */
-  font-size: calc(16px * var(--ui-scale-desktop, 1));
-  inline-size: calc(
-    var(--mk-h) * var(--mk-ratio) +
-      (1em * var(--wm-ratio) - var(--mk-h) * var(--mk-ratio)) * var(--wm-out)
-  );
-  clip-path: inset(-100% 0);
-  font-family: var(--font-body);
-  letter-spacing: var(--tracking-body-lg, -0.005em);
   color: var(--text-primary);
   white-space: nowrap;
-  --wm-out: clamp(0, (var(--nav-shrink, 0) - 0.45) * 3, 1);
-  --mk-in: clamp(0, (0.65 - var(--nav-shrink, 0)) * 1.8, 1);
-  --edge: calc((1 - var(--wm-out)) * var(--wm-out) * 4);
-  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 26% * var(--edge)), transparent 100%);
-  mask-image: linear-gradient(to right, #000 calc(100% - 26% * var(--edge)), transparent 100%);
-  place-items: center start;
-  margin-inline-start: calc(var(--nav-cta-inset) * max(0, var(--nav-p, 0)));
   /* Peso regular (400): solo regular en ambas tipografías, nada de bold. */
   font-weight: 400;
   text-decoration: none;
   display: grid;
-  -webkit-mask-clip: no-clip;
-  mask-clip: no-clip;
+  place-items: center start;
 }
-.mark > * {
+
+/* JPM: la altura es la del icono de menú (burgerBox: 12px; 11px en
+   teléfono). El ancho puede ser mayor (JPM es más ancho que alto). */
+.jpm {
+  block-size: 12px;
+  inline-size: auto;
+  display: block;
+  overflow: visible;
+  font-family: var(--font-display);
+}
+
+/* Lado derecho del nav: links + controles (idioma/tema) + burger. */
+.navRight {
+  display: flex;
+  align-items: center;
+  min-inline-size: 0;
+  flex-shrink: 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-inline-start: var(--nav-gap);
+  flex-shrink: 0;
+}
+
+/* Botón circular de icono (idioma/tema): mismo hit que el burger
+   (44px) y material liquid glass. Los dos iconos de tema (sol/luna)
+   comparten la celda y el CSS muestra uno según [data-theme]. */
+.iconBtn {
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: 50%;
+  color: var(--text-primary);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+}
+
+.iconSvg {
+  inline-size: 20px;
+  block-size: 20px;
+  display: block;
   grid-area: 1 / 1;
 }
-.wordmark {
-  inline-size: max-content;
-  opacity: var(--wm-out);
-  filter: blur(calc((1 - var(--wm-out)) * 3px));
-  line-height: 1;
-  position: relative;
+
+/* En modo oscuro se muestra el sol (para pasar a claro); en modo
+   claro, la luna (para pasar a oscuro). */
+.iconMoon {
+  display: none;
 }
-.wordmark::after {
-  content: "";
-  block-size: calc(2px * var(--ui-scale-desktop, 1));
-  transform-origin: 0;
-  background: currentColor;
-  transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1);
-  position: absolute;
-  inset-block-start: calc(100% + 0.39em);
-  inset-inline: 0;
-  transform: scaleX(0);
-}
-.mark:hover .wordmark::after,
-.mark:focus-visible .wordmark::after {
-  transition-duration: 0.5s;
-  transform: scaleX(1);
-}
-.glyph {
-  block-size: var(--mk-h);
-  aspect-ratio: var(--mk-ratio);
-  opacity: var(--mk-in);
-  filter: blur(calc((1 - var(--mk-in)) * 2px));
-  background-color: currentColor;
+[data-theme="light"] .iconMoon {
   display: block;
-  -webkit-mask: url("/brand/mark.svg") 50% / contain no-repeat;
-  mask: url("/brand/mark.svg") 50% / contain no-repeat;
+}
+[data-theme="light"] .iconSun {
+  display: none;
 }
 
 .links {
@@ -131,7 +154,6 @@
   gap: var(--nav-gap);
   min-inline-size: 0;
   flex-shrink: 0;
-  margin-inline-start: var(--nav-gap);
   display: flex;
 }
 .item {
@@ -258,11 +280,12 @@
   --burger-ink: 22px;
   inline-size: var(--burger-hit);
   block-size: var(--burger-hit);
+  /* Botón circular de liquid glass (como idioma/tema). */
+  border-radius: 50%;
+  margin-inline-start: 8px;
   color: var(--text-primary);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  background: 0 0;
-  border: 0;
   justify-content: center;
   /* Las líneas van apoyadas ABAJO, a la misma altura que la parte baja
      de "Jafet Pérez" (el botón ya apoya abajo en la barra por el
@@ -387,6 +410,11 @@
   .burger {
     display: inline-flex;
   }
+  .iconBtn {
+    /* Como el burger: el icono apoya abajo, a la altura de las líneas. */
+    align-items: end;
+    padding-block-end: 3px;
+  }
   .sheet {
     display: grid;
   }
@@ -440,9 +468,9 @@
     --ramp: 0;
   }
 
-  .mark {
-    --mk-h: 16px;
-    font-size: var(--text-body-base);
+  .jpm {
+    /* JPM a 11px en teléfono, igual que el icono de menú (burgerBox). */
+    block-size: 11px;
   }
 
   .burger {
@@ -490,6 +518,14 @@
   }
 }
 
+/* Chromium: el panel del menú también refracta (liquid glass). */
+@supports (backdrop-filter: url(#liquid-glass-filter)) {
+  .sheet {
+    -webkit-backdrop-filter: url(#liquid-glass-filter) blur(calc(var(--nav-m, 0) * 6px)) saturate(1.5);
+    backdrop-filter: url(#liquid-glass-filter) blur(calc(var(--nav-m, 0) * 6px)) saturate(1.5);
+  }
+}
+
 /* Tablet táctil (ref): mismo panel, barra de 56px. */
 @media (pointer: coarse) and (min-width: 481px) and (min-height: 481px) and (max-width: 1023px),
   (pointer: coarse) and (min-width: 1024px) and (max-width: 1100px) and (orientation: portrait) {
@@ -511,6 +547,11 @@
        que en teléfono, así que el burger sube 4px (7px en vez de 3px)
        para seguir alineado con la parte baja de "Jafet Pérez". */
     margin-block-end: 7px;
+  }
+
+  .iconBtn {
+    /* Como el burger en tablet: 7px en vez de 3px. */
+    padding-block-end: 7px;
   }
 
   .nav[data-menu-open] {

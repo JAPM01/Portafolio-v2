@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import styles from "./hero.module.css";
 import { CharRise, WordFade } from "../lib/anim";
 import { px } from "../lib/paths";
@@ -17,12 +17,50 @@ import HeroBackground from "./HeroBackground";
     1-2 hueco, 3-6 título, 7 hueco, 8 rol, 9-10 párrafo, 11 hueco,
     12 meta. La burbuja flotante de herramientas de desarrollo (arrastrable,
     con su posición en localStorage) muestra la retícula para verificar que
-    cada elemento cae en su lugar; NO es parte del diseño. */
+    cada elemento cae en su lugar; NO es parte del diseño.
+    Idioma (es/en): el Hero escucha el evento "site-lang" del toggle del
+    header y cambia título, párrafo y meta. En modo claro ([data-theme=
+    "light"]) un velo blanco aclara el mesh para que el texto oscuro se
+    lea. */
+const HERO_TEXT = {
+  es: {
+    title: [["Diseñando"], ["con", "sentido"], ["humano."]],
+    para: "Desafío lo convencional para crear soluciones simples, útiles e intuitivas.",
+    meta1Label: ["Portafolio", "de", "trabajo"],
+    meta1Value: ["Jafet", "Pérez"],
+    meta2Label: ["Contact"],
+    meta2Value: ["Conectemos"],
+  },
+  en: {
+    title: [["Designing"], ["with", "a", "human"], ["touch."]],
+    para: "Challenging the conventional to build simple, useful, and usable solutions.",
+    meta1Label: ["Work", "portfolio"],
+    meta1Value: ["Jafet", "Pérez"],
+    meta2Label: ["Contact"],
+    meta2Value: ["Let's", "connect"],
+  },
+} as const;
+type Lang = keyof typeof HERO_TEXT;
+
+/** Idioma como store externo: el toggle del header dispara "site-lang"
+    y el Hero se suscribe. En el servidor es "es" (el idioma por
+    defecto); en el cliente lee localStorage. */
+function getLang(): Lang {
+  if (typeof window === "undefined") return "es";
+  return window.localStorage.getItem("site-lang") === "en" ? "en" : "es";
+}
+function subscribeLang(cb: () => void) {
+  window.addEventListener("site-lang", cb);
+  return () => window.removeEventListener("site-lang", cb);
+}
+
 export default function Hero() {
   const rootRef = useRef<HTMLElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const imgWrapRef = useRef<HTMLDivElement>(null);
   const [showGrid, setShowGrid] = useState(true);
+  const lang = useSyncExternalStore<Lang>(subscribeLang, getLang, () => "es");
+  const t = HERO_TEXT[lang];
 
   useEffect(() => {
     const root = rootRef.current;
@@ -66,6 +104,7 @@ export default function Hero() {
               </div>
             </div>
             <div className={styles.veil} style={{ background: "#080405", opacity: 0.2 }} />
+            <div className={styles.lightScrim} aria-hidden="true" />
             <div className={styles.topFade} aria-hidden="true">
               <div className={styles.topFadeLayer} />
             </div>
@@ -89,19 +128,17 @@ export default function Hero() {
             className={`${styles.titleBase} ${styles.title55} clipped`}
             style={{ textShadow: "0px 2px 28px rgba(0, 0, 0, 0.45)" }}
           >
-            <span style={{ "--anim-base": "0ms" } as React.CSSProperties}>
-              <span className="sr-only">Diseñando</span>
-              <CharRise word="Diseñando" base="0ms" />
-            </span>
-            <span style={{ "--anim-base": "0ms" } as React.CSSProperties}>
-              <span className="sr-only">con sentido</span>
-              <CharRise word="con" base="0ms" />{" "}
-              <CharRise word="sentido" base="0ms" />
-            </span>
-            <span style={{ "--anim-base": "0ms" } as React.CSSProperties}>
-              <span className="sr-only">humano.</span>
-              <CharRise word="humano." base="0ms" />
-            </span>
+            {t.title.map((line, li) => (
+              <span key={li} style={{ "--anim-base": "0ms" } as React.CSSProperties}>
+                <span className="sr-only">{line.join(" ")}</span>
+                {line.map((word, wi) => (
+                  <span key={wi}>
+                    {wi > 0 ? " " : null}
+                    <CharRise word={word} base="0ms" />
+                  </span>
+                ))}
+              </span>
+            ))}
           </h1>
         </div>
 
@@ -123,32 +160,32 @@ export default function Hero() {
               />
             </svg>
           </p>
-          <p className={styles.sub}>Desafío lo convencional para crear soluciones simples, útiles e intuitivas.</p>
+          <p className={styles.sub}>{t.para}</p>
         </div>
 
         <div className={styles.meta} data-parallax-pitch="">
             <div className={styles.metaItem}>
               <span className={styles.metaLabel} style={{ "--anim-base": "560ms" } as React.CSSProperties}>
-                <span className="sr-only">Portafolio de trabajo</span>
-                <WordFade words={["Portafolio", "de", "trabajo"]} base="560ms" />
+                <span className="sr-only">{t.meta1Label.join(" ")}</span>
+                <WordFade words={[...t.meta1Label]} base="560ms" />
               </span>
               <span className={styles.metaValue} style={{ "--anim-base": "650ms" } as React.CSSProperties}>
-                <span className="sr-only">Jafet Pérez</span>
-                <WordFade words={["Jafet", "Pérez"]} base="650ms" />
+                <span className="sr-only">{t.meta1Value.join(" ")}</span>
+                <WordFade words={[...t.meta1Value]} base="650ms" />
               </span>
             </div>
             <div className={styles.metaItem}>
               <span className={styles.metaLabel} style={{ "--anim-base": "560ms" } as React.CSSProperties}>
-                <span className="sr-only">Contact</span>
-                <WordFade words={["Contact"]} base="560ms" />
+                <span className="sr-only">{t.meta2Label.join(" ")}</span>
+                <WordFade words={[...t.meta2Label]} base="560ms" />
               </span>
               <a
                 className={`${styles.metaValue} ${styles.ctaLink}`}
                 href={px("/contact")}
                 style={{ "--anim-base": "650ms" } as React.CSSProperties}
               >
-                <span className="sr-only">Conectemos</span>
-                <WordFade words={["Conectemos"]} base="650ms" />
+                <span className="sr-only">{t.meta2Value.join(" ")}</span>
+                <WordFade words={[...t.meta2Value]} base="650ms" />
                 <svg
                   className={styles.ctaIcon}
                   viewBox="0 0 24 24"

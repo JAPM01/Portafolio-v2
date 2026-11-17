@@ -3,8 +3,11 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { px } from "../lib/paths";
 import styles from "./site-nav.module.css";
-import { WordFade, RiseWhole } from "../lib/anim";
+import liquidGlass from "./liquid-glass.module.css";
+import { WordFade } from "../lib/anim";
 import { morphTarget, SETTLED } from "../lib/scroll";
+import LiquidGlassFilter from "./LiquidGlassFilter";
+import JpmMark from "./JpmMark";
 
 /** SiteNav 1:1 — barra completa arriba, píldora flotante al bajar.
     El morph lo gobierna morphTarget(scrollY, free .28, commit 90) con
@@ -61,6 +64,24 @@ export default function SiteNav() {
   const openRef = useRef(open);
   openRef.current = open;
   const [mode, setMode] = useState<NavMode>("desktop");
+
+  // Tema (dark/light) e idioma (es/en): se guardan en localStorage y en
+  // <html> (data-theme / lang). El idioma se comunica al Hero con un
+  // evento "site-lang"; el tema lo lee el CSS ([data-theme="light"]) y el
+  // icono sol/luna se muestra con CSS (sin estado de React, para no
+  // desfasar la hidratación).
+  const toggleTheme = () => {
+    const next =
+      document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    window.localStorage.setItem("site-theme", next);
+  };
+  const toggleLang = () => {
+    const next = document.documentElement.lang === "en" ? "es" : "en";
+    document.documentElement.lang = next;
+    window.localStorage.setItem("site-lang", next);
+    window.dispatchEvent(new CustomEvent("site-lang", { detail: next }));
+  };
 
   useLayoutEffect(() => {
     const nav = navRef.current;
@@ -285,23 +306,14 @@ export default function SiteNav() {
 
   return (
     <>
+      <LiquidGlassFilter />
       <nav className={styles.nav} aria-label="Primary" ref={navRef} data-menu-open={open || undefined}>
         <a href={px("/")} className={styles.mark} aria-label="Jafet Pérez">
-          <span className={styles.wordmark} aria-hidden="true">
-            <span style={{ "--anim-base": "720ms" } as React.CSSProperties}>
-              <span className="sr-only">Jafet Pérez</span>
-              <WordFade words={["Jafet"]} base="720ms" />
-              <span aria-hidden="true"> </span>
-              <WordFade words={["Pérez"]} base="720ms" />
-            </span>
-          </span>
-          <RiseWhole base="720ms" riseY="8px">
-            <span aria-hidden="true">
-              <span className={styles.glyph} aria-hidden="true" />
-            </span>
-          </RiseWhole>
+          <span className="sr-only">Jafet Pérez</span>
+          <JpmMark />
         </a>
 
+        <div className={styles.navRight}>
         <div className={styles.links} data-nav-links="">
           <a href={px("/#work")} className={styles.item}>
             <span style={{ "--anim-base": "820ms" } as React.CSSProperties}>
@@ -334,9 +346,45 @@ export default function SiteNav() {
           </a>
         </div>
 
+        <div className={styles.controls}>
+          <button
+            type="button"
+            className={`${liquidGlass.glass} ${styles.iconBtn}`}
+            aria-label="Cambiar idioma / Switch language"
+            onClick={toggleLang}
+          >
+            <svg className={styles.iconSvg} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="2" y1="12" x2="22" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            className={`${liquidGlass.glass} ${styles.iconBtn}`}
+            aria-label="Cambiar entre modo oscuro y claro"
+            onClick={toggleTheme}
+          >
+            <svg className={`${styles.iconSvg} ${styles.iconSun}`} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <svg className={`${styles.iconSvg} ${styles.iconMoon}`} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
+
         <button
           type="button"
-          className={styles.burger}
+          className={`${liquidGlass.glass} ${styles.burger}`}
           data-open={open || undefined}
           aria-expanded={open}
           aria-controls="site-menu"
@@ -348,6 +396,7 @@ export default function SiteNav() {
             <span className={styles.burgerLine} />
           </span>
         </button>
+        </div>
       </nav>
 
       <div
