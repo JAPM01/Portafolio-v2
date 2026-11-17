@@ -73,11 +73,13 @@ vec3 paint(vec2 uv) {
   // keep the shapes' proportions on any screen (designed at ~3:2)
   // zoom out on narrow screens and on desktop: on a narrow screen the
   // blobs look huge (too much zoom), and on desktop (landscape) the
-  // cyan wash was too big/pale. Portrait 3.5x, landscape 2.0x — el mesh
-  // debe verse como en Sentos en los 3 tamaños (azul dominante, ondas
-  // cian como cintas, naranja solo en la esquina superior derecha).
+  // cyan wash was too big/pale. Portrait 4.0x, landscape 2.0x — el mesh
+  // en móvil seguía muy cerca a 3.5x (Jafet 17 Nov 2026); 4.5x se pasó
+  // (quedaba casi todo negro, las ondas muy chicas), así que 4.0x es el
+  // punto medio: ondas más extendidas como en Sentos sin perder el azul
+  // dominante. Naranja solo en la esquina superior derecha.
   float zoom = 2.0;
-  if (u_res.x < u_res.y) zoom = 3.5;
+  if (u_res.x < u_res.y) zoom = 4.0;
   vec2 p = (uv - 0.5) * vec2(u_res.x / u_res.y / 1.54, 1.0) * zoom + 0.5;
   float soft = clamp(0.06 + 0.5 * (1.32 - 1.64 * distance(uv, vec2(0.5))), 0.06, 0.5);
   vec3 c = u_bg;
@@ -85,7 +87,11 @@ vec3 paint(vec2 uv) {
   // el blob deep (azul) mucho más grande para que domine, y los
   // pliegues oscuros mucho más débiles (solo dan profundidad, no
   // grandes zonas negras). Sin nuevos colores, solo cantidades.
-  c = mix(c, u_deep, blob(p, vec2(0.52, 0.62), vec2(0.9, 1.1), soft));
+  // El deep es más grande SOLO en portrait: en móvil (zoom 4.0x) el
+  // azul se quedaba corto y se veía negro arriba y abajo; en desktop
+  // (zoom 2.0x) el deep grande lavaba el texto con el óvalo blanco.
+  vec2 deepR = u_res.x < u_res.y ? vec2(1.05, 1.3) : vec2(0.9, 1.1);
+  c = mix(c, u_deep, blob(p, vec2(0.52, 0.62), deepR, soft));
   // Onda cian ancha y suave como en Sentos (comparación 2 pestañas):
   // en Sentos las ondas son anchas, suaves y en capas, con un gran
   // óvalo blanco-cian en el centro-derecha; el naranja es una banda
