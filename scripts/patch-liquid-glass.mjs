@@ -65,6 +65,29 @@ replaceOnce(
   "refrCol = sampleSource(sampleUV); // JPM: WGSL single-tap sampling without frost blur",
 );
 
+// Preserve one high-contrast glyph edge rather than showing both the
+// original stroke and a refracted second stroke. Smooth backgrounds retain
+// the complete optical displacement; high-contrast edges blend back toward
+// the undistorted sample. This is not chromatic aberration.
+replaceOnce(
+  "GLSL high-contrast edge guard",
+  "vec4 final    = refrCol;",
+  [
+    "float glyphDelta = max(max(abs(refrCol.r - baseCol.r), abs(refrCol.g - baseCol.g)), abs(refrCol.b - baseCol.b));",
+    "float glyphMix = 1.0 - 0.82 * smoothstep(0.12, 0.42, glyphDelta);",
+    "vec4 final = mix(baseCol, refrCol, glyphMix);",
+  ].join("\n          "),
+);
+replaceOnce(
+  "WGSL high-contrast edge guard",
+  "var finalCol = refrCol;",
+  [
+    "let glyphDelta = max(max(abs(refrCol.r - baseCol.r), abs(refrCol.g - baseCol.g)), abs(refrCol.b - baseCol.b));",
+    "let glyphMix = 1.0 - 0.82 * smoothstep(0.12, 0.42, glyphDelta);",
+    "var finalCol = mix(baseCol, refrCol, glyphMix);",
+  ].join("\n  "),
+);
+
 // Use the GPU's *deformed silhouette*, not a second static CSS outline,
 // to show a delicate rim over both white and black surfaces.
 replaceOnce(

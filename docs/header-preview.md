@@ -117,3 +117,13 @@ luminosidad de la imagen refractada. La máscara, el radio y la
 elasticidad proceden de una única superficie GPU. En fondos negros,
 el borde gana algo de luminosidad; en blancos se oscurece sutilmente.
 No se utilizan otros colores base de la paleta.
+
+## Corrección de alta fidelidad y contraste — noviembre 2026
+
+- El shader mantiene la refracción de gradientes y colores, pero limita los dobles contornos al cruzar letras de alto contraste. Compara la muestra refractada con la muestra original y reduce el desplazamiento únicamente cuando difieren mucho. El mismo código existe en WebGL y WebGPU.
+- Los parámetros `refraction: 0.014` y `bevelDepth: 0.009` producen una desviación física nominal de aproximadamente 1.4px sobre una lente de 62px, antes de las atenuaciones espaciales y la interacción viscosa.
+- El texto se toma con una sola muestra cuando `frost: 0`; la aberración cromática se mantiene en cero.
+- La captura de `body` se actualiza al terminar la carga de fuentes y después de cambiar idioma, tema o tamaño de pantalla. El scroll solo actualiza coordenadas y contraste; no dispara un proceso de rasterización completo en cada pausa.
+- Los iconos y JPM eligen de forma independiente un tono de la escala neutra autorizada, según la luminancia mediana de sus respectivas regiones en la captura real. Se utiliza histéresis para evitar parpadeos. Si la captura no permite lectura, siguen usando los colores semánticos del tema.
+- La barra y la superficie óptica tienen exactamente la misma altura en móvil y escritorio.
+- Los controles y el menú permanecen como DOM interactivo, encima del canvas GPU.

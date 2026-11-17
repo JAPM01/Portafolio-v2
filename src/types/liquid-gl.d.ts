@@ -5,6 +5,8 @@ declare module "liquid-gl" {
     renderer?: {
       backend?: { constructor?: { name?: string }; maxTextureSize?: number };
       scaleFactor?: number;
+      staticSnapshotCanvas?: HTMLCanvasElement;
+      snapshotTarget?: HTMLElement;
       captureSnapshot(): Promise<boolean>;
     };
   }

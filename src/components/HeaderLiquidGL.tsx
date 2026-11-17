@@ -2,65 +2,157 @@
 
 import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
+import type { LiquidGLLens } from "liquid-gl";
 import { setHeaderPreviewStatus } from "../lib/header-preview";
 import styles from "./site-nav.module.css";
 
-/** liquidGL v3.0: official menu-bar bevel geometry with neutral RGB
- * sampling. Using aberration=0 during Android validation disables per-channel
- * offset samples while preserving true refraction, specular and fluid touch.
- * Keep one instance with the upstream-recommended body snapshot across page scroll.
- */
-export default function HeaderLiquidGL({ children, active }: { children: ReactNode; active: boolean }) {
+/** Sample the exact body snapshot that liquidGL refracts. A single global
+ * light/dark theme does not describe the surfaces crossed while scrolling.
+ * Sample the left and right controls independently to preserve contrast. */
+function updateControlContrast(
+  lens: LiquidGLLens | undefined,
+  target: HTMLDivElement | null,
+  previous: { logo: boolean; actions: boolean }
+) {
+  const renderer = lens?.renderer;
+  const bitmap = renderer?.staticSnapshotCanvas;
+  const anchor = target?.closest("header");
+  const scale = renderer?.scaleFactor ?? 1;
+  if (!bitmap || !anchor || !Number.isFinite(scale) || scale <= 0) return;
+  const rect = anchor.getBoundingClientRect();
+  const captureRect = document.body.getBoundingClientRect();
+  if (!rect.width || !rect.height || !bitmap.width || !bitmap.height) return;
+
+  try {
+    const ctx = bitmap.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return;
+
+    const measure = (fractions: number[]) => {
+      const values: number[] = [];
+      for (const x of fractions) {
+        for (const y of [0.28, 0.52, 0.72]) {
+          const px = Math.floor((rect.left + x * rect.width - captureRect.left) * scale);
+          const py = Math.floor((rect.top + y * rect.height - captureRect.top) * scale);
+          if (px < 0 || px >= bitmap.width || py < 0 || py >= bitmap.height) continue;
+          const rgba = ctx.getImageData(px, py, 1, 1).data;
+          // The rasterized body is sRGB and includes the page background.
+          const lum = (0.2126 * rgba[0] + 0.7152 * rgba[1] + 0.0722 * rgba[2]) / 255;
+          values.push(lum);
+        }
+      }
+      if (!values.length) return undefined;
+      values.sort((a, b) => a - b);
+      return values[Math.floor(values.length / 2)];
+    };
+
+    const assign = (name: "logo" | "actions", value: number | undefined) => {
+      if (value === undefined) return;
+      // Hysteresis avoids flickering between icon colors at a boundary.
+      const bright = previous[name] ? value > 0.52 : value > 0.63;
+      if (previous[name] === bright && anchor.style.getPropertyValue(
+        name === "logo" ? "--header-logo-foreground" : "--header-actions-foreground"
+      )) return;
+      previous[name] = bright;
+      anchor.style.setProperty(
+        name === "logo" ? "--header-logo-foreground" : "--header-actions-foreground",
+        bright ? "var(--brand-gray-2)" : "var(--brand-gray-7)"
+      );
+    };
+    assign("logo", measure([0.06, 0.12, 0.19, 0.25]));
+    assign("actions", measure([0.69, 0.77, 0.84, 0.91, 0.96]));
+  } catch {
+    // A tainted canvas or restricted readback must not disable navigation.
+    // The existing theme-based foreground remains as a safe fallback.
+  }
+}
+
+/** Single GPU lens. Refract smoothly, keep text legible and avoid expensive
+ * whole-document re-rasterization on every scroll event. */
+export default function HeaderLiquidGL({
+  children,
+  active,
+}: {
+  children: ReactNode;
+  active: boolean;
+}) {
   const lensRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef(active);
+  const lensInstanceRef = useRef<LiquidGLLens | undefined>(undefined);
+
+  useEffect(() => {
+    activeRef.current = active;
+    if (!active) {
+      lensRef.current?.closest("header")?.style.removeProperty("--header-logo-foreground");
+      lensRef.current?.closest("header")?.style.removeProperty("--header-actions-foreground");
+    }
+  }, [active]);
 
   useEffect(() => {
     let mounted = true;
-    let lens: { destroy(): void; renderer?: { captureSnapshot(): Promise<boolean> } } | undefined;
     let refreshTimer: ReturnType<typeof setTimeout> | null = null;
-    let lastRefresh = 0;
+    let toneFrame: number | null = null;
+    const tone = { logo: false, actions: false };
+    const scheduleTone = () => {
+      if (!mounted || !activeRef.current || toneFrame !== null) return;
+      toneFrame = requestAnimationFrame(() => {
+        toneFrame = null;
+        if (mounted && activeRef.current) {
+          updateControlContrast(lensInstanceRef.current, lensRef.current, tone);
+        }
+      });
+    };
+
     const refresh = (delay: number) => {
       if (refreshTimer) clearTimeout(refreshTimer);
-      refreshTimer = setTimeout(() => {
-        if (!mounted || !lens?.renderer || Date.now() - lastRefresh < 1000) return;
-        lastRefresh = Date.now();
-        void lens.renderer.captureSnapshot();
+      refreshTimer = setTimeout(async () => {
+        if (!mounted || !lensInstanceRef.current?.renderer) return;
+        try {
+          await lensInstanceRef.current.renderer.captureSnapshot();
+          scheduleTone();
+        } catch {
+          // Continue using the last valid snapshot and colors.
+        }
       }, delay);
     };
-    const onScrollEnd = () => refresh(330);
-    const onLanguageChange = () => refresh(250);
-    const themeObserver = new MutationObserver(() => refresh(450));
+
+    // Scroll moves the snapshot's viewport mapping; it does NOT require a
+    // fresh whole-document rasterization. Refresh only when the DOM changes.
+    const onScroll = () => scheduleTone();
+    const onResize = () => {
+      scheduleTone();
+      refresh(700);
+    };
+    const onLanguage = () => refresh(450);
+    const themeObserver = new MutationObserver(() => refresh(500));
     themeObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["data-theme", "lang"],
     });
-    window.addEventListener("scroll", onScrollEnd, { passive: true });
-    window.addEventListener("site-lang", onLanguageChange);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("site-lang", onLanguage);
 
     setHeaderPreviewStatus("Inicializando refracción");
-
     import("liquid-gl")
       .then(({ default: liquidGL }) => {
         if (!mounted || !lensRef.current) return;
-
         const result = liquidGL({
           target: "#jpm-preview-header1-lens",
           snapshot: "body",
-          // Mobile Chromium: prefer the stable WebGL2 shader backend.
-          // This avoids WebGPU-specific capture/edge artifacts on Android.
           engine: window.innerWidth < 768 ? "webgl2" : "auto",
           resolution: window.innerWidth < 768 ? 1.25 : 1.6,
-          // Anchor .header has z-index 9999. This yields GPU canvas z=1
-          // inside the header, below the real navigation at z=3.
+          // Header stacking context is z=9999; the GPU canvas is local z=1,
+          // under the navigation at local z=3.
           zIndex: 10001,
           content: false,
-          // Shader patched to use lens-pixel units (not page-height UV).
-          refraction: 0.026,
+          // Offset is now normalized to the lens in our reproducible shader patch.
+          // Keep letter edges inside a narrow, physically plausible displacement.
+          refraction: 0.014,
           aberration: 0,
-          bevelDepth: 0.018,
-          bevelWidth: 0.071,
+          bevelDepth: 0.009,
+          bevelWidth: 0.068,
           frost: 0,
           shadow: false,
-          // Prevent a second bright white highlight on light surfaces.
           specular: false,
           reveal: "none",
           draggable: false,
@@ -74,37 +166,33 @@ export default function HeaderLiquidGL({ children, active }: { children: ReactNo
           on: {
             init(instance) {
               if (!mounted) return;
-              // Report the actual renderer, not merely the requested engine.
-              const backend = (instance as {
-                renderer?: {
-                  backend?: { constructor?: { name?: string }; maxTextureSize?: number };
-                  scaleFactor?: number;
-                };
-              }).renderer;
-              const engine = backend?.backend?.constructor?.name || "motor no identificado";
-              const scale = backend?.scaleFactor;
+              const backend = instance.renderer?.backend?.constructor?.name || "motor no identificado";
+              const scale = instance.renderer?.scaleFactor;
               setHeaderPreviewStatus(
-                "liquidGL: " + engine +
+                "liquidGL: " + backend +
                 (typeof scale === "number" ? " · captura " + scale.toFixed(2) + "x" : "")
               );
+              scheduleTone();
             },
           },
         });
-        lens = Array.isArray(result) ? result[0] : result;
-        // Layout fonts and dynamic hero content may settle after the first
-        // full-document capture. Refresh once without remounting the lens.
-        refresh(700);
-        {
-          try {
-            // Live hero canvas is registered. The header itself is excluded
-            // from the rasterizer and the GL canvas stays mounted on scroll.
-            const withDynamics = liquidGL as typeof liquidGL & { registerDynamic?: (selector: string) => void };
-            withDynamics.registerDynamic?.("[data-hero-bg-source] canvas");
-          } catch {
-            // Static capture remains valid if dynamic registration fails.
-          }
+        const lens = Array.isArray(result) ? result[0] : result;
+        lensInstanceRef.current = lens;
+        if (!lens) {
+          setHeaderPreviewStatus("liquidGL: motor no disponible");
+          return;
         }
-        if (!lens) setHeaderPreviewStatus("liquidGL: sin motor disponible");
+        // Register the animated mesh as an independent live source.
+        const withDynamics = liquidGL as typeof liquidGL & {
+          registerDynamic?: (selector: string) => void;
+        };
+        withDynamics.registerDynamic?.("[data-hero-bg-source] canvas");
+        scheduleTone();
+        // Fonts might settle after initial capture. Re-capture once, not
+        // after each scroll frame, and whenever language/theme changes.
+        void document.fonts.ready.then(() => {
+          if (mounted) refresh(500);
+        });
       })
       .catch(() => {
         if (mounted) setHeaderPreviewStatus("liquidGL: error de inicialización");
@@ -113,10 +201,16 @@ export default function HeaderLiquidGL({ children, active }: { children: ReactNo
     return () => {
       mounted = false;
       themeObserver.disconnect();
-      window.removeEventListener("scroll", onScrollEnd);
-      window.removeEventListener("site-lang", onLanguageChange);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("site-lang", onLanguage);
       if (refreshTimer) clearTimeout(refreshTimer);
-      lens?.destroy();
+      if (toneFrame !== null) cancelAnimationFrame(toneFrame);
+      const header = lensRef.current?.closest("header");
+      header?.style.removeProperty("--header-logo-foreground");
+      header?.style.removeProperty("--header-actions-foreground");
+      lensInstanceRef.current?.destroy();
+      lensInstanceRef.current = undefined;
     };
   }, []);
 
