@@ -1,0 +1,174 @@
+.root {
+  width: 100%;
+  max-width: 580px;
+  margin-inline: auto;
+  min-width: 0;
+  position: relative;
+  --venn-line: color-mix(in srgb, var(--text-primary) 23%, transparent);
+  --venn-guide: color-mix(in srgb, var(--text-primary) 15%, transparent);
+  --venn-label: var(--text-secondary);
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  isolation: isolate;
+}
+
+.baseCircle {
+  stroke: var(--venn-line);
+  fill: none;
+  stroke-width: 1.15px;
+  vector-effect: non-scaling-stroke;
+}
+
+.resultGuide {
+  stroke: var(--venn-guide);
+  fill: none;
+  stroke-width: 1px;
+  stroke-dasharray: 3 7;
+  vector-effect: non-scaling-stroke;
+}
+
+.intersectionOutline {
+  fill: none;
+  stroke: var(--venn-line);
+  stroke-dasharray: 2 5;
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+}
+
+.intersectionCore {
+  fill: var(--brand-blue-3);
+  opacity: .55;
+}
+
+.diagramLabel,
+.resultLabel {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .09em;
+  fill: var(--venn-label);
+}
+
+.resultLabel {
+  fill: var(--text-primary);
+}
+
+.flowLayer {
+  fill: none;
+  stroke-dasharray: 145 855;
+  stroke-dashoffset: 145;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: vennTravel 9.6s linear infinite;
+  animation-play-state: paused;
+  will-change: stroke-dashoffset, opacity;
+}
+
+.flowAura {
+  --layer-opacity: .85;
+  stroke-width: 24px;
+}
+
+.flowBody {
+  --layer-opacity: .75;
+  stroke-width: 8px;
+}
+
+.flowCore {
+  --layer-opacity: 1;
+  stroke-width: 2.75px;
+}
+
+.intersectionResponse,
+.impactBloom,
+.impactRing,
+.impactPoint {
+  animation-play-state: paused;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.intersectionResponse {
+  opacity: .1;
+  animation: intersectionFlash 9.6s ease-in-out infinite;
+}
+
+.impactBloom {
+  opacity: 0;
+  animation: resultBloom 9.6s ease-out infinite;
+}
+
+.impactRing {
+  opacity: 0;
+  fill: none;
+  stroke: #6FD3FF; /* cian exacto del mesh del hero */
+  stroke-width: 1.8px;
+  animation: resultRing 9.6s ease-out infinite;
+}
+
+.impactPoint {
+  opacity: .3;
+  fill: #E8F7FF; /* destello exacto del mesh del hero */
+  animation: resultPoint 9.6s ease-in-out infinite;
+}
+
+.root[data-flow-active="true"] .flowLayer,
+.root[data-flow-active="true"] .intersectionResponse,
+.root[data-flow-active="true"] .impactBloom,
+.root[data-flow-active="true"] .impactRing,
+.root[data-flow-active="true"] .impactPoint {
+  animation-play-state: running;
+}
+
+/* Cada ciclo es un relato completo, con una breve pausa final. El
+   pathLength=1000 normaliza el avance sin medir el SVG con JavaScript. */
+@keyframes vennTravel {
+  0%, 9% { stroke-dashoffset: 145; opacity: 0; }
+  12% { opacity: var(--layer-opacity); }
+  78% { stroke-dashoffset: -855; opacity: var(--layer-opacity); }
+  83%, 100% { stroke-dashoffset: -855; opacity: 0; }
+}
+
+@keyframes intersectionFlash {
+  0%, 30%, 41%, 63%, 75%, 100% { opacity: .08; transform: scale(.8); }
+  36%, 68% { opacity: .86; transform: scale(1.7); }
+}
+
+@keyframes resultBloom {
+  0%, 75% { opacity: 0; transform: scale(.55); }
+  81% { opacity: .85; transform: scale(1.1); }
+  94%, 100% { opacity: 0; transform: scale(2.1); }
+}
+
+@keyframes resultRing {
+  0%, 75% { opacity: 0; transform: scale(.6); }
+  81% { opacity: .9; transform: scale(1); }
+  95%, 100% { opacity: 0; transform: scale(2.8); }
+}
+
+@keyframes resultPoint {
+  0%, 76% { opacity: .22; transform: scale(1); }
+  80%, 85% { opacity: 1; transform: scale(1.9); }
+  96%, 100% { opacity: .22; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flowLayer,
+  .intersectionResponse,
+  .impactBloom,
+  .impactRing,
+  .impactPoint {
+    animation: none !important;
+    will-change: auto;
+  }
+  .flowLayer,
+  .impactBloom,
+  .impactRing { opacity: 0; }
+  .intersectionResponse { opacity: .2; }
+  .impactPoint { opacity: .65; }
+}
