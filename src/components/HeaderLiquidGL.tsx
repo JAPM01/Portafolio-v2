@@ -181,12 +181,13 @@ export default function HeaderLiquidGL({
           // under the navigation at local z=3.
           zIndex: 10001,
           content: false,
-          // Physical lens-relative displacement: ~4.3px maximum for 62px
-          // mobile glass; high-contrast glyph guard remains enabled.
-          refraction: 0.024,
-          aberration: 0,
-          bevelDepth: 0.046,
-          bevelWidth: 0.15,
+          // Lens-relative offset: ~5.2px nominal peak on 62px mobile glass.
+          // Shader attenuates this near text to prevent duplicated letters.
+          refraction: 0.030,
+          // Nominal RGB separation <0.3px, without old yellow/green halos.
+          aberration: 0.045,
+          bevelDepth: 0.054,
+          bevelWidth: 0.18,
           frost: 0,
           shadow: false,
           specular: true,
@@ -194,7 +195,7 @@ export default function HeaderLiquidGL({
           draggable: false,
           tilt: false,
           interaction: "fluid",
-          interactionStrength: 0.22,
+          interactionStrength: 0.28,
           interactionRadius: 0.35,
           interactionViscosity: 0.65,
           magnify: 1,

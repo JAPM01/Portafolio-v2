@@ -7,6 +7,7 @@
   --header-divider: color-mix(in srgb, var(--brand-gray-7) 23.00%, transparent);
   --header-panel: color-mix(in srgb, var(--brand-gray-1) 78.00%, transparent);
   --header-muted: var(--brand-gray-5);
+  --header-glass-radius: 26px;
   position: fixed;
   z-index: 9999;
   inset-block-start: 24px;
@@ -192,7 +193,7 @@
   letter-spacing: .04em;
 }
 @media (max-width: 480px) {
-  .header { inset-block-start: 12px; width: calc(100% - 24px); }
+  .header { inset-block-start: 12px; width: calc(100% - 24px); --header-glass-radius: 22px; }
   .scrolled { inset-block-start: 8px; }
   .glassStage { height: 62px; }
   .nav { height: 100%; padding-inline: 17px; }
@@ -216,19 +217,17 @@
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  border-radius: 999px;
-  /* GPU shader renders one luminance-adaptive rim along its deformed mask.
+  border-radius: var(--header-glass-radius);
+  /* Target inherits the same GPU radius. One optical mask, no extra rim.
+     GPU shader renders one luminance-adaptive rim along its deformed mask.
      Do not add a second fixed CSS border/shadow around an elastic lens. */
 }
 .previewGlassInactive {
   pointer-events: none;
 }
 .header.heroResting > canvas { opacity: 0 !important; }
-/* Drop-shadow follows the alpha silhouette of the single GPU lens,
-   rather than introducing a second rounded CSS border. */
-.header:not(.heroResting) > canvas {
-  filter: drop-shadow(0 7px 14px color-mix(in srgb, var(--brand-gray-1) 13%, transparent));
-}
+/* Do not filter the viewport canvas: drop-shadow painted a second
+   offset silhouette alongside liquidGL's adaptive GPU rim. */
 .previewLiquidLens {
   position: absolute;
   inset: 0;

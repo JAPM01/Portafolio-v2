@@ -138,3 +138,11 @@ Los diez parches reproducibles en WebGL y WebGPU mantienen los ocho cambios prev
 La sombra difusa se aplica al **canvas con transparencia** de la GPU, siguiendo su silueta, nunca mediante una segunda píldora ni un pseudo-elemento con bordes. El padding horizontal de la navegación queda simétrico: 17px en móvil y 24px en escritorio.
 
 El estado del menú de desarrollo ahora muestra `geometría ΔNpx`, que compara los rectángulos CSS y GPU de la lente al iniciar y al terminar de desplazarse o cambiar el tamaño, para detectar discrepancias reales en dispositivos. Un Δ cercano a cero demuestra alineación de las dimensiones medidas, pero no valida por sí mismo el aspecto final del shader.
+
+## Ajuste óptico y geometría (17 noviembre 2026)
+
+- Retirado `filter: drop-shadow(...)` del canvas del viewport: duplicaba el contorno adaptativo del shader. Se conserva una sola lente y su borde GPU.
+- Radio explícito de 22px móvil y 26px escritorio en el contenedor. El objetivo óptico hereda el mismo radio. No se modifica la geometría interna del canvas que requiere medición independiente en navegador.
+- `refraction: 0.030`, `bevelDepth: 0.054`, `bevelWidth: 0.18`, `interactionStrength: 0.28` y `aberration: 0.045`. En móvil nominalmente <0.3px de separación RGB antes de atenuación; se mantienen `frost: 0` y la protección de texto del shader.
+- Sin cambios al mesh, tema, colores ni otras secciones.
+- Pendiente para Muse: en Chrome Android, medir los límites alfa reales de la máscara GPU y compararlos con `header`, `.glassStage`, `.previewGlassRoot`, `.previewLiquidLens` y el canvas durante el scroll. Los rectángulos HTML no son suficientes.
