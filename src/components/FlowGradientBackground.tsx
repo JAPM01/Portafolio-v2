@@ -75,18 +75,19 @@ vec3 paint(vec2 uv) {
   vec2 p = (uv - 0.5) * vec2(u_res.x / u_res.y / 1.54, 1.0) * zoom + 0.5;
   float soft = clamp(0.06 + 0.5 * (1.32 - 1.64 * distance(uv, vec2(0.5))), 0.06, 0.5);
   vec3 c = u_bg;
-  // Más azul brand y un poco menos de negro (Jafet 17 Nov 2026):
-  // el blob deep (azul) un poco más grande y los pliegues oscuros
-  // un poco más débiles. Solo ajustar cantidades, sin nuevos colores.
-  c = mix(c, u_deep, blob(p, vec2(0.52, 0.62), vec2(0.66, 0.85), soft));
+  // La pantalla debe ser MÁS azul brand que negro (Jafet 17 Nov 2026):
+  // el blob deep (azul) mucho más grande para que domine, y los
+  // pliegues oscuros mucho más débiles (solo dan profundidad, no
+  // grandes zonas negras). Sin nuevos colores, solo cantidades.
+  c = mix(c, u_deep, blob(p, vec2(0.52, 0.62), vec2(0.9, 1.1), soft));
   c = mix(c, u_body, blob(p, vec2(0.58, 0.8), vec2(0.55, 0.32), soft) * 0.95);
   // hot spot: a corner accent (top-right), not a band across the top —
   // like the orange corner in the Sentos reference.
   c = mix(c, u_hot, blob(p, vec2(0.88, 1.05), vec2(0.20, 0.15), soft) * 0.75);
   // dark folds cut back into the colour
-  c = mix(c, u_bg, blob(p, vec2(0.14, 0.42), vec2(0.24, 0.7), soft) * 0.85);
-  c = mix(c, u_bg, blob(p, vec2(0.42, 0.18), vec2(0.36, 0.22), soft) * 0.6);
-  c = mix(c, u_bg * 0.6, blob(p, vec2(0.9, 0.36), vec2(0.16, 0.5), soft) * 0.65);
+  c = mix(c, u_bg, blob(p, vec2(0.14, 0.42), vec2(0.24, 0.7), soft) * 0.5);
+  c = mix(c, u_bg, blob(p, vec2(0.42, 0.18), vec2(0.36, 0.22), soft) * 0.35);
+  c = mix(c, u_bg * 0.6, blob(p, vec2(0.9, 0.36), vec2(0.16, 0.5), soft) * 0.4);
   // bright wave on the right side (more visible than a thin edge glint).
   c += u_accent * blob(p, vec2(0.88, 0.62), vec2(0.12, 0.28), soft) * 0.6;
   return c;
