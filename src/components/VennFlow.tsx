@@ -15,6 +15,9 @@ const G = {
   technology: { x: 400, y: 188 },
   usability: { x: 320, y: 315 },
   convergence: { x: 320, y: 252 },
+  // La lente (triple intersección) va de x≈258–382, y≈173–305.
+  // El degradado del relleno se reparte por esa diagonal.
+  lens: { x1: 255, y1: 308, x2: 385, y2: 170 },
 } as const;
 
 const CENTERS = [G.design, G.technology, G.usability] as const;
@@ -146,13 +149,22 @@ export default function VennFlow({ lang }: { lang: Lang }) {
           ? "Diseño, Tecnología y Usabilidad: cada círculo se enciende con su color en secuencia, la intersección se rellena del líquido del mesh, late y se repite."
           : "Design, Technology and Usability: each circle lights up in its color in sequence, the intersection fills with the mesh liquid, pulses and repeats."}>
         <defs>
-          {/* El líquido del mesh: mismo degradado del hero. */}
-          <linearGradient id={fillId} x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop stopColor={HERO_MESH.blue} />
-            <stop offset=".4" stopColor={HERO_MESH.cyan} />
-            <stop offset=".67" stopColor={HERO_MESH.ice} />
-            <stop offset=".85" stopColor={HERO_MESH.orange} />
-            <stop offset="1" stopColor={HERO_MESH.blue} />
+          {/* El líquido del mesh: mismo degradado del hero, en miniatura.
+              userSpaceOnUse y no el bbox del círculo: el degradado se
+              reparte por toda la lente (si se mapeara al círculo de
+              relleno, de 340×340, la lente solo mostraría el centro y
+              se vería solo cian). Diagonal inferior-izquierda a
+              superior-derecha, como el hero: azul dominante, onda cian,
+              brillo hielo y naranja solo en la esquina superior derecha. */}
+          <linearGradient id={fillId} gradientUnits="userSpaceOnUse"
+            x1={G.lens.x1} y1={G.lens.y1} x2={G.lens.x2} y2={G.lens.y2}>
+            <stop offset="0" stopColor={HERO_MESH.blue} />
+            <stop offset="0.3" stopColor={HERO_MESH.blue} />
+            <stop offset="0.48" stopColor={HERO_MESH.cyan} />
+            <stop offset="0.62" stopColor={HERO_MESH.ice} />
+            <stop offset="0.78" stopColor={HERO_MESH.ice} />
+            <stop offset="0.9" stopColor={HERO_MESH.orange} />
+            <stop offset="1" stopColor={HERO_MESH.orange} />
           </linearGradient>
           <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="4" result="blur" />
