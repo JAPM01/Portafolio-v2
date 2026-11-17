@@ -58,7 +58,7 @@ export default function Hero() {
   const rootRef = useRef<HTMLElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const imgWrapRef = useRef<HTMLDivElement>(null);
-  const [showGrid, setShowGrid] = useState(true);
+  const [showGrid, setShowGrid] = useState(false);
   const lang = useSyncExternalStore<Lang>(subscribeLang, getLang, () => "es");
   const t = HERO_TEXT[lang];
 
