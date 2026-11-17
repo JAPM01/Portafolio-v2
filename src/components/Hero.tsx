@@ -123,7 +123,7 @@ export default function Hero() {
               />
             </svg>
           </p>
-          <p className={styles.sub}>Diseñando con sentido humano. Desafío lo convencional para crear soluciones simples, útiles e intuitivas.</p>
+          <p className={styles.sub}>Desafío lo convencional para crear soluciones simples, útiles e intuitivas.</p>
         </div>
 
         <div className={styles.meta} data-parallax-pitch="">
