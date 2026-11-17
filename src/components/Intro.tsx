@@ -41,7 +41,7 @@ const MANIFESTO: Record<Lang, Word[]> = {
 const CONTENT = {
   es: {
     eyebrow: "Manifiesto",
-    heading: "01 / Mi forma de trabajar",
+    heading: "01. Mi forma de trabajar",
     thoughts: [
       "Entender a las personas.",
       "Cuestionar lo convencional.",
@@ -50,7 +50,7 @@ const CONTENT = {
   },
   en: {
     eyebrow: "Manifesto",
-    heading: "01 / How I work",
+    heading: "01. How I work",
     thoughts: [
       "Understand people.",
       "Challenge conventions.",
