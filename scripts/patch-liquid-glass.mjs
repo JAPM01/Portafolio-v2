@@ -62,7 +62,7 @@ replaceOnce(
     "    refrCol = refrCol + sampleSource(sampleUV + vec2<f32>(0.0, -texel.y));",
     "    refrCol = refrCol / 5.0;",
   ].join("\n"),
-  "refrCol = sampleSource(sampleUV); // JPM: sharp transparent glass, no five-tap blur",
+  "refrCol = sampleSource(sampleUV); // JPM: WGSL single-tap sampling without frost blur",
 );
 
 await writeFile(modulePath, source, "utf8");
