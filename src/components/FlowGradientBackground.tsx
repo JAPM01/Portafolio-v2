@@ -65,12 +65,12 @@ float blob(vec2 p, vec2 c, vec2 r, float soft) {
 
 vec3 paint(vec2 uv) {
   // keep the shapes' proportions on any screen (designed at ~3:2)
-  // zoom out more on portrait screens: on a narrow screen the blobs
-  // look huge (too much zoom). Portrait 3.5x vs landscape 1.4x — el
-  // mesh en móvil estaba muy cerca (Jafet 17 Nov 2026): un solo blob
-  // azul dominaba la pantalla; al alejar el zoom se ven las ondas
-  // (cian, blanco, naranja) como en la referencia Sentos.
-  float zoom = 1.4;
+  // zoom out on narrow screens and on desktop: on a narrow screen the
+  // blobs look huge (too much zoom), and on desktop (landscape) the
+  // cyan wash was too big/pale. Portrait 3.5x, landscape 2.0x — el mesh
+  // debe verse como en Sentos en los 3 tamaños (azul dominante, ondas
+  // cian como cintas, naranja solo en la esquina superior derecha).
+  float zoom = 2.0;
   if (u_res.x < u_res.y) zoom = 3.5;
   vec2 p = (uv - 0.5) * vec2(u_res.x / u_res.y / 1.54, 1.0) * zoom + 0.5;
   float soft = clamp(0.06 + 0.5 * (1.32 - 1.64 * distance(uv, vec2(0.5))), 0.06, 0.5);
@@ -80,16 +80,20 @@ vec3 paint(vec2 uv) {
   // pliegues oscuros mucho más débiles (solo dan profundidad, no
   // grandes zonas negras). Sin nuevos colores, solo cantidades.
   c = mix(c, u_deep, blob(p, vec2(0.52, 0.62), vec2(0.9, 1.1), soft));
-  c = mix(c, u_body, blob(p, vec2(0.58, 0.8), vec2(0.55, 0.32), soft) * 0.95);
+  // Onda cian ancha y suave como en Sentos (comparación 2 pestañas):
+  // en Sentos las ondas son anchas, suaves y en capas, con un gran
+  // óvalo blanco-cian en el centro-derecha; el naranja es una banda
+  // diagonal ancha arriba a la derecha. Más blanco protagónico.
+  c = mix(c, u_body, blob(p, vec2(0.58, 0.8), vec2(0.7, 0.4), soft) * 0.95);
   // hot spot: a corner accent (top-right), not a band across the top —
   // like the orange corner in the Sentos reference.
-  c = mix(c, u_hot, blob(p, vec2(0.88, 1.05), vec2(0.20, 0.15), soft) * 0.75);
+  c = mix(c, u_hot, blob(p, vec2(0.88, 1.05), vec2(0.28, 0.2), soft) * 0.75);
   // dark folds cut back into the colour
   c = mix(c, u_bg, blob(p, vec2(0.14, 0.42), vec2(0.24, 0.7), soft) * 0.5);
   c = mix(c, u_bg, blob(p, vec2(0.42, 0.18), vec2(0.36, 0.22), soft) * 0.35);
   c = mix(c, u_bg * 0.6, blob(p, vec2(0.9, 0.36), vec2(0.16, 0.5), soft) * 0.4);
   // bright wave on the right side (more visible than a thin edge glint).
-  c += u_accent * blob(p, vec2(0.88, 0.62), vec2(0.12, 0.28), soft) * 0.6;
+  c += u_accent * blob(p, vec2(0.88, 0.62), vec2(0.18, 0.35), soft) * 0.75;
   return c;
 }
 
