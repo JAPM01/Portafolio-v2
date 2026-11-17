@@ -10,11 +10,9 @@
   height: 100svh;
   display: flex;
   position: relative;
-  /* Margen horizontal del grid = gutter: el .container del hero usa
-     --page-margin (clamp 12→24px), que NO es el gutter (24px desktop /
-     16px móvil). Se sobreescribe aquí para que las columnas empiecen
-     después de un margen exactamente igual al gutter. */
-  --page-margin: var(--space-6);
+  /* El margen horizontal (= gutter) ya no se fija aquí: lo pone la grid
+     compartida (.site-grid en globals.css, que fija --page-margin al
+     gutter y .container lo lee). */
 }
 
 /* Fondo fijo con ripple: cubre el viewport y se desvanece al hacer scroll. */
@@ -149,18 +147,12 @@
   }
 }
 
-/* Retícula del hero — mejores prácticas: 12 columnas en desktop, 4 en
-   móvil (12 se divide en 2, 3, 4 y 6); gutters fijos 24px / 16px;
-   márgenes = gutter en los 4 lados (el horizontal se fija en .hero con
-   --page-margin, el vertical es el padding-block de .inner) y las
-   columnas empiezan después del margen; gutters horizontales = row-gap
-   (antes no había: las 12 filas iban pegadas). Todo el espaciado en
-   múltiplos de 8 (medio paso de 4 para detalles). Título, pitch y meta
-   son celdas de ESTE grid: antes cada uno se ubicaba con un mecanismo
-   distinto (flujo / absolute con px fijos / flex) y por eso se movían
-   por separado al cambiar de viewport. Filas: 12 filas iguales; el
-   título va en 2–7, el pitch en 6–10 y el meta en 11–13 (medido contra
-   la referencia). */
+/* Retícula del hero — usa la grid compartida (.site-grid en
+   globals.css: 12 columnas en desktop, 4 en móvil, gutters 24px /
+   16px, márgenes = gutter). Aquí solo van las FILAS (12 filas 1fr) y
+   los placements: el título en 2–11, el pitch en 6–10 y el meta en
+   11–13 (medido contra la referencia). El espaciado vertical es el
+   padding-block (= gutter en los 4 lados). */
 .inner {
   z-index: 1;
   padding-block: var(--space-6);
@@ -173,11 +165,7 @@
      texto largo solo desborda visualmente su celda, como antes. */
   min-width: 0;
   min-height: 0;
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: repeat(12, minmax(0, 1fr));
-  column-gap: var(--space-6);
-  row-gap: var(--space-6);
   position: relative;
 }
 .inner::before {
@@ -201,10 +189,10 @@
 .titleWrap {
   z-index: 1;
   /* Cols 1-11 (no 1-8): la línea larga del título ("con sentido") mide
-     ~1100px a ×0.95 y no cabe en las 8 columnas (921px); con 11 columnas
+     ~1100px a 200px y no cabe en las 8 columnas (921px); con 11 columnas
      (1158px) el texto queda DENTRO de su caja sin invadir los gutters de
-     las columnas 8-11. Filas 2-11: 3 líneas a ×0.95 miden ~570px y las
-     filas 2-7 (341px) ya no las contienen. */
+     las columnas 8-11. Filas 2-11: 3 líneas a 200px miden ~570px y
+     caben en el span de 9 filas (633px a 900px de alto). */
   grid-column: 1 / 11;
   grid-row: 2 / 11;
   align-self: start;
@@ -224,19 +212,18 @@
   --rise-y-ramp: 0.065em;
   --rise-o: 1;
   font-family: var(--font-display);
-  font-size: var(--text-heading-5-5xl);
-  /* Título nuevo "Diseñando con sentido humano." en 3 líneas
-     ("Diseñando" / "con sentido" / "humano."): la línea larga es
-     "con sentido" (11 caracteres). A ×0.88 cabía en una línea en 390px;
-     ahora es más grande: ×0.95 en desktop y ×0.88 en móvil (lo máximo
-     que cabe en 390px — en móvil no puede crecer más sin partir la
-     línea). El tamaño se redondea a múltiplos de 8px con round() (la
-     primera línea es el fallback para navegadores sin round()). Peso
-     regular (400): solo regular en ambas tipografías, nada de bold. El
-     line-height y el tracking son relativos (0.95 / -0.036em), así que
-     escalan solos. */
-  font-size: calc(var(--text-heading-5-5xl) * 0.95);
-  font-size: round(calc(var(--text-heading-5-5xl) * 0.95), 8px);
+  /* Título "Diseñando con sentido humano." en 3 líneas ("Diseñando" /
+     "con sentido" / "humano."): la línea larga es "con sentido" (11
+     caracteres). Tamaño fluido por ANCHO: 72px en 390px y 200px en
+     1440px, con tope en 200px; se redondea a múltiplos de 8px con
+     round() (la primera línea es el fallback para navegadores sin
+     round()). En móvil se le aplica además un tope por ALTO (ver la
+     media query): el menor entre este valor y lo que cabe en su span
+     de 4 filas. Peso regular (400): solo regular en ambas tipografías,
+     nada de bold. El line-height y el tracking son relativos (0.95 /
+     -0.036em), así que escalan solos. */
+  font-size: calc(24px + 12.2vw);
+  font-size: min(round(calc(24px + 12.2vw), 8px), 200px);
   line-height: var(--leading-heading-5-5xl);
   letter-spacing: var(--tracking-heading-5-5xl);
   font-weight: 400;
@@ -252,9 +239,10 @@
   align-self: end;
   gap: calc(var(--space-16) * var(--ui-scale-desktop, 1));
   width: fit-content;
-  /* 12px/16px: múltiplos de 4. El meta es más chico que el rol (16px). */
-  font-size: 12px;
-  line-height: 16px;
+  /* 16px/20px: el meta es más chico que el rol (20px). Solo 3 tamaños
+     en el hero: título 72/200, rol y párrafo 20, meta 16. */
+  font-size: 16px;
+  line-height: 20px;
   letter-spacing: var(--tracking-body-sm, 0);
   display: flex;
   text-shadow: 0px 2px 20px rgba(0, 0, 0, 1);
@@ -278,27 +266,30 @@ a.metaValue {
 a.metaValue:hover {
   opacity: 0.7;
 }
-/* CTA "Conectemos" en lugar del correo: píldora con borde, no texto plano. */
-a.metaValue.ctaButton {
-  border: 1px solid color-mix(in oklch, var(--white-primary) 45%, transparent);
-  border-radius: 999px;
-  padding: var(--space-3) var(--space-5);
-  margin-block: 0;
+/* CTA "Conectemos": TEXTO con icono de flecha, NO un botón (sin
+   píldora ni borde). El enlace sigue llevando a /contact. */
+a.metaValue.ctaLink {
   display: inline-flex;
   align-items: center;
-  align-self: flex-start;
+  gap: var(--space-2);
 }
-a.metaValue.ctaButton:hover {
-  opacity: 1;
-  background: color-mix(in oklch, var(--white-primary) 12%, transparent);
+a.metaValue.ctaLink:hover {
+  opacity: 0.7;
+}
+.ctaIcon {
+  /* Flecha ↘ de 16px, igual que el texto del meta. */
+  inline-size: 16px;
+  block-size: 16px;
+  flex: none;
 }
 
 .pitch {
   z-index: 1;
-  /* Rol y párrafo a 16px/20px (múltiplos de 8 y 4): más chicos que antes
-     (26-32px). El párrafo llena todo lo ancho del pitch. */
-  font-size: 16px;
-  line-height: 20px;
+  /* Rol y párrafo a 20px/25px: el párrafo llena todo lo ancho del
+     pitch. Solo 3 tamaños en el hero: título 72/200, rol y párrafo 20,
+     meta 16. */
+  font-size: 20px;
+  line-height: 25px;
   flex-direction: column;
   gap: 0;
   display: flex;
@@ -308,8 +299,8 @@ a.metaValue.ctaButton:hover {
   align-self: center;
 }
 .role {
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 20px;
+  line-height: 25px;
   letter-spacing: var(--tracking-heading-lg, -0.015em);
   color: var(--white-primary);
   align-items: center;
@@ -320,8 +311,7 @@ a.metaValue.ctaButton:hover {
   display: inline-flex;
 }
 .roleIcon {
-  /* La flecha ↘ más grande: 32px fijos (múltiplo de 8), antes 24px y
-     encima escalaba con el texto, que ahora es más chico (16px). */
+  /* La flecha ↘ de 32px fijos (múltiplo de 8). */
   --role-icon-size: 32px;
   inline-size: var(--role-icon-size);
   block-size: var(--role-icon-size);
@@ -329,8 +319,8 @@ a.metaValue.ctaButton:hover {
   flex: none;
 }
 .sub {
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 20px;
+  line-height: 25px;
   letter-spacing: var(--tracking-heading-lg, -0.015em);
   color: var(--white-primary);
   /* Sin max-width ni balance: el texto llena las columnas del pitch y la
@@ -339,43 +329,56 @@ a.metaValue.ctaButton:hover {
      derecha en desktop. */
 }
 
-/* Móvil: retícula de 4 columnas, gutter 16px, márgenes 16px. */
+/* Móvil: el nav SALE de la grid — la grid del hero (12 filas) empieza
+   DEBAJO de la barra del nav (56px). El hero sigue siendo 100svh.
+   Mapa de filas móvil: 1-2 hueco (2 filas debajo del nav), 3-6 título
+   (span de 4 filas), 7 hueco, 8 rol, 9-10 párrafo, 11 hueco, 12 meta.
+   Las columnas y los gutters vienen de la grid compartida (.site-grid). */
 @media (max-width: 1023px) {
-  .hero {
-    --page-margin: var(--space-4);
-  }
   .inner {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: var(--space-4);
-    row-gap: var(--space-4);
-    padding-block: var(--space-4);
+    /* La grid empieza debajo de la barra del nav: margen de página
+       (16px) + barra (56px) = 72px; abajo, un gutter (16px). */
+    --hero-grid-top: calc(var(--page-margin) + 56px);
+    padding-block: var(--hero-grid-top) var(--space-4);
   }
   .titleWrap {
     grid-column: 1 / 5;
-    grid-row: 2 / 5;
+    grid-row: 3 / 7;
   }
-  /* En móvil el título es ×0.88 (lo máximo que cabe "con sentido" en
-     una línea en 390px); en desktop es ×0.95. */
+  /* El título cabe en su span de 4 filas: su tamaño es el menor entre
+     el valor por ancho (fluido, redondeado a 8px) y lo que cabe en sus
+     4 filas a cada altura. La altura de 4 filas sale de la geometría
+     real del grid móvil: 100svh menos el offset superior
+     (--hero-grid-top) y el margen inferior (16px), menos 11 gutters de
+     16px, entre 12 filas, por 4 filas, más 3 gutters internos; entre
+     3 líneas a 0.95 de interlineado. A 390x716 da ~70px; en pantallas
+     más altas el tope por ancho (72px) manda. */
   .title55 {
-    font-size: calc(var(--text-heading-5-5xl) * 0.88);
-    font-size: round(calc(var(--text-heading-5-5xl) * 0.88), 8px);
+    font-size: calc(24px + 12.2vw);
+    font-size: min(
+      round(calc(24px + 12.2vw), 8px),
+      calc(
+        (
+          (
+            (100svh - var(--hero-grid-top) - var(--space-4) - 11 * var(--space-4)) /
+            12
+          ) * 4 + 3 * var(--space-4)
+        ) / 2.85
+      )
+    );
   }
   .pitch {
     grid-column: 1 / 5;
-    grid-row: 6 / 9;
-    align-self: center;
+    grid-row: 8 / 11;
+    align-self: start;
   }
   .role {
     /* Un solo gutter de separación con el párrafo (16px en móvil). */
     margin-block-end: var(--space-4);
   }
-  /* El rol y el párrafo ya son 16px en base (múltiplo de 8): a 16px el
-     rol nuevo ("UX/UI · Product Design · Branding") cabe en una línea
-     en 390px y el párrafo parte en 2 líneas llenando todo lo ancho.
-     Sin reducción en móvil. */
   .meta {
     grid-column: 1 / 5;
-    grid-row: 11 / 13;
+    grid-row: 12 / 13;
     align-self: end;
     /* Dos columnas en móvil: "Portafolio de trabajo / Jafet Pérez" a la
        izquierda y "Contact / Conectemos" a la derecha, con un gutter de
@@ -403,11 +406,11 @@ a.metaValue.ctaButton:hover {
      sí empiezan después del margen). Con el mismo valor que el
      padding-inline, el overlay cubre exactamente la caja de contenido. */
   inset-inline: var(--space-6);
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
+  /* Columnas y gutters de la grid compartida (.site-grid, en el JSX):
+     el overlay dibuja la misma grid que usa el contenido. Aquí solo van
+     las filas (12, como .inner) y los insets (= el padding-block de
+     .inner, para que cada celda calce con la del grid real). */
   grid-template-rows: repeat(12, minmax(0, 1fr));
-  column-gap: var(--space-6);
-  row-gap: var(--space-6);
   pointer-events: none;
   z-index: 0;
 }
@@ -415,44 +418,16 @@ a.metaValue.ctaButton:hover {
   border: 1px solid rgba(190, 255, 0, 0.55);
   background: rgba(190, 255, 0, 0.08);
 }
-.gridToggle {
-  position: fixed;
-  right: var(--space-4);
-  bottom: var(--space-4);
-  z-index: 60;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  border: 1px solid color-mix(in oklch, var(--white-primary) 40%, transparent);
-  border-radius: 999px;
-  background: rgba(10, 10, 14, 0.85);
-  color: var(--white-primary);
-  font-size: 13px;
-  line-height: 1;
-  padding: 10px 14px;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-}
-.gridToggle:hover {
-  background: rgba(10, 10, 14, 1);
-}
 @media (max-width: 1023px) {
   .gridOverlay {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: var(--space-4);
-    row-gap: var(--space-4);
-    inset-block: var(--space-4);
+    /* inset-block = el padding-block de .inner en móvil: la grid
+       empieza debajo de la barra del nav (--hero-grid-top) y termina
+       un gutter antes del borde inferior. Las columnas y los gutters
+       vienen de la grid compartida (.site-grid). */
+    inset-block: var(--hero-grid-top) var(--space-4);
     inset-inline: var(--space-4);
   }
   .gridOverlayCell:nth-child(n + 49) {
     display: none;
-  }
-}
-@media (max-width: 360px) {
-  /* En pantallas muy angostas "con sentido" a ×0.88 ya no cabe en una
-     línea; se baja a ×0.78 para que siga entrando. */
-  .title55 {
-    font-size: calc(var(--text-heading-5-5xl) * 0.78);
-    font-size: round(calc(var(--text-heading-5-5xl) * 0.78), 8px);
   }
 }

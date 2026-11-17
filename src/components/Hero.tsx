@@ -4,14 +4,20 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./hero.module.css";
 import { CharRise, WordFade } from "../lib/anim";
 import { px } from "../lib/paths";
+import DevBubble from "./DevBubble";
 import HeroBackground from "./HeroBackground";
 
 /** Hero 1:1 — fondo fluido (mesh gradient animado + fluted glass waves),
     título gigante por caracteres, pitch a la derecha y meta abajo. El fade
     del fondo y el parallax del ratón se gobiernan con variables CSS
-    (--hero-fade). Título, pitch y meta son celdas de UNA retícula
-    (12×12 desktop, 4×12 móvil, base 8): el botón flotante muestra la
-    retícula para verificar que cada elemento cae en su lugar. */
+    (--hero-fade). Título, pitch y meta son celdas de la RETÍCULA
+    COMPARTIDA del sitio (.site-grid en globals.css: 12 columnas desktop
+    / 4 móvil, gutters 24px / 16px, márgenes = gutter); en móvil el nav
+    sale de la grid y las 12 filas empiezan debajo de su barra (56px):
+    1-2 hueco, 3-6 título, 7 hueco, 8 rol, 9-10 párrafo, 11 hueco,
+    12 meta. La burbuja flotante de herramientas de desarrollo (arrastrable,
+    con su posición en localStorage) muestra la retícula para verificar que
+    cada elemento cae en su lugar; NO es parte del diseño. */
 export default function Hero() {
   const rootRef = useRef<HTMLElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -69,9 +75,9 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className={`container ${styles.inner}`}>
+      <div className={`container site-grid ${styles.inner}`}>
         {showGrid && (
-          <div className={styles.gridOverlay} aria-hidden="true">
+          <div className={`site-grid ${styles.gridOverlay}`} aria-hidden="true">
             {Array.from({ length: 144 }, (_, i) => (
               <div key={i} className={styles.gridOverlayCell} />
             ))}
@@ -117,7 +123,7 @@ export default function Hero() {
               />
             </svg>
           </p>
-          <p className={styles.sub}>Cuestiono lo habitual para crear soluciones con enfoque humano.</p>
+          <p className={styles.sub}>Diseñando con sentido humano. Desafío lo convencional para crear soluciones simples, útiles e intuitivas.</p>
         </div>
 
         <div className={styles.meta} data-parallax-pitch="">
@@ -137,32 +143,35 @@ export default function Hero() {
                 <WordFade words={["Contact"]} base="560ms" />
               </span>
               <a
-                className={`${styles.metaValue} ${styles.ctaButton}`}
+                className={`${styles.metaValue} ${styles.ctaLink}`}
                 href={px("/contact")}
                 style={{ "--anim-base": "650ms" } as React.CSSProperties}
               >
                 <span className="sr-only">Conectemos</span>
                 <WordFade words={["Conectemos"]} base="650ms" />
+                <svg
+                  className={styles.ctaIcon}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M7 7l10 10M17 8v9H8"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </a>
             </div>
           </div>
       </div>
 
-      <button
-        type="button"
-        className={styles.gridToggle}
-        aria-pressed={showGrid}
-        onClick={() => setShowGrid((v) => !v)}
-      >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-          <path
-            d="M1 1h5v5H1zM8 1h5v5H8zM1 8h5v5H1zM8 8h5v5H8z"
-            stroke="currentColor"
-            strokeWidth="1.2"
-          />
-        </svg>
-        {showGrid ? "Ocultar retícula" : "Ver retícula"}
-      </button>
+      {/* Burbuja flotante de herramientas de desarrollo (DevBubble.tsx):
+          el estado de la retícula vive aquí, la burbuja solo es dueña de
+          su UI flotante/arrastrable y su posición. */}
+      <DevBubble visible={showGrid} onToggle={() => setShowGrid((v) => !v)} />
     </section>
   );
 }

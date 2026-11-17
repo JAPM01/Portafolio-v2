@@ -264,7 +264,11 @@
   background: 0 0;
   border: 0;
   justify-content: center;
-  align-items: center;
+  /* Las líneas van apoyadas ABAJO, a la misma altura que la parte baja
+     de "Jafet Pérez" (el botón ya apoya abajo en la barra por el
+     align-items: flex-end del nav): antes iban centradas en el botón
+     de 44px y flotaban ~12px por encima del nombre. */
+  align-items: flex-end;
   margin-inline-end: calc((var(--burger-hit) - var(--burger-ink)) / -2);
   padding: 0;
   display: none;
@@ -272,6 +276,10 @@
 .burgerBox {
   inline-size: var(--burger-ink);
   block-size: 12px;
+  /* La línea inferior queda ~3px por encima de la parte baja de la
+     barra: la tinta de "Jafet Pérez" (16px, sin descendentes) termina
+     en su línea base, ~3px arriba del fondo de su caja de línea. */
+  margin-block-end: 3px;
   display: block;
   position: relative;
 }
@@ -495,6 +503,14 @@
     --ramp: var(--nav-m, 0);
     padding-inline: calc((var(--page-indent) - var(--page-margin)) * var(--nav-m, 0));
     inset-block-start: var(--page-margin);
+  }
+
+  .burgerBox {
+    /* En tablet la marca mide 24px (glifo --mk-h) y el wordmark de 16px
+       queda centrado 4px más arriba; su tinta termina 4px más arriba
+       que en teléfono, así que el burger sube 4px (7px en vez de 3px)
+       para seguir alineado con la parte baja de "Jafet Pérez". */
+    margin-block-end: 7px;
   }
 
   .nav[data-menu-open] {

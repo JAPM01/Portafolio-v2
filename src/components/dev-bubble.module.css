@@ -1,0 +1,66 @@
+/* Burbuja flotante de herramientas de desarrollo (NO es parte del diseño):
+   position fixed, sin impacto en el layout. Posición por defecto abajo a
+   la derecha pero ELEVADA sobre el meta: el meta mide ~48px y termina
+   16px antes del borde inferior, así que con bottom: 88px la burbuja
+   queda ~24px por encima de su borde superior y no tapa "Conectemos".
+   Cuando se arrastra, su posición pasa a left/top en línea (ver
+   DevBubble.tsx) y se guarda en localStorage. Contenedor extensible: hoy
+   solo lleva el toggle de la retícula; más herramientas van como hermanas
+   de .devToolsToggle dentro de este contenedor. */
+.devTools {
+  position: fixed;
+  right: var(--space-4);
+  bottom: 88px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid color-mix(in oklch, var(--white-primary) 40%, transparent);
+  border-radius: 999px;
+  background: rgba(10, 10, 14, 0.85);
+  color: var(--white-primary);
+  padding: 8px 12px 8px 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.devTools:hover {
+  background: rgba(10, 10, 14, 1);
+}
+.devToolsDragging {
+  cursor: grabbing;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+/* Agarre de arrastre (solo affordance visual; toda la burbuja se arrastra). */
+.devToolsGrip {
+  display: inline-flex;
+  align-items: center;
+  color: color-mix(in oklch, var(--white-primary) 55%, transparent);
+}
+/* Toggle de la retícula dentro de la burbuja. El clic lo gestiona el
+   contenedor (ver DevBubble.tsx, el pointer capture hace que el click
+   caiga en él); el botón aporta semántica, foco y aria-pressed. */
+.devToolsToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+.devToolsToggle[aria-pressed="false"] {
+  opacity: 0.55;
+}
+.devToolsToggle:focus-visible {
+  outline: 2px solid var(--white-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

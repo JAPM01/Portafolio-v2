@@ -424,6 +424,32 @@ svg {
   padding-inline: var(--page-indent);
   margin-inline: auto;
 }
+/* ---- Retícula del sitio (sistema compartido) ----
+   La grid real: 12 columnas en desktop, 4 en móvil (12 se divide en 2,
+   3, 4 y 6); gutters 24px / 16px; márgenes = gutter en los 4 lados.
+   Antes vivía en hero.module.css y solo el hero la usaba; ahora es el
+   sistema que rige todo el sitio y cada sección la USA (sus placements
+   de filas/columnas quedan en su propio módulo). Las FILAS no son parte
+   del sistema compartido: cada sección define las suyas (el hero usa
+   12 filas 1fr). El margen horizontal llega por .container
+   (padding-inline: var(--page-margin)) con --page-margin fijado al
+   gutter aquí; el vertical es el padding-block de cada sección. */
+.site-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--space-6);
+  row-gap: var(--space-6);
+  /* Margen horizontal = gutter. */
+  --page-margin: var(--space-6);
+}
+@media (max-width: 1023px) {
+  .site-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: var(--space-4);
+    row-gap: var(--space-4);
+    --page-margin: var(--space-4);
+  }
+}
 .sr-only {
   clip-path: inset(50%);
   white-space: nowrap;

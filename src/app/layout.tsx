@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import RotatePrompt from "../components/RotatePrompt";
 import "./globals.css";
 
@@ -13,6 +14,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         {children}
         <RotatePrompt />
+        {/* Runtime del efecto fluted-glass del hero (aidesigner.ai), una vez por app. */}
+        <Script
+          src="https://cdn.aidesigner.ai/effects/runtime/v1.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
