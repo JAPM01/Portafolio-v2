@@ -176,6 +176,14 @@ export default function FlowGradientBackground({
 
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches
     const mouse = {x: 0.5, y: 0.5, tx: 0.5, ty: 0.5}
+    // Impulso del flujo por velocidad del puntero: al mover el mouse o
+    // deslizar el dedo, el líquido se remueve más (el flujo se
+    // intensifica) y te sigue; al parar, decae a lo normal. Funciona
+    // IGUAL en mouse y touch porque ambos llegan por PointerEvent.
+    let boost = 0
+    let lastPX = 0.5
+    let lastPY = 0.5
+    let lastPT = 0
     let drift = 0
     let last = 0
     let frame = 0
@@ -184,22 +192,18 @@ export default function FlowGradientBackground({
     const draw = (now: number) => {
       frame = 0
       const s = live.current
-      // Tope de 30 fps: el mesh se mueve lento, 30 fps se ve fluido y
-      // reduce el trabajo de GPU a la mitad (batería + rendimiento).
-      if (now - last < 33 && last !== 0) {
-        if (visible && !still) frame = requestAnimationFrame(draw)
-        return
-      }
       const dt = Math.min(now - last || 16.7, 50)
       last = now
       const k = 1 - Math.pow(1 - s.follow, dt / 16.7)
       mouse.x += (mouse.tx - mouse.x) * k
       mouse.y += (mouse.ty - mouse.y) * k
+      // El impulso decae ~10% por frame hasta volver a lo normal.
+      boost *= Math.pow(0.9, dt / 16.7)
       if (!still) drift += (dt / 1000) * 0.06 * s.speed
       gl.uniform2f(uRes, canvas.width, canvas.height)
       gl.uniform2f(uMouse, mouse.x, mouse.y)
       gl.uniform1f(uTime, drift)
-      gl.uniform1f(uFlow, s.flow)
+      gl.uniform1f(uFlow, s.flow * (1 + boost))
       uColors.forEach((loc, i) => gl.uniform3f(loc, ...rgb(s.colors[i])))
       gl.drawArrays(gl.TRIANGLES, 0, 3)
       if (visible && !still) frame = requestAnimationFrame(draw)
@@ -226,10 +230,25 @@ export default function FlowGradientBackground({
     io.observe(canvas)
 
     // the cursor anywhere over the canvas (read off the window, so content on top stays clickable)
+    // Mouse y touch usan EL MISMO handler (PointerEvent): no hay
+    // divergencia de efectos entre modos. La velocidad del puntero
+    // (mouse o dedo) impulsa el flujo: al deslizar, el líquido se
+    // remueve y te sigue; al parar, vuelve a lo normal.
     const onMove = (e: PointerEvent) => {
       const r = canvas.getBoundingClientRect()
-      mouse.tx = (e.clientX - r.left) / r.width
-      mouse.ty = 1 - (e.clientY - r.top) / r.height
+      const px = (e.clientX - r.left) / r.width
+      const py = 1 - (e.clientY - r.top) / r.height
+      const now = performance.now()
+      if (lastPT !== 0) {
+        const dt = Math.max(now - lastPT, 1)
+        const v = Math.hypot(px - lastPX, py - lastPY) / dt // unidades UV por ms
+        boost = Math.min(v * 220, 1.6)
+      }
+      lastPX = px
+      lastPY = py
+      lastPT = now
+      mouse.tx = px
+      mouse.ty = py
       if (still) start()
     }
     // En touch, un tap debe reaccionar al instante (no solo al arrastrar):
