@@ -8,7 +8,7 @@ import styles from "./site-nav.module.css";
 /** liquidGL v3.0: official menu-bar bevel geometry with neutral RGB
  * sampling. Using aberration=0 during Android validation disables per-channel
  * offset samples while preserving true refraction, specular and fluid touch.
- * Keep one instance and a stable #main snapshot across page scroll.
+ * Keep one instance with the upstream-recommended body snapshot across page scroll.
  */
 export default function HeaderLiquidGL({ children }: { children: ReactNode }) {
   const lensRef = useRef<HTMLDivElement>(null);
@@ -25,15 +25,17 @@ export default function HeaderLiquidGL({ children }: { children: ReactNode }) {
 
         const result = liquidGL({
           target: "#jpm-preview-header1-lens",
-          snapshot: "#main",
-          engine: "auto",
+          snapshot: "body",
+          // Mobile Chromium: prefer the stable WebGL2 shader backend.
+          // This avoids WebGPU-specific capture/edge artifacts on Android.
+          engine: window.innerWidth < 768 ? "webgl2" : "auto",
           resolution: window.innerWidth < 768 ? 1.25 : 1.6,
           zIndex: 9998,
           content: false,
-          refraction: 0.012,
+          refraction: 0.006,
           aberration: 0,
-          bevelDepth: 0.014,
-          bevelWidth: 0.071,
+          bevelDepth: 0.006,
+          bevelWidth: 0.055,
           frost: 0,
           shadow: false,
           specular: true,
@@ -44,18 +46,19 @@ export default function HeaderLiquidGL({ children }: { children: ReactNode }) {
           interactionStrength: 0.44,
           interactionRadius: 0.35,
           interactionViscosity: 0.65,
+          magnify: 1,
           tint: null,
           on: {
             init() {
-              if (active) setHeaderPreviewStatus("liquidGL: inicializado (motor auto)");
+              if (active) setHeaderPreviewStatus("liquidGL: lente lista · " + (window.innerWidth < 768 ? "WebGL2" : "automático"));
             },
           },
         });
         lens = Array.isArray(result) ? result[0] : result;
         {
           try {
-            // Register the moving hero shader once, while the snapshot root
-            // remains stable throughout scrolling.
+            // Register the moving hero shader once. The body snapshot
+            // stays stable and the navbar is explicitly ignored by rasterization.
             const withDynamics = liquidGL as typeof liquidGL & { registerDynamic?: (selector: string) => void };
             withDynamics.registerDynamic?.("[data-hero-bg-source] canvas");
           } catch {

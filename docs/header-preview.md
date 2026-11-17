@@ -27,7 +27,7 @@ La aberración cromática es un efecto opcional, **no un requisito para producir
 ## Continuidad del efecto
 
 - El objetivo óptico ocupa exactamente el contenedor del header.
-- El snapshot es `#main`, una fuente estable que excluye el propio header para evitar autocaptura. El proyecto usa `<main id="main">`.
+- El snapshot es `body`, una fuente estable que excluye el propio header para evitar autocaptura. El proyecto usa `<main id="main">`.
 - Se registra el canvas dinámico del hero mediante `liquidGL.registerDynamic()` después de inicializar la lente.
 - No se emplean keys dependientes del scroll ni cambios de fuente al cambiar de sección.
 - Al inicio del hero no hay píldora; al desplazarse se monta la lente y queda activa mientras se continúa descendiendo.
@@ -36,3 +36,16 @@ La aberración cromática es un efecto opcional, **no un requisito para producir
 ## Validación en dispositivo
 
 Revisar que el borde sea neutral, sin verdes/amarillos; que el texto detrás no se triplique; que exista distorsión refractiva única; que los iconos permanezcan visibles y táctiles; y que no se remonte la lente al cambiar de sección. La compilación valida la integración de código, no el efecto óptico en el teléfono.
+
+## Ajuste de artefactos sobre texto y bajo contraste
+
+- Captura `body` como recomienda el README de liquidGL, en lugar de `#main`.
+  El header fijo lleva `data-liquid-ignore` para no capturarse a sí mismo.
+- En móvil, se solicita `engine: "webgl2"` (con fallback automático
+  WebGL1/CSS) para evitar una discrepancia del backend WebGPU en Android.
+- Aberración cromática `0` y magnificación explícita `1`.
+  `refraction: 0.006`, `bevelDepth: 0.006`, `bevelWidth: 0.055`:
+  menor desplazamiento para evitar la apariencia de caracteres repetidos.
+- Los contornos se definen mediante un reflejo neutro semitransparente,
+  separado del shader, para mantener visibilidad en superficies negras.
+- Aún debe verificarse visualmente sobre texto y fondo oscuro en Chrome Android.

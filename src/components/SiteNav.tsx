@@ -227,6 +227,7 @@ export default function SiteNav() {
     <header
       className={styles.header + (scrolled ? " " + styles.scrolled : "") + (overHero ? " " + styles.overHero : "") + (!showGlass ? " " + styles.heroResting : "")}
       ref={headerRef}
+      data-liquid-ignore=""
     >
       <JpmGlassOptics />
       <div
