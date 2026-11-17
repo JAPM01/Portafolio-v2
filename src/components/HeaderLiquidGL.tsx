@@ -147,7 +147,16 @@ export default function HeaderLiquidGL({
       refresh(700);
     };
     const onLanguage = () => refresh(450);
-    const themeObserver = new MutationObserver(() => refresh(500));
+    const themeObserver = new MutationObserver(() => {
+      // The icons must follow the new theme at once. The snapshot
+      // re-capture takes seconds on this long page, so clear the
+      // snapshot-based foreground overrides now (the CSS theme color
+      // applies instantly) and let the fresh capture re-tune them after.
+      const header = lensRef.current?.closest("header");
+      header?.style.removeProperty("--header-logo-foreground");
+      header?.style.removeProperty("--header-actions-foreground");
+      refresh(100);
+    });
     themeObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["data-theme", "lang"],
