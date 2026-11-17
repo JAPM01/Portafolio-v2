@@ -14,17 +14,14 @@
   }
 }
 
-/* Respeta exactamente site-grid: 12 columnas, gutter 24px y
-   margen = gutter en desktop; 4 columnas, gutter 16px en mobile.
-   Esta sección define únicamente la ocupación de esas columnas. */
 .layout {
   align-items: center;
-  row-gap: var(--section-columns-desktop);
+  row-gap: var(--section-columns-mobile);
 }
 
 .headingBlock {
   grid-column: 1 / -1;
-  min-width: 0;
+  min-inline-size: 0;
 }
 
 .eyebrow {
@@ -40,12 +37,14 @@
 .editorial,
 .diagram,
 .copyColumn {
-  min-width: 0;
+  min-inline-size: 0;
   align-self: center;
 }
 
-.editorial {
-  grid-column: 1 / 4;
+.editorial,
+.diagram,
+.copyColumn {
+  grid-column: 1 / -1;
 }
 
 .thoughts {
@@ -67,11 +66,8 @@
 }
 
 .diagram {
-  grid-column: 4 / 9;
-}
-
-.copyColumn {
-  grid-column: 9 / 13;
+  justify-self: center;
+  inline-size: 100%;
 }
 
 .copy {
@@ -85,8 +81,8 @@
 }
 
 .word {
-  display: inline-block;
   white-space: nowrap;
+  display: inline-block;
 }
 
 .toneGray {
@@ -116,24 +112,40 @@
   display: inline-block;
 }
 
-@media (max-width: 1023px) {
+/* 12 columnas existentes. Una columna completa de separación en
+   cada lado: 3 + 1 + 4 + 1 + 3 = 12; sin gap/width ad hoc. */
+@media (min-width: 1440px) {
   .layout {
-    row-gap: var(--section-columns-mobile);
+    row-gap: var(--section-columns-desktop);
   }
+  .editorial { grid-column: 1 / 4; }
+  .diagram { grid-column: 5 / 9; }
+  .copyColumn { grid-column: 10 / 13; }
+}
 
-  .headingBlock,
-  .editorial,
-  .diagram,
-  .copyColumn {
-    grid-column: 1 / -1;
+/* Pantalla de laptop: 12 columnas, pero sin comprimir un párrafo
+   de 28px en tres columnas estrechas. Se reserva una columna
+   completa entre texto izquierdo y diagrama. */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .layout {
+    row-gap: var(--section-columns-desktop);
   }
+  .editorial { grid-column: 1 / 5; }
+  .diagram { grid-column: 6 / 13; }
+  .copyColumn { grid-column: 3 / 11; }
+}
 
+/* La retícula global es de cuatro columnas en tablet: los bloques
+   se apilan para conservar ancho legible, nunca se fuerzan cinco
+   pistas dentro de cuatro. */
+@media (max-width: 1023px) {
   .diagram {
-    justify-self: center;
-    inline-size: 100%;
+    grid-column: 1 / -1;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .letter { --t: 1; }
+  .letter {
+    --t: 1;
+  }
 }

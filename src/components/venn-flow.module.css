@@ -1,195 +1,51 @@
 .root {
   inline-size: 100%;
   min-inline-size: 0;
-  --diagram-cycle: var(--motion-diagram-cycle);
 }
 
 .svg {
-  display: block;
   inline-size: 100%;
   block-size: auto;
+  display: block;
   overflow: visible;
 }
 
-.ring {
+.circle {
   fill: none;
   stroke: var(--border-default);
   stroke-width: var(--border-width);
   vector-effect: non-scaling-stroke;
 }
 
-.lens {
-  pointer-events: none;
-}
-
-.guide {
-  fill: none;
-  stroke: var(--border-subtle);
-  stroke-width: var(--border-width);
-  stroke-dasharray: var(--space-1) var(--space-2);
-  vector-effect: non-scaling-stroke;
-}
-
-.centerPoint {
-  fill: var(--text-secondary);
-}
-
-.label,
-.outcomeLabel {
+.circleLabel,
+.resultLabel {
   font-family: var(--font-display);
   font-weight: var(--type-h2-weight);
-  text-transform: none;
+  font-size: var(--type-h5-size);
   fill: var(--text-primary);
   dominant-baseline: middle;
 }
 
-.label {
-  font-size: var(--type-h5-size);
-}
-
-.outcomeLabel {
+.resultLabel {
   font-family: var(--font-body);
-  font-size: var(--type-body-size);
-  fill: var(--text-secondary);
-  dominant-baseline: auto;
+  font-size: var(--type-caption-size);
+  font-weight: var(--weight-body-lg);
+  fill: var(--text-inverse);
 }
 
-/* El trazo es un fragmento de luz que se desplaza, no un círculo
-   permanentemente iluminado. Tres capas reproducen la profundidad
-   del flujo del hero usando exactamente sus colores SVG compartidos. */
-.current {
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 170 830;
-  stroke-dashoffset: 170;
-  opacity: 0;
-  animation-duration: var(--diagram-cycle);
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-play-state: paused;
-}
-
-.aura {
-  stroke-opacity: .4;
-  stroke-width: var(--space-6);
-  filter: blur(var(--space-2));
-  opacity: 0;
-}
-
-.body {
-  stroke-opacity: .76;
-  stroke-width: var(--space-2);
-  filter: blur(var(--space-1));
-}
-
-.core {
-  stroke-width: var(--space-1);
-}
-
-.approach .current {
-  animation-name: approachTravel;
-}
-
-.outcome .current {
-  animation-name: outcomeTravel;
-}
-
-.convergencePulse,
-.resultBloom,
-.resultRing,
-.resultPoint {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation-duration: var(--diagram-cycle);
-  animation-iteration-count: infinite;
-  animation-play-state: paused;
-}
-
-.convergencePulse {
-  opacity: 0;
-  animation-name: convergenceFlash;
-}
-
-.resultBloom {
-  opacity: 0;
-  animation-name: finishedBloom;
-}
-
-.resultRing {
-  fill: none;
-  stroke: var(--mesh-cyan);
+.pulseRing {
   stroke-width: var(--border-width);
   vector-effect: non-scaling-stroke;
-  opacity: 0;
-  animation-name: finishedRing;
 }
 
-.resultPoint {
-  fill: var(--mesh-ice);
-  opacity: .65;
-  animation-name: finishedPoint;
+.shaderHost,
+.shaderCanvas {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
 }
 
-.root[data-flow-visible="true"] .current,
-.root[data-flow-visible="true"] .convergencePulse,
-.root[data-flow-visible="true"] .resultBloom,
-.root[data-flow-visible="true"] .resultRing,
-.root[data-flow-visible="true"] .resultPoint {
-  animation-play-state: running;
-}
-
-/* Dos etapas físicamente separadas, sincronizadas por la misma
-   duración: contornos y cruce → convergencia → salida → pulso. */
-@keyframes approachTravel {
-  0%, 7% { stroke-dashoffset: 170; opacity: 0; }
-  10% { opacity: .95; }
-  62% { stroke-dashoffset: -830; opacity: .95; }
-  66%, 100% { stroke-dashoffset: -830; opacity: 0; }
-}
-
-@keyframes outcomeTravel {
-  0%, 66% { stroke-dashoffset: 170; opacity: 0; }
-  69% { opacity: .95; }
-  84% { stroke-dashoffset: -830; opacity: .95; }
-  88%, 100% { stroke-dashoffset: -830; opacity: 0; }
-}
-
-@keyframes convergenceFlash {
-  0%, 59%, 100% { opacity: 0; transform: scale(.55); }
-  65% { opacity: .92; transform: scale(1); }
-  73% { opacity: 0; transform: scale(1.55); }
-}
-
-@keyframes finishedBloom {
-  0%, 81%, 100% { opacity: 0; transform: scale(.6); }
-  87% { opacity: .95; transform: scale(1); }
-  96% { opacity: 0; transform: scale(1.7); }
-}
-
-@keyframes finishedRing {
-  0%, 82%, 100% { opacity: 0; transform: scale(.5); }
-  87% { opacity: 1; transform: scale(1); }
-  97% { opacity: 0; transform: scale(2.6); }
-}
-
-@keyframes finishedPoint {
-  0%, 81%, 100% { opacity: .65; transform: scale(1); }
-  86% { opacity: 1; transform: scale(1.8); }
-  95% { opacity: .65; transform: scale(1); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .current,
-  .convergencePulse,
-  .resultBloom,
-  .resultRing,
-  .resultPoint {
-    animation: none !important;
-  }
-  .current,
-  .convergencePulse,
-  .resultBloom,
-  .resultRing { opacity: 0; }
-  .resultPoint { opacity: 1; transform: none; }
+.shaderHost {
+  overflow: hidden;
+  pointer-events: none;
 }
