@@ -128,7 +128,7 @@ export default function SiteNav() {
       <div className={styles.glassStage}>
         <LiquidGlass
           className={styles.glassRoot}
-          style={{ position: "absolute", width: "100%", height: "100%" }}
+          style={{ position: "absolute", top: "50%", left: "50%", width: "100%", height: "100%" }}
           padding="0px"
           cornerRadius={999}
           displacementScale={48}
