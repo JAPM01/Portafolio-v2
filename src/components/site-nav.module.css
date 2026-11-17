@@ -216,14 +216,12 @@
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  border: 1px solid color-mix(in srgb, var(--header-foreground) 22%, transparent);
   border-radius: 999px;
-  box-shadow: 0 7px 18px color-mix(in srgb, var(--brand-gray-1) 10%, transparent);
-  transition: border-color 180ms ease;
+  /* GPU shader renders one luminance-adaptive rim along its deformed mask.
+     Do not add a second fixed CSS border/shadow around an elastic lens. */
 }
 .previewGlassInactive {
-  border-color: transparent;
-  box-shadow: none;
+  pointer-events: none;
 }
 .header.heroResting > canvas { opacity: 0 !important; }
 .previewLiquidLens {
@@ -248,6 +246,4 @@
   color: var(--header-foreground);
   mix-blend-mode: normal;
 }
-@media (prefers-reduced-motion: reduce) {
-  .previewGlassRoot { transition: none; }
-}
+/* No CSS geometry or visual border changes on reduced-motion devices. */

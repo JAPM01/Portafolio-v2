@@ -103,3 +103,17 @@ Capturas de Chrome Android sobre fondo negro, fondo blanco, textos
 grandes y secciones intermedias. Comprobar que no exista texto
 desplazado ni controles invisibles, y que el refresco de la captura no
 provoque saltos o retardos perceptibles.
+
+## Borde adaptativo sin segunda silueta
+
+El borde CSS de `previewGlassRoot` también era incorrecto: la
+interacción `fluid` puede deformar la máscara GPU, pero el contorno
+estático seguía dibujando una píldora de tamaño original. Esto explica
+que aparecieran dos contornos desplazados sobre fondos claros.
+
+Se eliminó la geometría CSS adicional. Ambos shaders ahora calculan un
+reflejo de borde `rimWeight = pow(edge, 8) * 0.28`, adaptado a la
+luminosidad de la imagen refractada. La máscara, el radio y la
+elasticidad proceden de una única superficie GPU. En fondos negros,
+el borde gana algo de luminosidad; en blancos se oscurece sutilmente.
+No se utilizan otros colores base de la paleta.

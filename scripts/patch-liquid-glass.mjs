@@ -65,5 +65,28 @@ replaceOnce(
   "refrCol = sampleSource(sampleUV); // JPM: WGSL single-tap sampling without frost blur",
 );
 
+// Use the GPU's *deformed silhouette*, not a second static CSS outline,
+// to show a delicate rim over both white and black surfaces.
+replaceOnce(
+  "GLSL adaptive rim",
+  "final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);",
+  [
+    "final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);",
+    "float rimLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));",
+    "float rimWeight = pow(edge, 8.0) * 0.28;",
+    "final.rgb = clamp(final.rgb + vec3(0.45 - rimLum) * rimWeight, vec3(0.0), vec3(1.0));",
+  ].join("\n"),
+);
+replaceOnce(
+  "WGSL adaptive rim",
+  "finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);",
+  [
+    "finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);",
+    "let rimLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));",
+    "let rimWeight = pow(edge, 8.0) * 0.28;",
+    "finalCol = vec4<f32>(clamp(finalCol.rgb + vec3<f32>(0.45 - rimLum) * rimWeight, vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);",
+  ].join("\n"),
+);
+
 await writeFile(modulePath, source, "utf8");
 console.log("liquidGL optical patch verified (GLSL + WGSL; " + modified + " replacements).");
