@@ -11,6 +11,7 @@
   }
 }
 
+/* Manifiesto a todo lo ancho: una sola columna, sin retrato. */
 .grid {
   gap: var(--space-12);
   grid-template-columns: 1fr;
@@ -21,42 +22,9 @@
 @media (min-width: 1024px) {
   .grid {
     gap: var(--space-16);
-    grid-template-columns: minmax(0, 39fr) minmax(0, 61fr);
+    grid-template-columns: 1fr;
     align-items: start;
   }
-}
-
-.card {
-  aspect-ratio: 1;
-  border-radius: var(--radius-xs);
-  background: var(--surface-raised);
-  --photo-travel: 0px;
-  position: relative;
-  overflow: hidden;
-}
-
-@media (min-width: 1024px) {
-  .card {
-    --photo-travel: var(--parallax-travel-photo);
-  }
-}
-
-.photo {
-  --ptr-travel: var(--parallax-travel-pointer);
-  width: calc(100% + var(--ptr-travel) * 2);
-  height: calc(100% + var(--photo-travel) + var(--ptr-travel) * 2);
-  object-fit: cover;
-  max-inline-size: none;
-  display: block;
-  position: absolute;
-  inset-block-start: calc((var(--photo-travel) * 0.5 + var(--ptr-travel)) * -1);
-  inset-inline-start: calc(var(--ptr-travel) * -1);
-  transform: translate3d(
-    calc(var(--ptr-travel) * var(--ptr-x, 0)),
-    calc(var(--photo-travel) * (0.5 - var(--p, 0)) + var(--ptr-travel) * var(--ptr-y, 0)),
-    0
-  );
-  will-change: transform;
 }
 
 .copy {
@@ -88,46 +56,8 @@
   display: inline-block;
 }
 
-.icon {
-  --g: clamp(0, (var(--p, 0) - var(--at) / var(--n)) * var(--n), 1);
-  inline-size: calc(var(--g, 1) * 0.8em);
-  vertical-align: -0.06em;
-  block-size: 0.8em;
-  color: var(--text-primary);
-  opacity: var(--g, 1);
-  scale: calc(0.4 + 0.6 * var(--g, 1));
-  margin-inline-start: calc(var(--g, 1) * 0.16em);
-  display: inline-block;
-  overflow: hidden;
-}
-
-.icon svg {
-  block-size: 0.8em;
-  inline-size: 0.8em;
-  display: block;
-}
-
-/* Reveal de la tarjeta al entrar al viewport. */
-.card[data-reveal] {
-  --reveal-r: var(--radius-xs);
-  opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 0.9s ease,
-    transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.card[data-revealed] {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 @media (pointer: coarse) {
-  .copy,
-  .photo {
+  .copy {
     transform: none;
-  }
-  .card {
-    --photo-travel: 0px;
   }
 }
