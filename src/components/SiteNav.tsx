@@ -49,6 +49,13 @@ function subscribeScroll(listener: () => void) {
 }
 
 function isScrolled() {
+  // On mobile/tablet the header only docks to the bottom once about one
+  // grid row of the hero has scrolled out of view (the hero is 100svh
+  // with 12 rows, so one row is innerHeight / 12), so the top-to-bottom
+  // move is not instantaneous. On desktop the pill appears sooner.
+  if (window.innerWidth <= 1023) {
+    return window.scrollY > window.innerHeight / 12;
+  }
   return window.scrollY > 24;
 }
 

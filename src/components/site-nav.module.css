@@ -161,23 +161,28 @@
    clearance, like the iOS 26 liquid-glass tab bar. Desktop keeps the
    top pill. The dropdown opens upward so it never runs off-screen. */
 @media (max-width: 1023px) {
+  /* Mobile/tablet: the header STARTS at the top like desktop (resting,
+     full-width, transparent) and only docks to the bottom as a pill
+     once the user has scrolled about one grid row (see isScrolled in
+     SiteNav.tsx). The move is not instantaneous: it happens after that
+     scroll threshold, not on the first pixel. */
   .header {
+    transition: inset-block-start 240ms ease, inset-block-end 240ms ease, width 280ms cubic-bezier(.22, 1, .36, 1);
+  }
+  /* Scrolled: the pill docks to the bottom, in the natural thumb zone,
+     with safe-area clearance (fluid.glass bottom bar sits ~48px up on
+     desktop; on phones the pill floats just above the bottom edge). */
+  .scrolled {
     inset-block-start: auto;
     inset-block-end: max(12px, env(safe-area-inset-bottom, 12px));
-    transition: inset-block-end 240ms ease, width 280ms cubic-bezier(.22, 1, .36, 1);
   }
-  .scrolled { inset-block-start: auto; inset-block-end: max(8px, env(safe-area-inset-bottom, 8px)); }
-  /* Always a pill at the bottom (even at rest): a bottom tab bar is
-     always reachable, and a full-width transparent bar would cover the
-     hero meta. The glass canvas stays visible in the resting state. */
-  .heroResting {
-    inset-block-start: auto;
-    inset-block-end: max(12px, env(safe-area-inset-bottom, 12px));
-    width: min(560px, calc(100% - 24px));
-  }
-  .heroResting .nav { padding-inline: 17px; }
-  .header.heroResting > canvas { opacity: 1 !important; }
-  .dropdown {
+  /* Resting: same as desktop — top, full-width, transparent, glass
+     hidden. The hero meta stays on row 11 so it clears the pill once
+     the user scrolls and the pill appears at the bottom. */
+  .heroResting { inset-block-start: 12px; }
+  /* The dropdown opens away from the screen edge: downward while the
+     header is at the top, upward once it has docked to the bottom. */
+  .scrolled .dropdown {
     inset-block-start: auto;
     inset-block-end: calc(100% + 12px);
   }
@@ -238,12 +243,3 @@
   background: color-mix(in srgb, currentColor 24%, transparent);
 }
 /* No CSS geometry or visual border changes on reduced-motion devices. */
-
-/* The base `.header.heroResting > canvas { opacity: 0 }` sits after the
-   <=1023px block, so it wins over the bottom-nav override above. This
-   later rule restores the glass at rest on mobile/tablet: the pill must
-   be visible at the bottom from the very first frame, never a transparent
-   full-width bar that only becomes a pill once the user scrolls. */
-@media (max-width: 1023px) {
-  .header.heroResting > canvas { opacity: 1 !important; }
-}
