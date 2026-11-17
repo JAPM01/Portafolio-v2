@@ -400,14 +400,12 @@ a.metaValue.ctaLink:hover {
       )
     );
   }
-  /* Título en inglés en móvil: 56px fijos. La línea "with a human"
-     mide 420px a 70px y la columna solo tiene 358px, así que la página
-     quedaba de 436px de ancho y había que hacer scroll horizontal para
-     ver las últimas letras ("a" y "n" de "human"). A 56px la línea
-     mide ~337px y cabe. En español se mantiene el tamaño aprobado
-     (70px). */
+  /* Inglés en móvil: 64px y tracking compacto para que
+     "with a human" quepa dentro de la columna de 358px, sin
+     reducir la jerarquía visual frente al título en español. */
   :global(html[lang="en"]) .title55 {
-    font-size: 56px;
+    font-size: 64px;
+    letter-spacing: -0.08em;
   }
   .pitch {
     grid-column: 1 / 5;
