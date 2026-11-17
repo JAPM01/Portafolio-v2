@@ -42,7 +42,6 @@ const CONTENT = {
   es: {
     eyebrow: "01 / ENFOQUE",
     heading: "Mi forma de trabajar",
-    leftLabel: "UNA FORMA DE PENSAR",
     thoughts: [
       "Entender a las personas.",
       "Cuestionar lo convencional.",
@@ -52,7 +51,6 @@ const CONTENT = {
   en: {
     eyebrow: "01 / APPROACH",
     heading: "How I work",
-    leftLabel: "A WAY OF THINKING",
     thoughts: [
       "Understand people.",
       "Challenge conventions.",
@@ -122,11 +120,10 @@ export default function Intro() {
       <div className={`container site-grid ${styles.layout}`}>
         <div className={styles.headingBlock}>
           <span className={styles.eyebrow}>{t.eyebrow}</span>
-          <h2 className={styles.heading} id="intro-heading">{t.heading}</h2>
+          <h2 className="type-h2" id="intro-heading">{t.heading}</h2>
         </div>
 
         <div className={styles.editorial}>
-          <span className={styles.editorialLabel}>{t.leftLabel}</span>
           <div className={styles.thoughts}>
             {t.thoughts.map((thought) => (
               <p className={styles.thought} key={thought}>{thought}</p>

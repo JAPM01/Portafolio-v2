@@ -1,174 +1,195 @@
 .root {
-  width: 100%;
-  max-width: 580px;
-  margin-inline: auto;
-  min-width: 0;
-  position: relative;
-  --venn-line: color-mix(in srgb, var(--text-primary) 23%, transparent);
-  --venn-guide: color-mix(in srgb, var(--text-primary) 15%, transparent);
-  --venn-label: var(--text-secondary);
+  inline-size: 100%;
+  min-inline-size: 0;
+  --diagram-cycle: var(--motion-diagram-cycle);
 }
 
 .svg {
   display: block;
-  width: 100%;
-  height: auto;
+  inline-size: 100%;
+  block-size: auto;
   overflow: visible;
-  isolation: isolate;
 }
 
-.baseCircle {
-  stroke: var(--venn-line);
+.ring {
   fill: none;
-  stroke-width: 1.15px;
+  stroke: var(--border-default);
+  stroke-width: var(--border-width);
   vector-effect: non-scaling-stroke;
 }
 
-.resultGuide {
-  stroke: var(--venn-guide);
+.lens {
+  pointer-events: none;
+}
+
+.guide {
   fill: none;
-  stroke-width: 1px;
-  stroke-dasharray: 3 7;
+  stroke: var(--border-subtle);
+  stroke-width: var(--border-width);
+  stroke-dasharray: var(--space-1) var(--space-2);
   vector-effect: non-scaling-stroke;
 }
 
-.intersectionOutline {
-  fill: none;
-  stroke: var(--venn-line);
-  stroke-dasharray: 2 5;
-  stroke-width: 1px;
-  vector-effect: non-scaling-stroke;
+.centerPoint {
+  fill: var(--text-secondary);
 }
 
-.intersectionCore {
-  fill: var(--brand-blue-3);
-  opacity: .55;
-}
-
-.diagramLabel,
-.resultLabel {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: .09em;
-  fill: var(--venn-label);
-}
-
-.resultLabel {
+.label,
+.outcomeLabel {
+  font-family: var(--font-display);
+  font-weight: var(--type-h2-weight);
+  text-transform: none;
   fill: var(--text-primary);
+  dominant-baseline: middle;
 }
 
-.flowLayer {
+.label {
+  font-size: var(--type-h5-size);
+}
+
+.outcomeLabel {
+  font-family: var(--font-body);
+  font-size: var(--type-body-size);
+  fill: var(--text-secondary);
+  dominant-baseline: auto;
+}
+
+/* El trazo es un fragmento de luz que se desplaza, no un círculo
+   permanentemente iluminado. Tres capas reproducen la profundidad
+   del flujo del hero usando exactamente sus colores SVG compartidos. */
+.current {
   fill: none;
-  stroke-dasharray: 145 855;
-  stroke-dashoffset: 145;
   stroke-linecap: round;
   stroke-linejoin: round;
-  animation: vennTravel 9.6s linear infinite;
+  stroke-dasharray: 170 830;
+  stroke-dashoffset: 170;
+  opacity: 0;
+  animation-duration: var(--diagram-cycle);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
   animation-play-state: paused;
-  will-change: stroke-dashoffset, opacity;
 }
 
-.flowAura {
-  --layer-opacity: .85;
-  stroke-width: 24px;
+.aura {
+  stroke-opacity: .4;
+  stroke-width: var(--space-6);
+  filter: blur(var(--space-2));
+  opacity: 0;
 }
 
-.flowBody {
-  --layer-opacity: .75;
-  stroke-width: 8px;
+.body {
+  stroke-opacity: .76;
+  stroke-width: var(--space-2);
+  filter: blur(var(--space-1));
 }
 
-.flowCore {
-  --layer-opacity: 1;
-  stroke-width: 2.75px;
+.core {
+  stroke-width: var(--space-1);
 }
 
-.intersectionResponse,
-.impactBloom,
-.impactRing,
-.impactPoint {
-  animation-play-state: paused;
+.approach .current {
+  animation-name: approachTravel;
+}
+
+.outcome .current {
+  animation-name: outcomeTravel;
+}
+
+.convergencePulse,
+.resultBloom,
+.resultRing,
+.resultPoint {
   transform-box: fill-box;
   transform-origin: center;
+  animation-duration: var(--diagram-cycle);
+  animation-iteration-count: infinite;
+  animation-play-state: paused;
 }
 
-.intersectionResponse {
-  opacity: .1;
-  animation: intersectionFlash 9.6s ease-in-out infinite;
-}
-
-.impactBloom {
+.convergencePulse {
   opacity: 0;
-  animation: resultBloom 9.6s ease-out infinite;
+  animation-name: convergenceFlash;
 }
 
-.impactRing {
+.resultBloom {
   opacity: 0;
+  animation-name: finishedBloom;
+}
+
+.resultRing {
   fill: none;
-  stroke: #6FD3FF; /* cian exacto del mesh del hero */
-  stroke-width: 1.8px;
-  animation: resultRing 9.6s ease-out infinite;
+  stroke: var(--mesh-cyan);
+  stroke-width: var(--border-width);
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  animation-name: finishedRing;
 }
 
-.impactPoint {
-  opacity: .3;
-  fill: #E8F7FF; /* destello exacto del mesh del hero */
-  animation: resultPoint 9.6s ease-in-out infinite;
+.resultPoint {
+  fill: var(--mesh-ice);
+  opacity: .65;
+  animation-name: finishedPoint;
 }
 
-.root[data-flow-active="true"] .flowLayer,
-.root[data-flow-active="true"] .intersectionResponse,
-.root[data-flow-active="true"] .impactBloom,
-.root[data-flow-active="true"] .impactRing,
-.root[data-flow-active="true"] .impactPoint {
+.root[data-flow-visible="true"] .current,
+.root[data-flow-visible="true"] .convergencePulse,
+.root[data-flow-visible="true"] .resultBloom,
+.root[data-flow-visible="true"] .resultRing,
+.root[data-flow-visible="true"] .resultPoint {
   animation-play-state: running;
 }
 
-/* Cada ciclo es un relato completo, con una breve pausa final. El
-   pathLength=1000 normaliza el avance sin medir el SVG con JavaScript. */
-@keyframes vennTravel {
-  0%, 9% { stroke-dashoffset: 145; opacity: 0; }
-  12% { opacity: var(--layer-opacity); }
-  78% { stroke-dashoffset: -855; opacity: var(--layer-opacity); }
-  83%, 100% { stroke-dashoffset: -855; opacity: 0; }
+/* Dos etapas físicamente separadas, sincronizadas por la misma
+   duración: contornos y cruce → convergencia → salida → pulso. */
+@keyframes approachTravel {
+  0%, 7% { stroke-dashoffset: 170; opacity: 0; }
+  10% { opacity: .95; }
+  62% { stroke-dashoffset: -830; opacity: .95; }
+  66%, 100% { stroke-dashoffset: -830; opacity: 0; }
 }
 
-@keyframes intersectionFlash {
-  0%, 30%, 41%, 63%, 75%, 100% { opacity: .08; transform: scale(.8); }
-  36%, 68% { opacity: .86; transform: scale(1.7); }
+@keyframes outcomeTravel {
+  0%, 66% { stroke-dashoffset: 170; opacity: 0; }
+  69% { opacity: .95; }
+  84% { stroke-dashoffset: -830; opacity: .95; }
+  88%, 100% { stroke-dashoffset: -830; opacity: 0; }
 }
 
-@keyframes resultBloom {
-  0%, 75% { opacity: 0; transform: scale(.55); }
-  81% { opacity: .85; transform: scale(1.1); }
-  94%, 100% { opacity: 0; transform: scale(2.1); }
+@keyframes convergenceFlash {
+  0%, 59%, 100% { opacity: 0; transform: scale(.55); }
+  65% { opacity: .92; transform: scale(1); }
+  73% { opacity: 0; transform: scale(1.55); }
 }
 
-@keyframes resultRing {
-  0%, 75% { opacity: 0; transform: scale(.6); }
-  81% { opacity: .9; transform: scale(1); }
-  95%, 100% { opacity: 0; transform: scale(2.8); }
+@keyframes finishedBloom {
+  0%, 81%, 100% { opacity: 0; transform: scale(.6); }
+  87% { opacity: .95; transform: scale(1); }
+  96% { opacity: 0; transform: scale(1.7); }
 }
 
-@keyframes resultPoint {
-  0%, 76% { opacity: .22; transform: scale(1); }
-  80%, 85% { opacity: 1; transform: scale(1.9); }
-  96%, 100% { opacity: .22; transform: scale(1); }
+@keyframes finishedRing {
+  0%, 82%, 100% { opacity: 0; transform: scale(.5); }
+  87% { opacity: 1; transform: scale(1); }
+  97% { opacity: 0; transform: scale(2.6); }
+}
+
+@keyframes finishedPoint {
+  0%, 81%, 100% { opacity: .65; transform: scale(1); }
+  86% { opacity: 1; transform: scale(1.8); }
+  95% { opacity: .65; transform: scale(1); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .flowLayer,
-  .intersectionResponse,
-  .impactBloom,
-  .impactRing,
-  .impactPoint {
+  .current,
+  .convergencePulse,
+  .resultBloom,
+  .resultRing,
+  .resultPoint {
     animation: none !important;
-    will-change: auto;
   }
-  .flowLayer,
-  .impactBloom,
-  .impactRing { opacity: 0; }
-  .intersectionResponse { opacity: .2; }
-  .impactPoint { opacity: .65; }
+  .current,
+  .convergencePulse,
+  .resultBloom,
+  .resultRing { opacity: 0; }
+  .resultPoint { opacity: 1; transform: none; }
 }
