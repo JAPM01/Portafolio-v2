@@ -3,7 +3,6 @@
 'use client'
 
 import {useEffect, useRef} from 'react'
-import { BRAND_PALETTE } from '../lib/brand-palette'
 
 export type FlowGradientBackgroundProps = {
   /** background, deep body, bright body, hot spot, cool accent */
@@ -67,9 +66,12 @@ float blob(vec2 p, vec2 c, vec2 r, float soft) {
 vec3 paint(vec2 uv) {
   // keep the shapes' proportions on any screen (designed at ~3:2)
   // zoom out more on portrait screens: on a narrow screen the blobs
-  // look huge (too much zoom) — 2.5x on portrait vs 1.4x on landscape.
+  // look huge (too much zoom). Portrait 3.5x vs landscape 1.4x — el
+  // mesh en móvil estaba muy cerca (Jafet 17 Nov 2026): un solo blob
+  // azul dominaba la pantalla; al alejar el zoom se ven las ondas
+  // (cian, blanco, naranja) como en la referencia Sentos.
   float zoom = 1.4;
-  if (u_res.x < u_res.y) zoom = 2.5;
+  if (u_res.x < u_res.y) zoom = 3.5;
   vec2 p = (uv - 0.5) * vec2(u_res.x / u_res.y / 1.54, 1.0) * zoom + 0.5;
   float soft = clamp(0.06 + 0.5 * (1.32 - 1.64 * distance(uv, vec2(0.5))), 0.06, 0.5);
   vec3 c = u_bg;
@@ -111,7 +113,7 @@ const SCALE = 0.75
 // middle of the frame like a depth blur. One WebGL pass, no dependencies;
 // it pauses off screen and holds still for reduced motion.
 export default function FlowGradientBackground({
-  colors = [BRAND_PALETTE.gray[0], BRAND_PALETTE.blue[0], BRAND_PALETTE.blue[3], BRAND_PALETTE.orange[0], BRAND_PALETTE.blue[6]],
+  colors = ["#030403", "#000AFF", "#6FD3FF", "#FF9636", "#E8F7FF"],
   flow = 1,
   speed = 1,
   follow = 0.05,

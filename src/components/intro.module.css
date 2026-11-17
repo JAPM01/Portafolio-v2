@@ -51,10 +51,44 @@
   display: inline-block;
 }
 
+/* Tonos del manifiesto (v4): cada palabra revela de un tono apagado a
+   su color final. Gris = brand-gray-5, azul = brand blue #000AFF,
+   blanco = casi blanco. */
+.toneGray {
+  --reveal-from: var(--brand-gray-3);
+  --reveal-to: var(--brand-gray-5);
+}
+.toneBlue {
+  --reveal-from: var(--brand-blue-3);
+  --reveal-to: var(--brand-blue-1);
+}
+.toneWhite {
+  --reveal-from: var(--neutral-9);
+  --reveal-to: var(--text-primary);
+}
+
 .letter {
   --t: clamp(0, (var(--p, 0) - var(--i) / var(--n)) * var(--n), 1);
-  color: color-mix(in oklch, var(--neutral-9), var(--text-primary) calc(var(--t) * 100%));
+  color: color-mix(in oklch, var(--reveal-from, var(--neutral-9)), var(--reveal-to, var(--text-primary)) calc(var(--t) * 100%));
   display: inline-block;
+}
+
+/* Icono inline (paleta, </>, mira): blanco, outline, ~0.8em, en línea
+   con el texto. Se revela (opacidad) justo después de su palabra. */
+.icon {
+  --t: clamp(0, (var(--p, 0) - var(--i) / var(--n)) * var(--n), 1);
+  opacity: var(--t);
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  margin-left: 0.18em;
+  vertical-align: -0.08em;
+  color: var(--text-primary);
+}
+.icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 @media (pointer: coarse) {
