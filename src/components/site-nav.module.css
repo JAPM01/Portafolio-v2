@@ -43,7 +43,7 @@
   background: transparent !important;
   border: 1px solid var(--header-edge);
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--brand-gray-7) 24.00%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--brand-gray-7) 34.00%, transparent),
     inset 0 -1px 0 color-mix(in srgb, var(--brand-gray-7) 4.50%, transparent),
     0 10px 30px color-mix(in srgb, var(--brand-gray-1) 19.00%, transparent) !important;
 }
@@ -59,19 +59,11 @@
   backdrop-filter: blur(4px) saturate(155%);
   -webkit-backdrop-filter: blur(4px) saturate(155%);
 }
-/* The upstream package filters its already blurred element, which can show
-   as ordinary frosting in Chromium Android. Applying the SVG displacement
-   to the live backdrop produces actual refraction of what's behind it.
-   Keep the package for geometry, edge highlights and elasticity. */
-@supports (backdrop-filter: url("#jpm-glass-optics")) {
-  @supports not (-webkit-touch-callout: none) {
-    .glassRoot :global(.glass__warp) {
-      filter: none !important;
-      backdrop-filter: url("#jpm-glass-optics") saturate(155%) !important;
-      -webkit-backdrop-filter: url("#jpm-glass-optics") saturate(155%) !important;
-    }
-  }
-}
+/* El filtro propio de liquid-glass-react (mapa radial: refracción fuerte
+   en el borde, centro claro) es el que se usa. #jpm-glass-optics
+   (turbulencia uniforme) daba un aspecto escarchado sin el doblez
+   concentrado en el borde del cristal líquido real, así que no se
+   aplica. El componente JpmGlassOptics queda sin uso. */
 .glassRoot :global(.glass)::after {
   content: "";
   position: absolute;
@@ -79,10 +71,10 @@
   border-radius: inherit;
   pointer-events: none;
   background:
-    linear-gradient(115deg, color-mix(in srgb, var(--brand-gray-7) 26.00%, transparent), transparent 27% 72%, color-mix(in srgb, var(--brand-blue-6) 12.00%, transparent)),
-    radial-gradient(ellipse 54% 24% at 42% 0%, color-mix(in srgb, var(--brand-gray-7) 25.00%, transparent), transparent);
+    linear-gradient(115deg, color-mix(in srgb, var(--brand-gray-7) 32.00%, transparent), transparent 27% 72%, color-mix(in srgb, var(--brand-blue-6) 12.00%, transparent)),
+    radial-gradient(ellipse 54% 24% at 42% 0%, color-mix(in srgb, var(--brand-gray-7) 32.00%, transparent), transparent);
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--brand-gray-7) 27.00%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--brand-gray-7) 34.00%, transparent),
     inset 0 -1px 0 color-mix(in srgb, var(--brand-blue-4) 18.00%, transparent);
 }
 .glassRoot :global(.glass > div:last-child) {

@@ -6,7 +6,6 @@ import { MorphIcon } from "morphicons/react";
 import { ArrowUpRight, Globe, Menu, Moon, Sun, X } from "lucide";
 import { px } from "../lib/paths";
 import styles from "./site-nav.module.css";
-import JpmGlassOptics from "./JpmGlassOptics";
 import {
   getHeaderPreview,
   getServerHeaderPreview,
@@ -229,7 +228,6 @@ export default function SiteNav() {
       ref={headerRef}
       data-liquid-ignore=""
     >
-      <JpmGlassOptics />
       <div
         className={styles.glassStage}
         onPointerDown={trackTouch}
@@ -246,12 +244,12 @@ export default function SiteNav() {
             style={{ position: "absolute", top: "50%", left: "50%", width: "100%", height: "100%" }}
             padding="0px"
             cornerRadius={18}
-            displacementScale={120}
+            displacementScale={200}
             blurAmount={0.035}
-            saturation={155}
-            aberrationIntensity={4.0}
+            saturation={180}
+            aberrationIntensity={6.0}
             elasticity={0.26}
-            mode="prominent"
+            mode="shader"
             overLight={false}
             globalMousePos={touchPoint?.global}
             mouseOffset={touchPoint?.offset}

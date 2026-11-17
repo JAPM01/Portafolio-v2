@@ -4,13 +4,18 @@
  */
 export type HeaderPreview = "original" | "header1";
 
-const STORAGE_KEY = "jpm-header-preview";
+const STORAGE_KEY = "jpm-header-preview-v2";
 const CHANGE_EVENT = "jpm-header-preview-change";
 const STATUS_EVENT = "jpm-header-preview-status";
 
 function parsePreview(value: string | undefined | null): HeaderPreview {
-  // Migrate the discontinued Header 2 selection to liquidGL.
-  return value === "original" ? "original" : "header1";
+  // "original" (liquid-glass-react) es el default: su geometría es
+  // correcta en móvil y desktop (la cápsula llega a ambos márgenes y el
+  // header funciona en desktop). "header1" (liquidGL) queda disponible
+  // para comparar, pero su canvas se desalinea en móvil (-12px/-8px, la
+  // cápsula no llega al margen derecho) y en desktop renderiza un blob
+  // en vez de la píldora. Clave v2: la v1 guardaba "header1" como default.
+  return value === "header1" ? "header1" : "original";
 }
 
 export function getHeaderPreview(): HeaderPreview {
