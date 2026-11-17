@@ -238,3 +238,12 @@
   background: color-mix(in srgb, currentColor 24%, transparent);
 }
 /* No CSS geometry or visual border changes on reduced-motion devices. */
+
+/* The base `.header.heroResting > canvas { opacity: 0 }` sits after the
+   <=1023px block, so it wins over the bottom-nav override above. This
+   later rule restores the glass at rest on mobile/tablet: the pill must
+   be visible at the bottom from the very first frame, never a transparent
+   full-width bar that only becomes a pill once the user scrolls. */
+@media (max-width: 1023px) {
+  .header.heroResting > canvas { opacity: 1 !important; }
+}

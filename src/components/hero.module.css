@@ -467,7 +467,10 @@ a.metaValue.ctaLink:hover {
   }
   .meta {
     grid-column: 1 / 5;
-    grid-row: 12 / 13;
+    /* Fila 11 (no 12): en móvil/tablet el nav inferior flota sobre la
+       fila 12, así que el meta sube una fila para no quedar tapado por
+       la píldora. La fila 12 queda libre como despeje del nav. */
+    grid-row: 11 / 12;
     align-self: end;
     /* Sin font-size propio: los valores usan el token cuerpo (20px
        móvil) y las etiquetas el token caption (16px móvil). */
