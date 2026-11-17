@@ -91,7 +91,7 @@ replaceOnce(
   "vec4 final    = refrCol;",
   [
     "float glyphDelta = max(max(abs(refrCol.r - baseCol.r), abs(refrCol.g - baseCol.g)), abs(refrCol.b - baseCol.b));",
-    "float glyphMix = 1.0 - 0.82 * smoothstep(0.12, 0.42, glyphDelta);",
+    "float glyphMix = 1.0 - 0.75 * smoothstep(0.22, 0.50, glyphDelta);",
     "vec4 final = mix(baseCol, refrCol, glyphMix);",
   ].join("\n          "),
 );
@@ -100,7 +100,7 @@ replaceOnce(
   "var finalCol = refrCol;",
   [
     "let glyphDelta = max(max(abs(refrCol.r - baseCol.r), abs(refrCol.g - baseCol.g)), abs(refrCol.b - baseCol.b));",
-    "let glyphMix = 1.0 - 0.82 * smoothstep(0.12, 0.42, glyphDelta);",
+    "let glyphMix = 1.0 - 0.75 * smoothstep(0.22, 0.50, glyphDelta);",
     "var finalCol = mix(baseCol, refrCol, glyphMix);",
   ].join("\n  "),
 );
@@ -110,12 +110,12 @@ replaceOnce(
 replaceOneOf(
   "GLSL optical bevel and rim",
   ["final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);\nfloat rimLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));\nfloat rimWeight = pow(edge, 8.0) * 0.28;\nfinal.rgb = clamp(final.rgb + vec3(0.45 - rimLum) * rimWeight, vec3(0.0), vec3(1.0));", "final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);"],
-  "final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);\nfloat rimLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));\nfloat rimTarget = mix(0.80, 0.43, smoothstep(0.24, 0.86, rimLum));\nfloat rimWeight = pow(edge, 2.2) * 0.34 + pow(edge, 7.0) * 0.13;\nfinal.rgb = clamp(mix(final.rgb, vec3(rimTarget), rimWeight), vec3(0.0), vec3(1.0));",
+  "final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);\nfloat rimLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));\nfloat bevelShade = pow(edge, 1.35) * 0.11;\nfinal.rgb *= 1.0 - bevelShade;\nfloat rimTarget = mix(0.88, 0.30, smoothstep(0.24, 0.84, rimLum));\nfloat rimWeight = pow(edge, 3.0) * 0.34 + pow(edge, 9.0) * 0.17;\nfinal.rgb = clamp(mix(final.rgb, vec3(rimTarget), rimWeight), vec3(0.0), vec3(1.0));",
 );
 replaceOneOf(
   "WGSL optical bevel and rim",
   ["finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);\nlet rimLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));\nlet rimWeight = pow(edge, 8.0) * 0.28;\nfinalCol = vec4<f32>(clamp(finalCol.rgb + vec3<f32>(0.45 - rimLum) * rimWeight, vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);", "finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);"],
-  "finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);\nlet rimLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));\nlet rimTarget = mix(0.80, 0.43, smoothstep(0.24, 0.86, rimLum));\nlet rimWeight = pow(edge, 2.2) * 0.34 + pow(edge, 7.0) * 0.13;\nfinalCol = vec4<f32>(clamp(mix(finalCol.rgb, vec3<f32>(rimTarget), rimWeight), vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);",
+  "finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);\nlet rimLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));\nlet bevelShade = pow(edge, 1.35) * 0.11;\nfinalCol = vec4<f32>(finalCol.rgb * (1.0 - bevelShade), finalCol.a);\nlet rimTarget = mix(0.88, 0.30, smoothstep(0.24, 0.84, rimLum));\nlet rimWeight = pow(edge, 3.0) * 0.34 + pow(edge, 9.0) * 0.17;\nfinalCol = vec4<f32>(clamp(mix(finalCol.rgb, vec3<f32>(rimTarget), rimWeight), vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);",
 );
 
 // Respect the current background luminance: strong reflections over dark
@@ -126,7 +126,7 @@ replaceOnce(
   [
     "float surfaceLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));",
     "float reflectionStrength = 0.18 + 0.82 * (1.0 - smoothstep(0.32, 0.86, surfaceLum));",
-    "final.rgb = clamp(final.rgb + (vec3(1.0) - final.rgb) * h * reflectionStrength * 1.15, vec3(0.0), vec3(1.0));",
+    "final.rgb = clamp(final.rgb + (vec3(1.0) - final.rgb) * h * reflectionStrength * 1.24, vec3(0.0), vec3(1.0));",
   ].join("\n            "),
 );
 replaceOnce(
@@ -135,7 +135,7 @@ replaceOnce(
   [
     "let surfaceLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));",
     "let reflectionStrength = 0.18 + 0.82 * (1.0 - smoothstep(0.32, 0.86, surfaceLum));",
-    "finalCol = vec4<f32>(clamp(finalCol.rgb + (vec3<f32>(1.0) - finalCol.rgb) * h * reflectionStrength * 1.15, vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);",
+    "finalCol = vec4<f32>(clamp(finalCol.rgb + (vec3<f32>(1.0) - finalCol.rgb) * h * reflectionStrength * 1.24, vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);",
   ].join("\n    "),
 );
 
