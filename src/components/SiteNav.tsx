@@ -61,18 +61,6 @@ function isOverHero() {
   return !!hero && hero.getBoundingClientRect().bottom > (window.innerWidth <= 480 ? 85 : 100);
 }
 
-function JPMLogo() {
-  return (
-    <svg viewBox="0 0 117 46" fill="none" aria-hidden="true" focusable="false">
-      <g stroke="currentColor" strokeWidth="4.4" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M9 8H34V28C34 36 29 40 21 40C13 40 8 36 7 30" />
-        <path d="M46 40V8H61C71 8 76 13 76 21C76 29 71 34 61 34H46" />
-        <path d="M88 40V8L101 28L114 8V40" />
-      </g>
-    </svg>
-  );
-}
-
 export default function SiteNav() {
   // Server snapshot stays stable during hydration; actual state is read
   // from the existing <html> attributes once the browser is ready.
@@ -128,25 +116,10 @@ export default function SiteNav() {
     }
   }
 
-  return (
-    <header
-      className={styles.header + (scrolled ? " " + styles.scrolled : "") + (overHero ? " " + styles.overHero : "")}
-      ref={headerRef}
-    >
-      <div className={styles.glassStage}>
-        <LiquidGlass
-          className={styles.glassRoot}
-          style={{ position: "absolute", top: "50%", left: "50%", width: "100%", height: "100%" }}
-          padding="0px"
-          cornerRadius={999}
-          displacementScale={48}
-          blurAmount={0.09}
-          saturation={135}
-          aberrationIntensity={1.5}
-          elasticity={0.06}
-          mode="standard"
-          overLight={false}
-        >
+  // No glass capsule over the hero at rest. On scroll (or elsewhere on
+  // the site), mount the actual LiquidGlass component around the same nav.
+  const showGlass = scrolled || !overHero;
+  const navigation = (
           <nav
             className={styles.nav}
             aria-label={isSpanish ? "Navegación principal" : "Main navigation"}
@@ -157,7 +130,7 @@ export default function SiteNav() {
               aria-label={isSpanish ? "Jafet Pérez — Inicio" : "Jafet Pérez — Home"}
               onClick={() => setMenuOpen(false)}
             >
-              <JPMLogo />
+              JPM
             </a>
             <div className={styles.actions}>
               <button
@@ -211,7 +184,32 @@ export default function SiteNav() {
               </button>
             </div>
           </nav>
+  );
+
+  return (
+    <header
+      className={styles.header + (scrolled ? " " + styles.scrolled : "") + (overHero ? " " + styles.overHero : "") + (!showGlass ? " " + styles.heroResting : "")}
+      ref={headerRef}
+    >
+      <div className={styles.glassStage}>
+        {showGlass ? (
+        <LiquidGlass
+          className={styles.glassRoot}
+          style={{ position: "absolute", top: "50%", left: "50%", width: "100%", height: "100%" }}
+          padding="0px"
+          cornerRadius={999}
+          displacementScale={48}
+          blurAmount={0.09}
+          saturation={135}
+          aberrationIntensity={1.5}
+          elasticity={0.06}
+          mode="standard"
+          overLight={false}
+        >
+            {navigation}
+
         </LiquidGlass>
+        ) : navigation}
       </div>
 
       <div id="jpm-navigation-menu" className={styles.dropdown} hidden={!menuOpen}>

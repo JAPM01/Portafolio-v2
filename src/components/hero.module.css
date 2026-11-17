@@ -91,7 +91,7 @@
 .topFadeLayer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(8, 4, 5, 0.55) 0%, rgba(8, 4, 5, 0) 100%);
+  background: linear-gradient(to bottom, rgba(8, 4, 5, 0.30) 0%, rgba(8, 4, 5, 0) 100%);
 }
 .bottomDark {
   opacity: 0;
@@ -101,10 +101,10 @@
   background: linear-gradient(
     to bottom,
     rgb(0 0 0 / 0) 0%,
-    rgb(0 0 0 / 0.094) 35%,
-    rgb(0 0 0 / 0.36) 65%,
-    rgb(0 0 0 / 0.64) 88%,
-    rgb(0 0 0 / 0.8) 100%
+    rgb(0 0 0 / 0.06) 35%,
+    rgb(0 0 0 / 0.25) 65%,
+    rgb(0 0 0 / 0.5) 88%,
+    rgb(0 0 0 / 0.68) 100%
   );
 }
 /* Sin overrides en modo claro: el hero siempre es oscuro (el mesh no
@@ -388,7 +388,7 @@ a.metaValue.ctaLink:hover {
      más altas el tope por ancho (72px) manda. */
   .title55 {
     font-size: calc(24px + 12.2vw);
-    font-size: min(
+    --mobile-title-size: min(
       round(calc(24px + 12.2vw), 8px),
       calc(
         (
@@ -399,13 +399,22 @@ a.metaValue.ctaLink:hover {
         ) / 2.85
       )
     );
+    font-size: var(--mobile-title-size);
   }
-  /* Inglés en móvil: 64px y tracking compacto para que
-     "with a human" quepa dentro de la columna de 358px, sin
-     reducir la jerarquía visual frente al título en español. */
+  /* Exactly the same typography as Spanish: only the font size is 2px
+     smaller. Allow long English word groups to wrap without horizontal
+     viewport overflow; letter-spacing and line-height are inherited. */
   :global(html[lang="en"]) .title55 {
-    font-size: 64px;
-    letter-spacing: -0.08em;
+    font-size: calc(var(--mobile-title-size) - 2px);
+  }
+  .titleBase {
+    text-wrap: wrap;
+    max-width: 100%;
+    min-width: 0;
+  }
+  .titleBase > span {
+    max-width: 100%;
+    min-width: 0;
   }
   .pitch {
     grid-column: 1 / 5;

@@ -14,7 +14,7 @@
   width: min(560px, calc(100% - 32px));
   transform: translateX(-50%);
   color: var(--header-foreground);
-  transition: inset-block-start 240ms ease;
+  transition: inset-block-start 240ms ease, width 280ms cubic-bezier(.22, 1, .36, 1);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -78,7 +78,22 @@
   transition: color 180ms ease;
 }
 .logo:hover { color: #fe0149; }
-.logo svg { display: block; width: 87px; height: 38px; }
+.logo {
+  font-family: var(--font-display), "Google Sans", sans-serif;
+  font-size: 38px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  white-space: nowrap;
+}
+/* On the hero the navigation sits directly on the artwork. Liquid glass
+   and the rounded container are introduced only after scrolling. */
+.heroResting {
+  inset-block-start: 24px;
+  width: calc(100% - 2 * var(--page-margin));
+  max-width: 1440px;
+}
+.heroResting .nav { padding-inline: 0; }
 .actions { display: flex; align-items: center; gap: 5px; }
 .iconButton {
   display: grid;
@@ -148,7 +163,9 @@
   .scrolled { inset-block-start: 8px; }
   .glassStage { height: 62px; }
   .nav { height: 60px; padding-inline: 17px 11px; }
-  .logo svg { width: 71px; height: 32px; }
+  .logo { font-size: 34px; }
+  .heroResting { inset-block-start: 12px; width: calc(100% - 2 * var(--space-4)); }
+  .heroResting .nav { padding-inline: 0; }
   .actions { gap: 1px; }
   .iconButton { width: 40px; height: 40px; }
   .divider { margin-inline: 2px; }

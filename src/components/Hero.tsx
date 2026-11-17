@@ -103,7 +103,7 @@ export default function Hero() {
                 <HeroBackground />
               </div>
             </div>
-            <div className={styles.veil} style={{ background: "#080405", opacity: 0.2 }} />
+            <div className={styles.veil} style={{ background: "#080405", opacity: 0.07 }} />
             <div className={styles.topFade} aria-hidden="true">
               <div className={styles.topFadeLayer} />
             </div>
