@@ -506,6 +506,15 @@ h5,
 h6 {
   font-family: var(--font-display);
 }
+/* Clases de utilidad de la escala única (misma fuente de verdad que los
+   tokens --type-*): un componente usa .type-h2 en vez de un tamaño
+   suelto. H2-H5 en Google Sans, cuerpo y caption en Manrope. */
+.type-h2 { font-size: var(--type-h2-size); line-height: var(--type-h2-leading); letter-spacing: var(--type-h2-tracking); }
+.type-h3 { font-size: var(--type-h3-size); line-height: var(--type-h3-leading); letter-spacing: var(--type-h3-tracking); }
+.type-h4 { font-size: var(--type-h4-size); line-height: var(--type-h4-leading); letter-spacing: var(--type-h4-tracking); }
+.type-h5 { font-size: var(--type-h5-size); line-height: var(--type-h5-leading); letter-spacing: var(--type-h5-tracking); }
+.type-body { font-family: var(--font-body); font-size: var(--type-body-size); line-height: var(--type-body-leading); letter-spacing: var(--type-body-tracking); }
+.type-caption { font-family: var(--font-body); font-size: var(--type-caption-size); line-height: var(--type-caption-leading); letter-spacing: var(--type-caption-tracking); }
 body:has([data-chromeless]) nav {
   display: none;
 }

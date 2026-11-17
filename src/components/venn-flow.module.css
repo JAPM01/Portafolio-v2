@@ -14,22 +14,15 @@
   stroke-width: var(--border-width);
   vector-effect: non-scaling-stroke;
 }
-.circleLabel,
-.resultLabel {
-  font-family: var(--font-display);
-  font-size: var(--type-h5-size);
-  font-weight: var(--type-h2-weight);
-  fill: var(--text-primary);
-  dominant-baseline: middle;
-}
-.resultLabel {
+/* Etiquetas del diagrama (Diseño, Tecnología, Usabilidad): tamaño y
+   estilo meta, como "Portafolio de trabajo" del hero (Manrope, caption
+   16/20), no H5. La etiqueta "Resultado" se eliminó (no va). */
+.circleLabel {
   font-family: var(--font-body);
   font-size: var(--type-caption-size);
-  font-weight: var(--weight-body-lg);
+  letter-spacing: var(--type-caption-tracking);
   fill: var(--text-primary);
-  stroke: var(--surface-canvas);
-  stroke-width: var(--space-1);
-  paint-order: stroke fill;
+  dominant-baseline: middle;
 }
 .pulseRing {
   stroke-width: var(--border-width);

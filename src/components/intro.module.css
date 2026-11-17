@@ -51,11 +51,13 @@
   display: grid;
 }
 
+/* Pensamientos de la izquierda: tamaño body, como el párrafo del hero
+   ("Desafío lo convencional..."), no caption. */
 .thought {
   font-family: var(--font-body);
-  font-size: var(--type-caption-size);
-  line-height: var(--type-caption-leading);
-  letter-spacing: var(--type-caption-tracking);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  letter-spacing: var(--type-body-tracking);
   color: var(--text-secondary);
   padding-block: var(--space-4);
   border-block-start: var(--border-width) solid var(--border-subtle);

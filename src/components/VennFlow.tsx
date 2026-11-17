@@ -101,7 +101,6 @@ export default function VennFlow({ lang }: { lang: Lang }) {
   const fillRef = useRef<SVGCircleElement>(null);
   const flashRef = useRef<SVGCircleElement>(null);
   const ringRef = useRef<SVGCircleElement>(null);
-  const outcomeRef = useRef<SVGTextElement>(null);
 
   const id = useId().replace(/:/g, "");
   const beamId = `venn-beam-${id}`;
@@ -115,9 +114,9 @@ export default function VennFlow({ lang }: { lang: Lang }) {
   useEffect(() => {
     const root = rootRef.current, particle = particleRef.current;
     const fill = fillRef.current, flash = flashRef.current;
-    const ring = ringRef.current, outcome = outcomeRef.current;
+    const ring = ringRef.current;
     const paths = trackRefs.current.slice(0, TRACKS.length);
-    if (!root || !particle || !fill || !flash || !ring || !outcome ||
+    if (!root || !particle || !fill || !flash || !ring ||
         paths.length !== TRACKS.length || paths.some(p => !p)) return;
 
     const sections = (paths as SVGPathElement[]).map(path => ({
@@ -136,7 +135,6 @@ export default function VennFlow({ lang }: { lang: Lang }) {
       fill.setAttribute("r", String(G.radius * 1.2));
       flash.setAttribute("opacity", "0");
       ring.setAttribute("opacity", "0");
-      outcome.setAttribute("opacity", "1");
     };
 
     const tick = (now: number) => {
@@ -180,7 +178,6 @@ export default function VennFlow({ lang }: { lang: Lang }) {
       const reveal = smooth(T.fillStart, T.fillEnd, phase);
       fill.setAttribute("opacity", String(reveal));
       fill.setAttribute("r", String(reveal * G.radius * 1.2));
-      outcome.setAttribute("opacity", String(reveal));
 
       if (phase < 1) raf = requestAnimationFrame(tick);
       else { completed = true; settle(); }
@@ -282,10 +279,6 @@ export default function VennFlow({ lang }: { lang: Lang }) {
           y={G.technology.y} textAnchor="middle">{lang === "es" ? "Tecnología" : "Technology"}</text>
         <text className={styles.circleLabel} x={G.usability.x}
           y={G.usability.y + G.radius * .55} textAnchor="middle">{lang === "es" ? "Usabilidad" : "Usability"}</text>
-        <text ref={outcomeRef} className={styles.resultLabel} x={G.convergence.x}
-          y={G.convergence.y} textAnchor="middle" opacity="0">
-          {lang === "es" ? "Resultado" : "Outcome"}
-        </text>
       </svg>
     </div>
   );
