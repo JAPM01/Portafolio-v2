@@ -54,6 +54,13 @@ function isScrolled() {
   return window.scrollY > 24;
 }
 
+// The hero background is always dark, including when the rest of the site
+// is in light mode. Keep controls legible over the actual surface beneath.
+function isOverHero() {
+  const hero = document.getElementById("hero");
+  return !!hero && hero.getBoundingClientRect().bottom > (window.innerWidth <= 480 ? 85 : 100);
+}
+
 function JPMLogo() {
   return (
     <svg viewBox="0 0 117 46" fill="none" aria-hidden="true" focusable="false">
@@ -72,6 +79,7 @@ export default function SiteNav() {
   const language = useSyncExternalStore(subscribeLanguage, currentLanguage, () => "es");
   const theme = useSyncExternalStore(subscribeTheme, currentTheme, () => "dark");
   const scrolled = useSyncExternalStore(subscribeScroll, isScrolled, () => false);
+  const overHero = useSyncExternalStore(subscribeScroll, isOverHero, () => false);
 
   const [menuOpen, setMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
@@ -122,7 +130,7 @@ export default function SiteNav() {
 
   return (
     <header
-      className={styles.header + (scrolled ? " " + styles.scrolled : "")}
+      className={styles.header + (scrolled ? " " + styles.scrolled : "") + (overHero ? " " + styles.overHero : "")}
       ref={headerRef}
     >
       <div className={styles.glassStage}>
@@ -137,7 +145,7 @@ export default function SiteNav() {
           aberrationIntensity={1.5}
           elasticity={0.06}
           mode="standard"
-          overLight={theme === "light"}
+          overLight={false}
         >
           <nav
             className={styles.nav}

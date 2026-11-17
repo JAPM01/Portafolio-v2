@@ -1,12 +1,12 @@
 /* JPM floating header: responsive liquid glass with Morphicons controls. */
 .header {
-  --header-foreground: #181820;
-  --header-hover: rgba(17, 0, 255, .08);
-  --header-glass: rgba(255, 255, 255, .40);
-  --header-edge: rgba(255, 255, 255, .62);
-  --header-divider: rgba(25, 25, 40, .16);
-  --header-panel: rgba(252, 252, 255, .94);
-  --header-muted: #646578;
+  --header-foreground: #f5f7fd;
+  --header-hover: rgba(255, 255, 255, .10);
+  --header-glass: rgba(241, 246, 255, .065);
+  --header-edge: rgba(255, 255, 255, .28);
+  --header-divider: rgba(255, 255, 255, .23);
+  --header-panel: rgba(18, 20, 34, .78);
+  --header-muted: #b4b7c4;
   position: fixed;
   z-index: 9999;
   inset-block-start: 24px;
@@ -18,31 +18,39 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-:global(html[data-theme="dark"]) .header {
-  --header-foreground: #f5f5fa;
-  --header-hover: rgba(255, 255, 255, .12);
-  --header-glass: rgba(18, 20, 31, .57);
-  --header-edge: rgba(255, 255, 255, .18);
-  --header-divider: rgba(255, 255, 255, .22);
-  --header-panel: rgba(20, 21, 33, .95);
-  --header-muted: #b5b5c5;
+/* Light pages need dark controls. The dark hero deliberately overrides it. */
+:global(html[data-theme="light"]) .header:not(.overHero) {
+  --header-foreground: #171b27;
+  --header-hover: rgba(17, 0, 255, .07);
+  --header-glass: rgba(255, 255, 255, .16);
+  --header-edge: rgba(255, 255, 255, .52);
+  --header-divider: rgba(25, 28, 45, .2);
+  --header-panel: rgba(250, 251, 255, .82);
+  --header-muted: #62677a;
 }
 
 .scrolled { inset-block-start: 12px; }
 .glassStage { position: relative; height: 70px; width: 100%; }
 
 .glassRoot { position: absolute; }
+/* Let the library's refracted backdrop be the glass, not a solid overlay. */
 .glassRoot :global(.glass) {
   display: flex !important;
   width: 100% !important;
   height: 100% !important;
   box-sizing: border-box;
-  background: var(--header-glass);
+  background: transparent !important;
   border: 1px solid var(--header-edge);
-  box-shadow: 0 8px 34px rgba(9, 10, 28, .13) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .24),
+    inset 0 -1px 0 rgba(255, 255, 255, .045),
+    0 10px 30px rgba(2, 6, 22, .19) !important;
 }
-:global(html[data-theme="dark"]) .glassRoot :global(.glass) {
-  box-shadow: 0 12px 36px rgba(0, 0, 0, .33) !important;
+.glassRoot :global(.glass__warp) {
+  background: var(--header-glass);
+  /* Prefixed backdrop filtering for mobile WebKit; unprefixed blur and
+     refraction continue to be applied by liquid-glass-react itself. */
+  -webkit-backdrop-filter: blur(7px) saturate(145%);
 }
 .glassRoot :global(.glass > div:last-child) {
   width: 100%;
@@ -85,9 +93,13 @@
   cursor: pointer;
   transition: background 180ms ease, color 180ms ease;
 }
-.iconButton:hover, .active { background: var(--header-hover); }
+/* Avoid sticky :hover highlights on touchscreens. */
+.active { background: var(--header-hover); }
+@media (hover: hover) and (pointer: fine) {
+  .iconButton:hover { background: var(--header-hover); }
+}
 .iconButton:focus-visible, .logo:focus-visible, .menuLink:focus-visible {
-  outline: 2px solid #1100ff;
+  outline: 2px solid #00d0f0;
   outline-offset: 3px;
 }
 .divider { width: 1px; height: 21px; margin-inline: 6px; background: var(--header-divider); }
