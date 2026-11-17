@@ -12,7 +12,10 @@
     "@paper-design/shaders-react": "0.0.78",
     "next": "16.4.6",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "liquid-glass-react": "1.1.1",
+    "lucide": "1.73.0",
+    "morphicons": "2.0.2"
   },
   "devDependencies": {
     "@types/node": "^20",

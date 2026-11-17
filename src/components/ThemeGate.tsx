@@ -1,10 +1,5 @@
-"use client";
-
-import { useThemeGate } from "../lib/scroll";
-
-/** Puerta de tema de la home (oscuro → claro → oscuro). En páginas de
-    proyecto la base es clara. */
-export default function ThemeGate({ base = "dark" }: { base?: "dark" | "light" }) {
-  useThemeGate(base);
+/** Theme is controlled exclusively by the header toggle. The component
+ * remains as a compatibility shim until page layouts are refactored. */
+export default function ThemeGate({ base: _base = "dark" }: { base?: "dark" | "light" }) {
   return null;
 }

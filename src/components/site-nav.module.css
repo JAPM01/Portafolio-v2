@@ -1,624 +1,146 @@
-/* SiteNav — píldora flotante que muta al hacer scroll.
-   --nav-p: 0 arriba (barra completa, transparente) → 1 al bajar
-   (píldora centrada, con fondo y blur). Medido: arriba 64px de alto y
-   ancho completo; abajo ~56px y ancho del contenido. */
-.nav {
-  --ramp: clamp(0, (var(--nav-p, 0) - 0.5) * 2, 1);
-  --nav-par: clamp(0, 1 - var(--nav-p, 0), 1);
-  transform: translateX(-50%) scale(var(--nav-scale, 1));
-  z-index: 60;
-  contain: layout style;
-  block-size: calc((64px + (56px - 64px) * var(--nav-shrink, 0)) * var(--ui-scale-desktop, 1));
-  --nav-bar: calc(min(var(--content-cap), 100vw) - 2 * var(--page-margin));
-  --nav-cta-inset: calc(18px * var(--ui-scale-desktop, 1));
-  inline-size: fit-content;
-  padding-block: calc(var(--space-2) * var(--ui-scale-desktop, 1));
-  /* Padding interior fijo de 16px al bajar (antes 8px): el JPM y los
-     iconos no tocan los bordes de la píldora. Arriba es 0 (la marca
-     queda en el margen de página, alineada con el título). */
-  padding-inline: max(0px, calc(var(--space-4) * var(--nav-p, 0) * var(--ui-scale-desktop, 1)));
-  --nav-gap: calc(
-    (var(--space-12) + (var(--space-8) - var(--space-12)) * var(--nav-shrink, 0)) *
-      var(--ui-scale-desktop, 1)
-  );
-  border-radius: var(--radius-md2);
-  /* Header siempre oscuro (fijo, no depende del tema): el mesh no
-     cambia de color con el tema, así que la marca y los iconos deben
-     seguir siendo claros en light mode. */
-  --nav-tint: #0f0f14;
-  --nav-fg: #e7e7eb;
-  /* Sin glass en el propio nav: el glass va en ::before y solo aparece
-     al hacer scroll (opacity var(--ramp)). Arriba el nav es
-     transparente (sin fondo, sin blur, sin refracción). */
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  font-family: var(--font-body);
-  justify-content: space-between;
-  align-items: center;
-  display: flex;
+/* JPM floating header: responsive liquid glass with Morphicons controls. */
+.header {
+  --header-foreground: #181820;
+  --header-hover: rgba(17, 0, 255, .08);
+  --header-glass: rgba(255, 255, 255, .40);
+  --header-edge: rgba(255, 255, 255, .62);
+  --header-divider: rgba(25, 25, 40, .16);
+  --header-panel: rgba(252, 252, 255, .94);
+  --header-muted: #646578;
   position: fixed;
-  inset-block-start: calc(var(--space-6) - var(--space-1) * var(--nav-p, 0));
+  z-index: 9999;
+  inset-block-start: 24px;
   inset-inline-start: 50%;
+  width: min(560px, calc(100% - 32px));
+  transform: translateX(-50%);
+  color: var(--header-foreground);
+  transition: inset-block-start 240ms ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* Liquid glass (jahed / Apple Tahoe) en ::before: solo visible al hacer
-   scroll (opacity var(--ramp): 0 arriba, 1 al bajar). Tinte 20% (antes
-   55%: con ese tinte la barra se veía gris sólida al bajar, se perdía
-   el glass) y blur 16px para que el esmerilado se note aunque la
-   refracción SVG no renderice en Android. */
-.nav::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: color-mix(in oklch, var(--nav-tint) 20%, transparent);
-  border: 1px solid
-    color-mix(in oklab, #e7e7eb 14%, transparent);
-  box-shadow:
-    inset 0 1px 0 color-mix(in oklab, #e7e7eb 28%, transparent),
-    inset 0 -1px 0 color-mix(in oklab, #e7e7eb 6%, transparent),
-    0 12px 32px rgb(0 0 0 / 0.28);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  backdrop-filter: blur(16px) saturate(1.4);
-  opacity: var(--ramp, 0);
-  pointer-events: none;
+:global(html[data-theme="dark"]) .header {
+  --header-foreground: #f5f5fa;
+  --header-hover: rgba(255, 255, 255, .12);
+  --header-glass: rgba(18, 20, 31, .57);
+  --header-edge: rgba(255, 255, 255, .18);
+  --header-divider: rgba(255, 255, 255, .22);
+  --header-panel: rgba(20, 21, 33, .95);
+  --header-muted: #b5b5c5;
 }
 
-/* Chromium: refracción del filtro SVG (el doblez líquido del borde).
-   Safari/Firefox usan el blur escarchado de arriba. */
-@supports (backdrop-filter: url(#liquid-glass-filter)) {
-  .nav::before {
-    -webkit-backdrop-filter: url(#liquid-glass-filter) blur(12px) saturate(1.5);
-    backdrop-filter: url(#liquid-glass-filter) blur(12px) saturate(1.5);
-  }
+.scrolled { inset-block-start: 12px; }
+.glassStage { position: relative; height: 70px; width: 100%; }
+
+.glassRoot { position: absolute; }
+.glassRoot :global(.glass) {
+  display: flex !important;
+  width: 100% !important;
+  height: 100% !important;
+  box-sizing: border-box;
+  background: var(--header-glass);
+  border: 1px solid var(--header-edge);
+  box-shadow: 0 8px 34px rgba(9, 10, 28, .13) !important;
+}
+:global(html[data-theme="dark"]) .glassRoot :global(.glass) {
+  box-shadow: 0 12px 36px rgba(0, 0, 0, .33) !important;
+}
+.glassRoot :global(.glass > div:last-child) {
+  width: 100%;
+  min-width: 0;
+  text-shadow: none !important;
 }
 
-/* Solo medido: el ancho interpola entre el estado glifo (settled-0) y
-   el estado wordmark (settled-1). Sin medir, el nav hace shrink-wrap
-   (así se mide su ancho natural). */
-.nav[data-measured] {
-  --nav-settled: calc(
-    var(--nav-settled-0) + (var(--nav-settled-1) - var(--nav-settled-0)) * var(--nav-shrink, 0)
-  );
-  inline-size: max(
-    0px,
-    calc(var(--nav-settled) + (var(--nav-bar) - var(--nav-settled)) * (1 - var(--nav-p, 0)))
-  );
-}
-
-.nav[data-measured] .links {
-  --links-settled: calc(
-    var(--links-settled-0) + (var(--links-settled-1) - var(--links-settled-0)) * var(--nav-shrink, 0)
-  );
-  min-inline-size: 0;
-  inline-size: var(--links-settled);
-}
-
-/* Marca JPM: solo las iniciales (JpmMark.tsx). Sin morph de wordmark:
-   la marca es siempre el SVG, y el ancho del nav se mide del nav real.
-   Por encima del ::before del glass (z-index 1). */
-.mark {
-  color: #e7e7eb;
-  white-space: nowrap;
-  /* Peso regular (400): solo regular en ambas tipografías, nada de bold. */
-  font-weight: 400;
-  text-decoration: none;
-  display: grid;
-  place-items: center start;
-  position: relative;
-  z-index: 1;
-}
-
-/* JPM: 20px de alto, igual que los iconos (globo/sol: 20px). Antes 12px
-   (la altura del burgerBox) y quedaba muy pequeño junto a los iconos.
-   El ancho puede ser mayor (JPM es más ancho que alto). */
-.jpm {
-  block-size: 20px;
-  inline-size: auto;
-  display: block;
-  overflow: visible;
-  font-family: var(--font-display);
-}
-
-/* Lado derecho del nav: links + controles (idioma/tema) + burger.
-   Por encima del ::before del glass (z-index 1). */
-.navRight {
+.nav {
   display: flex;
   align-items: center;
-  min-inline-size: 0;
-  flex-shrink: 0;
-  position: relative;
-  z-index: 1;
+  justify-content: space-between;
+  box-sizing: border-box;
+  width: 100%;
+  height: 68px;
+  padding-inline: 24px 19px;
+  color: var(--header-foreground);
 }
-
-.controls {
-  display: flex;
+.logo {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  text-decoration: none;
+  transition: color 180ms ease;
+}
+.logo:hover { color: #fe0149; }
+.logo svg { display: block; width: 87px; height: 38px; }
+.actions { display: flex; align-items: center; gap: 5px; }
+.iconButton {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease;
+}
+.iconButton:hover, .active { background: var(--header-hover); }
+.iconButton:focus-visible, .logo:focus-visible, .menuLink:focus-visible {
+  outline: 2px solid #1100ff;
+  outline-offset: 3px;
+}
+.divider { width: 1px; height: 21px; margin-inline: 6px; background: var(--header-divider); }
+.dropdown {
+  position: absolute;
+  inset-block-start: calc(100% + 12px);
+  inset-inline-end: 0;
+  box-sizing: border-box;
+  width: min(318px, 100%);
+  padding: 10px;
+  border: 1px solid var(--header-edge);
+  border-radius: 24px;
+  background: var(--header-panel);
+  box-shadow: 0 18px 55px rgba(10, 12, 30, .18);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+}
+.dropdown[hidden] { display: none; }
+.dropdown nav { display: grid; gap: 3px; }
+.menuLink {
+  display: grid;
+  grid-template-columns: 25px 1fr 18px;
   align-items: center;
   gap: 8px;
-  margin-inline-start: var(--nav-gap);
-  flex-shrink: 0;
-}
-
-/* Botón circular de icono (idioma/tema): mismo hit que el burger
-   (44px) y material liquid glass. Los dos iconos de tema (sol/luna)
-   comparten la celda y el CSS muestra uno según [data-theme]. El icono
-   va CENTRADO en el círculo (place-items: center): antes en móvil se
-   apoyaba abajo (align-items: end) y quedaba descentrado. El icono va
-   por encima del ::before del glass (z-index 1). */
-.iconBtn {
-  inline-size: 44px;
-  block-size: 44px;
-  border-radius: 50%;
-  color: #e7e7eb;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  padding: 0;
-  display: inline-grid;
-  place-items: center;
-}
-
-.iconSvg {
-  inline-size: 20px;
-  block-size: 20px;
-  display: block;
-  grid-area: 1 / 1;
-  position: relative;
-  z-index: 1;
-}
-
-/* En modo oscuro se muestra el sol (para pasar a claro); en modo
-   claro, la luna (para pasar a oscuro). */
-.iconMoon {
-  display: none;
-}
-[data-theme="light"] .iconMoon {
-  display: block;
-}
-[data-theme="light"] .iconSun {
-  display: none;
-}
-
-.links {
-  transform: translate3d(
-    calc(var(--par-x, 0px) * var(--nav-par, 1)),
-    calc(var(--par-y, 0px) * var(--nav-par, 1)),
-    0
-  );
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--nav-gap);
-  min-inline-size: 0;
-  flex-shrink: 0;
-  display: flex;
-}
-.item {
-  /* 20px: múltiplo de 4 (antes --text-body-xl = 21px). */
-  font-size: calc(
-    (20px + (var(--text-body-base) - 20px) * var(--nav-shrink, 0)) *
-      var(--ui-scale-desktop, 1)
-  );
-  line-height: var(--leading-body-xl);
-  letter-spacing: var(--tracking-body-xl, -0.008em);
-  color: #e7e7eb;
-  white-space: nowrap;
-  transition:
-    color var(--theme-ms) linear,
-    opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 0.2s cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  min-height: 52px;
+  padding-inline: 12px;
+  border-radius: 14px;
+  color: var(--header-foreground);
+  font-family: var(--font-body), "Manrope", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 550;
+  line-height: 1.35;
   text-decoration: none;
-  position: relative;
+  transition: background 180ms ease;
 }
-.item::after {
-  content: "";
-  block-size: calc(2px * var(--ui-scale-desktop, 1));
-  transform-origin: 0;
-  background: currentColor;
-  transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1);
-  position: absolute;
-  inset-block-start: calc(100% + 0.14em);
-  inset-inline: 0;
-  transform: scaleX(0);
+.menuLink:hover { background: var(--header-hover); }
+.menuLink svg { opacity: .7; }
+.menuNumber {
+  color: var(--header-muted);
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: .04em;
 }
-.item:hover {
-  opacity: 0.7;
+@media (max-width: 480px) {
+  .header { inset-block-start: 12px; width: calc(100% - 24px); }
+  .scrolled { inset-block-start: 8px; }
+  .glassStage { height: 62px; }
+  .nav { height: 60px; padding-inline: 17px 11px; }
+  .logo svg { width: 71px; height: 32px; }
+  .actions { gap: 1px; }
+  .iconButton { width: 40px; height: 40px; }
+  .divider { margin-inline: 2px; }
 }
-.item:hover::after,
-.item:focus-visible::after {
-  transition-duration: 0.5s;
-  transform: scaleX(1);
-}
-
-.cta {
-  block-size: calc((48px + (40px - 48px) * var(--nav-shrink, 0)) * var(--ui-scale-desktop, 1));
-  white-space: nowrap;
-  padding-inline: var(--nav-cta-inset);
-  border-radius: var(--radius-sm2);
-  /* 20px: múltiplo de 4 (antes --text-body-xl = 21px). */
-  font-size: calc(
-    (20px + (var(--text-body-base) - 20px) * var(--nav-shrink, 0)) *
-      var(--ui-scale-desktop, 1)
-  );
-  line-height: var(--leading-body-xl);
-  letter-spacing: var(--tracking-body-xl, -0.008em);
-  --cta-stroke: 1.5px;
-  border: var(--cta-stroke) solid
-    color-mix(in oklch, var(--nav-fg) calc(50% * (1 - var(--ramp))), transparent);
-  background: color-mix(in oklch, var(--nav-fg) calc(100% * var(--ramp)), transparent);
-  color: #e7e7eb;
-  --cta-hover: 0;
-  transition:
-    --cta-hover 0.15s cubic-bezier(0.2, 0, 0, 1),
-    color var(--theme-ms) linear;
-  flex-shrink: 0;
-  align-items: center;
-  display: inline-flex;
-  position: relative;
-  text-decoration: none;
-}
-.cta > :first-child {
-  opacity: calc(1 - var(--ramp));
-}
-.cta::after {
-  content: attr(data-label);
-  inset: calc(-1 * var(--cta-stroke));
-  border: var(--cta-stroke) solid transparent;
-  padding-inline: var(--nav-cta-inset);
-  border-radius: inherit;
-  white-space: nowrap;
-  color: #0f0f14;
-  opacity: var(--ramp);
-  pointer-events: none;
-  align-items: center;
-  display: inline-flex;
-  position: absolute;
-}
-.ctaFill {
-  inset: calc(-1 * var(--cta-stroke));
-  border: var(--cta-stroke) solid transparent;
-  padding-inline: var(--nav-cta-inset);
-  border-radius: inherit;
-  white-space: nowrap;
-  background: #e7e7eb;
-  color: #0f0f14;
-  clip-path: inset(0 calc((1 - var(--cta-hover, 0)) * 100%) 0 0);
-  pointer-events: none;
-  align-items: center;
-  display: inline-flex;
-  position: absolute;
-}
-.cta:hover {
-  opacity: 1;
-  --cta-hover: 1;
-  transition-duration: 0.5s;
-}
-.cta:focus-visible {
-  --cta-hover: 1;
-  transition-duration: 0.5s;
-}
-:global(html[data-loaded]) .cta {
-  animation: 0.56s cubic-bezier(0.16, 1, 0.3, 1) both ctaStrokeIn;
-  animation-delay: calc(var(--reveal-delay, 0.34s) + var(--cta-reveal-delay, 0.9s));
-}
-@keyframes ctaStrokeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Burger + sheet (móvil) */
-.burger {
-  --burger-hit: 44px;
-  --burger-ink: 22px;
-  inline-size: var(--burger-hit);
-  block-size: var(--burger-hit);
-  /* Botón circular de liquid glass (como idioma/tema). */
-  border-radius: 50%;
-  margin-inline-start: 8px;
-  color: #e7e7eb;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  justify-content: center;
-  /* Las líneas van CENTRADAS en el botón (antes apoyadas abajo y
-     flotaban descentradas en el círculo). */
-  align-items: center;
-  margin-inline-end: calc((var(--burger-hit) - var(--burger-ink)) / -2);
-  padding: 0;
-  display: none;
-}
-.burgerBox {
-  inline-size: var(--burger-ink);
-  block-size: 12px;
-  /* Centrado (sin margin-block-end): las líneas quedan en el centro
-     del botón de 44px. Por encima del ::before del glass. */
-  margin-block-end: 0;
-  display: block;
-  position: relative;
-  z-index: 1;
-}
-.burgerLine {
-  background: currentColor;
-  border-radius: 1px;
-  block-size: 1.5px;
-  transition: transform 0.32s cubic-bezier(0.2, 0, 0, 1);
-  position: absolute;
-  inset-inline: 0;
-}
-.burgerLine:first-child {
-  inset-block-start: 0;
-}
-.burgerLine:last-child {
-  inset-block-end: 0;
-}
-.burger[data-open] .burgerLine:first-child {
-  transform: translateY(5.25px) rotate(45deg);
-}
-.burger[data-open] .burgerLine:last-child {
-  transform: translateY(-5.25px) rotate(-45deg);
-}
-.sheet {
-  z-index: 50;
-  block-size: 100svh;
-  padding-block: calc(var(--page-margin) + 56px) var(--space-8);
-  padding-inline: var(--page-margin);
-  background: var(--surface-canvas);
-  opacity: 0;
-  visibility: hidden;
-  align-content: center;
-  justify-items: start;
-  transition:
-    opacity 0.32s cubic-bezier(0.2, 0, 0, 1),
-    visibility 0s linear 0.32s;
-  display: none;
-  position: fixed;
-  inset-block-start: 0;
-  inset-inline: 0;
-}
-.sheet[data-open] {
-  opacity: 1;
-  visibility: visible;
-  transition:
-    opacity 0.32s cubic-bezier(0.2, 0, 0, 1),
-    visibility linear;
-}
-.sheetInner {
-  justify-items: start;
-  gap: var(--space-6);
-  inline-size: 100%;
-  display: grid;
-}
-.sheetItem {
-  font-family: var(--font-body);
-  /* 32px: múltiplo de 8 (antes --text-heading-lg, 26-32px fluido). */
-  font-size: 32px;
-  line-height: var(--leading-heading-lg);
-  /* Peso regular (400). */
-  font-weight: 400;
-  letter-spacing: var(--tracking-heading-lg, -0.01em);
-  color: var(--text-primary);
-  -webkit-tap-highlight-color: transparent;
-  align-items: center;
-  min-block-size: 44px;
-  text-decoration: none;
-  display: flex;
-}
-.sheetCta {
-  min-block-size: 52px;
-  padding-inline: var(--space-6);
-  border-radius: var(--radius-md2);
-  background: var(--text-primary);
-  color: var(--text-inverse);
-  font-family: var(--font-body);
-  /* 20px: múltiplo de 4 (antes --text-body-xl = 21px). */
-  font-size: 20px;
-  -webkit-tap-highlight-color: transparent;
-  justify-content: center;
-  align-items: center;
-  margin-block-start: var(--space-4);
-  /* Peso regular (400). */
-  font-weight: 400;
-  text-decoration: none;
-  display: inline-flex;
-}
-.scrim {
-  z-index: 40;
-  visibility: hidden;
-  -webkit-tap-highlight-color: transparent;
-  background: 0 0;
-  display: none;
-  position: fixed;
-  inset: 0;
-}
-.scrim[data-open] {
-  visibility: visible;
-}
-
-@media (max-width: 1023px) {
-  .links {
-    display: none;
-  }
-  .burger {
-    display: inline-flex;
-  }
-  .sheet {
-    display: grid;
-  }
-  .scrim {
-    display: block;
-  }
-}
-
-/* Barra móvil (ref): hasta 1023px —y portrait táctil 1024-1100— el nav
-   es una barra ancha fija arriba; al hacer scroll se encoge a píldora
-   centrada (con márgenes en los 4 lados). El ancho interpola con
-   --nav-m (0 arriba, 1 al bajar): min-inline-size pasa del ancho de
-   barra (100% - 2*space-3) a 0, y el nav (inline-size: fit-content)
-   se encoge a su contenido. Arriba la marca queda a la izquierda y
-   los controles a la derecha (space-between); al bajar, píldora. */
-@media (max-width: 1023px),
-  (min-width: 1024px) and (max-width: 1100px) and (orientation: portrait) and (pointer: coarse) {
-  .nav {
-    --nav-p: 0;
-    --nav-shrink: 0;
-    gap: var(--space-4);
-    flex-wrap: nowrap;
-    block-size: 56px;
-    /* Los textos del header apoyan su parte baja en la parte baja de la
-       fila 1 del hero (56px de barra + 12px de margen = 68px, la fila 1
-       termina a 69px): antes iban centrados y flotaban en medio del box
-       de la fila. */
-    align-items: flex-end;
-    padding-block-end: 0;
-  }
-  /* Píldora al hacer scroll (también con data-measured, que tiene más
-     especificidad que .nav y si no, impondría el ancho de barra):
-     inline-size fit-content + min-inline-size que interpola con
-     --nav-m (0 arriba = barra, 1 al bajar = píldora). */
-  .nav,
-  .nav[data-measured] {
-    inline-size: fit-content;
-    max-inline-size: calc(100% - var(--space-3) * 2);
-    min-inline-size: calc((100% - var(--space-3) * 2) * (1 - var(--nav-m, 0)));
-  }
-}
-
-/* Teléfono (ref): el morph va por --nav-m (max(scroll, menú)); el menú
-   es un panel que crece de --phone-bar-h a --sheet-h con --menu-p, con
-   su propio scrim en el box-shadow. */
-@media (pointer: coarse) and (max-width: 480px),
-  (pointer: coarse) and (max-height: 480px) {
-  .nav,
-  .sheet {
-    --phone-bar-h: 48px;
-  }
-
-  .nav {
-    --nav-shrink: calc(1 - var(--nav-m, 0));
-    --ramp: var(--nav-m, 0);
-    /* Padding interior 16px al bajar (antes (page-indent - page-margin)
-       que daba ~8px): el contenido no toca los bordes de la píldora. */
-    padding-inline: calc(var(--space-4) * var(--nav-m, 0));
-    inset-block-start: var(--page-margin);
-    /* Barra de 56px (no 48px): con el margen de 12px la parte baja de
-       la barra queda a 68px, en la parte baja de la fila 1 del hero. */
-    block-size: 56px;
-  }
-
-  .nav[data-menu-open] {
-    --ramp: 0;
-  }
-
-  .burger {
-    --burger-ink: 20px;
-  }
-
-  .burgerBox {
-    block-size: 11px;
-  }
-
-  .sheet {
-    inset-block-start: var(--page-margin);
-    inset-inline: var(--page-margin);
-    block-size: calc(
-      var(--phone-bar-h) + (var(--sheet-h, 320px) - var(--phone-bar-h)) * var(--menu-p, 0)
-    );
-    border-radius: var(--radius-md2);
-    background: color-mix(in oklch, var(--surface-canvas) calc(55% * var(--nav-m, 0)), transparent);
-    -webkit-backdrop-filter: blur(calc(var(--nav-m, 0) * 12px));
-    backdrop-filter: blur(calc(var(--nav-m, 0) * 12px));
-    /* El contenido del menú empieza debajo de la barra de 56px. */
-    padding-block: 56px 0;
-    padding-inline: var(--space-6);
-    box-shadow: 0 0 0 100vmax rgb(0 0 0 / calc(0.5 * var(--menu-p, 0)));
-    --menu-in: clamp(0, (var(--menu-p, 0) - 0.25) * 1.6, 1);
-    visibility: hidden;
-    align-content: start;
-    justify-items: center;
-    transition: none;
-    overflow: clip;
-  }
-
-  .sheet[data-anim] {
-    visibility: visible;
-    opacity: 1;
-  }
-
-  .sheetInner {
-    opacity: var(--menu-in, 0);
-    filter: blur(calc((1 - var(--menu-in, 0)) * 8px));
-    will-change: opacity, filter;
-    justify-items: center;
-    padding-block-end: var(--space-6);
-    transition: none;
-  }
-}
-
-/* Chromium: el panel del menú también refracta (liquid glass). */
-@supports (backdrop-filter: url(#liquid-glass-filter)) {
-  .sheet {
-    -webkit-backdrop-filter: url(#liquid-glass-filter) blur(calc(var(--nav-m, 0) * 6px)) saturate(1.5);
-    backdrop-filter: url(#liquid-glass-filter) blur(calc(var(--nav-m, 0) * 6px)) saturate(1.5);
-  }
-}
-
-/* Tablet táctil (ref): mismo panel, barra de 56px. */
-@media (pointer: coarse) and (min-width: 481px) and (min-height: 481px) and (max-width: 1023px),
-  (pointer: coarse) and (min-width: 1024px) and (max-width: 1100px) and (orientation: portrait) {
-  .nav,
-  .sheet {
-    --phone-bar-h: 56px;
-  }
-
-  .nav {
-    --nav-shrink: calc(1 - var(--nav-m, 0));
-    --ramp: var(--nav-m, 0);
-    /* Padding interior 16px al bajar (antes (page-indent - page-margin)). */
-    padding-inline: calc(var(--space-4) * var(--nav-m, 0));
-    inset-block-start: var(--page-margin);
-  }
-
-  .nav[data-menu-open] {
-    --ramp: 0;
-  }
-
-  .sheet {
-    inset-block-start: var(--page-margin);
-    inset-inline: var(--page-margin);
-    block-size: calc(
-      var(--phone-bar-h) + (var(--sheet-h, 320px) - var(--phone-bar-h)) * var(--menu-p, 0)
-    );
-    border-radius: var(--radius-md2);
-    background: color-mix(in oklch, var(--surface-canvas) calc(55% * var(--nav-m, 0)), transparent);
-    -webkit-backdrop-filter: blur(calc(var(--nav-m, 0) * 12px));
-    backdrop-filter: blur(calc(var(--nav-m, 0) * 12px));
-    padding-block: var(--phone-bar-h) 0;
-    padding-inline: var(--space-6);
-    box-shadow: 0 0 0 100vmax rgb(0 0 0 / calc(0.5 * var(--menu-p, 0)));
-    --menu-in: clamp(0, (var(--menu-p, 0) - 0.25) * 1.6, 1);
-    visibility: hidden;
-    align-content: start;
-    justify-items: center;
-    transition: none;
-    overflow: clip;
-  }
-
-  .sheet[data-anim] {
-    visibility: visible;
-    opacity: 1;
-  }
-
-  .sheetInner {
-    opacity: var(--menu-in, 0);
-    filter: blur(calc((1 - var(--menu-in, 0)) * 8px));
-    will-change: opacity, filter;
-    justify-items: center;
-    padding-block-end: var(--space-6);
-    transition: none;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .header, .iconButton, .logo, .menuLink { transition: none; }
 }
