@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import type { LiquidGLLens } from "liquid-gl";
-import { setHeaderPreviewStatus } from "../lib/header-preview";
 import styles from "./site-nav.module.css";
 
 /** Sample the exact body snapshot that liquidGL refracts. A single global
@@ -116,26 +115,6 @@ export default function HeaderLiquidGL({
       }, delay);
     };
 
-    const reportGeometry = (lens: LiquidGLLens | undefined) => {
-      if (!mounted || !activeRef.current || !lens) return;
-      const rect = lensRef.current?.getBoundingClientRect();
-      const gpu = lens.rectPx;
-      const delta = rect && gpu
-        ? Math.max(
-            Math.abs(rect.left - gpu.left),
-            Math.abs(rect.top - gpu.top),
-            Math.abs(rect.width - gpu.width),
-            Math.abs(rect.height - gpu.height)
-          )
-        : null;
-      const backend = lens.renderer?.backend?.constructor?.name || "motor no identificado";
-      const scale = lens.renderer?.scaleFactor;
-      setHeaderPreviewStatus(
-        "liquidGL: " + backend +
-        (typeof scale === "number" ? " · captura " + scale.toFixed(2) + "x" : "") +
-        (delta !== null ? " · geometría Δ" + delta.toFixed(1) + "px" : "")
-      );
-    };
     const scheduleGeometry = () => {
       if (geometryTimer) clearTimeout(geometryTimer);
       geometryTimer = setTimeout(() => {
@@ -145,7 +124,6 @@ export default function HeaderLiquidGL({
         // shader geometry without refreshing the entire body texture.
         lens.updateMetrics?.();
         lens.renderer?.render?.();
-        reportGeometry(lens);
       }, 360);
     };
     // Scroll changes geometry; it does not require re-rasterizing the body.
@@ -168,7 +146,6 @@ export default function HeaderLiquidGL({
     window.addEventListener("resize", onResize, { passive: true });
     window.addEventListener("site-lang", onLanguage);
 
-    setHeaderPreviewStatus("Inicializando refracción");
     import("liquid-gl")
       .then(({ default: liquidGL }) => {
         if (!mounted || !lensRef.current) return;
@@ -201,9 +178,8 @@ export default function HeaderLiquidGL({
           magnify: 1,
           tint: null,
           on: {
-            init(instance) {
+            init() {
               if (!mounted) return;
-              reportGeometry(instance);
               scheduleTone();
             },
           },
@@ -211,7 +187,6 @@ export default function HeaderLiquidGL({
         const lens = Array.isArray(result) ? result[0] : result;
         lensInstanceRef.current = lens;
         if (!lens) {
-          setHeaderPreviewStatus("liquidGL: motor no disponible");
           return;
         }
         // Register the animated mesh as an independent live source.
@@ -227,7 +202,7 @@ export default function HeaderLiquidGL({
         });
       })
       .catch(() => {
-        if (mounted) setHeaderPreviewStatus("liquidGL: error de inicialización");
+        // The header keeps working without the GPU lens.
       });
 
     return () => {

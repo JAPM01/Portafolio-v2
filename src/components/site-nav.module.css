@@ -19,6 +19,15 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* liquidGL: su canvas es un overlay del viewport completo, anclado al
+   header (fixed) por la librería. La regla global `canvas {
+   max-width: 100% }` lo aplastaba al ancho de la píldora (560px) y el
+   lente se veía como una mancha pequeña a la izquierda. Sin tope, el
+   canvas mide el viewport y el lente cae sobre la píldora. */
+.header > canvas {
+  max-width: none;
+}
+
 /* Light pages need dark controls. The dark hero deliberately overrides it. */
 :global(html[data-theme="light"]) .header:not(.overHero) {
   --header-foreground: var(--brand-gray-2);
@@ -32,42 +41,6 @@
 
 .scrolled { inset-block-start: 12px; }
 .glassStage { position: relative; z-index: 2; height: 70px; width: 100%; }
-
-/* liquid-glass-react: la librería es dueña del warp y del filtro de
-   desplazamiento. Aquí solo la dimensionamos al stage y le damos a su
-   píldora (.glass) el tinte, el borde y el rim. Nada de filtros propios. */
-.liquidGlass {
-  width: 100%;
-  height: 100%;
-}
-.liquidGlass :global(.glass) {
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  border: 1px solid var(--header-edge);
-  background: linear-gradient(
-    130deg,
-    color-mix(in srgb, var(--brand-gray-7) 5.20%, transparent) 0%,
-    color-mix(in srgb, var(--brand-gray-7) 1.30%, transparent) 42%,
-    color-mix(in srgb, var(--brand-blue-5) 3.50%, transparent) 75%,
-    color-mix(in srgb, var(--brand-blue-1) 2.20%, transparent) 100%
-  );
-  /* Tinte oscuro base: cuando pasa el título gigante del hero detrás,
-     la píldora lo atenúa para que JPM e iconos sigan legibles. */
-  background-color: color-mix(in srgb, var(--brand-gray-1) 55%, transparent);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--brand-gray-7) 34.00%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--brand-gray-7) 4.50%, transparent),
-    0 10px 30px color-mix(in srgb, var(--brand-gray-1) 19.00%, transparent);
-}
-/* La envoltura de contenido de la librería (hija div de .glass) debe
-   llenar la píldora para que el nav (width 100%) se extienda de borde
-   a borde; si no, se encoge al ancho intrínseco de JPM + iconos. */
-.liquidGlass :global(.glass) > div {
-  width: 100%;
-  height: 100%;
-  display: flex;
-}
 
 .nav {
   display: flex;

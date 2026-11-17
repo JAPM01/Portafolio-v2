@@ -1,128 +1,66 @@
-/* Draggable dev menu; never part of the public portfolio design. */
+/* Burbuja flotante de herramientas de desarrollo (NO es parte del diseño):
+   position fixed, sin impacto en el layout. Posición por defecto abajo a
+   la derecha pero ELEVADA sobre el meta: el meta mide ~48px y termina
+   16px antes del borde inferior, así que con bottom: 88px la burbuja
+   queda ~24px por encima de su borde superior y no tapa "Conectemos".
+   Cuando se arrastra, su posición pasa a left/top en línea (ver
+   DevBubble.tsx) y se guarda en localStorage. Contenedor extensible: hoy
+   solo lleva el toggle de la retícula; más herramientas van como hermanas
+   de .devToolsToggle dentro de este contenedor. */
 .devTools {
   position: fixed;
-  z-index: 10020;
   right: var(--space-4);
   bottom: 88px;
-  display: flex;
+  z-index: 60;
+  display: inline-flex;
   align-items: center;
-  gap: 9px;
-  border: 1px solid color-mix(in srgb, var(--brand-gray-7) 40%, transparent);
+  gap: var(--space-2);
+  border: 1px solid color-mix(in oklch, var(--white-primary) 40%, transparent);
   border-radius: 999px;
+  background: rgba(10, 10, 14, 0.85);
+  color: var(--white-primary);
   padding: 8px 12px 8px 10px;
-  background: color-mix(in srgb, var(--brand-gray-1) 88%, transparent);
-  color: var(--brand-gray-7);
-  box-shadow: 0 5px 20px color-mix(in srgb, var(--brand-gray-1) 28%, transparent);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  font-family: var(--font-body);
-  font-size: 12px;
-}
-.devToolsDragging { box-shadow: 0 8px 25px color-mix(in srgb, var(--brand-gray-1) 45%, transparent); }
-.devToolsGrip {
-  width: 11px;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border: 0;
-  color: var(--brand-gray-5);
-  background: transparent;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
   cursor: grab;
   touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
-.devToolsDragging .devToolsGrip { cursor: grabbing; }
+.devTools:hover {
+  background: rgba(10, 10, 14, 1);
+}
+.devToolsDragging {
+  cursor: grabbing;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+/* Agarre de arrastre (solo affordance visual; toda la burbuja se arrastra). */
+.devToolsGrip {
+  display: inline-flex;
+  align-items: center;
+  color: color-mix(in oklch, var(--white-primary) 55%, transparent);
+}
+/* Toggle de la retícula dentro de la burbuja. El clic lo gestiona el
+   contenedor (ver DevBubble.tsx, el pointer capture hace que el click
+   caiga en él); el botón aporta semántica, foco y aria-pressed. */
 .devToolsToggle {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  min-height: 24px;
+  gap: 6px;
+  background: none;
   border: 0;
   padding: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  white-space: nowrap;
-}
-.devToolsToggle svg:last-child { transition: transform 160ms ease; }
-.chevronOpen { transform: rotate(180deg); }
-.devToolsGrip:focus-visible, .devToolsToggle:focus-visible, .menuOption:focus-visible {
-  outline: 2px solid var(--brand-blue-4);
-  outline-offset: 3px;
-}
-.panel {
-  position: absolute;
-  bottom: calc(100% + 12px);
-  right: 0;
-  width: min(290px, calc(100vw - 24px));
-  max-height: min(390px, 62dvh);
-  overflow-y: auto;
-  display: grid;
-  gap: 3px;
-  padding: 12px;
-  border-radius: 18px;
-  border: 1px solid color-mix(in srgb, var(--brand-gray-7) 22%, transparent);
-  background: color-mix(in srgb, var(--brand-gray-1) 96%, transparent);
-  box-shadow: 0 18px 50px color-mix(in srgb, var(--brand-gray-1) 40%, transparent);
-  color: var(--brand-gray-7);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-}
-.panelHeading { display: flex; justify-content: space-between; align-items: center; padding: 3px 9px 9px; font-size: 13px; font-weight: 650; }
-.panelMeta { color: var(--brand-gray-5); font-size: 11px; font-weight: 400; }
-.separator { height: 1px; margin: 3px 8px; background: color-mix(in srgb, var(--brand-gray-6) 18%, transparent); }
-.menuOption {
-  border: 0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 10px 9px;
-  border-radius: 12px;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-.menuOption:hover { background: color-mix(in srgb, var(--brand-gray-6) 10%, transparent); }
-.optionCopy { display: grid; gap: 3px; min-width: 0; }
-.optionCopy strong { font-size: 13px; font-weight: 600; }
-.optionCopy small { font-size: 11px; line-height: 1.4; font-weight: 400; color: var(--brand-gray-5); }
-.switch {
-  flex: none;
-  position: relative;
-  width: 32px;
-  height: 19px;
-  border-radius: 999px;
-  background: var(--brand-gray-3);
-  transition: background 180ms ease;
-}
-.switch::after {
-  content: "";
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: var(--brand-gray-7);
-  transition: transform 180ms ease;
-}
-.switchOn { background: var(--brand-blue-1); }
-.switchOn::after { transform: translateX(13px); }
-.status {
-  padding: 8px 9px 2px;
   margin: 0;
-  color: var(--brand-gray-5);
-  font-size: 10px;
-  line-height: 1.4;
-  overflow-wrap: anywhere;
+  color: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
 }
-@media (max-height: 540px) {
-  .panel { bottom: auto; top: calc(100% + 12px); max-height: 60dvh; }
+.devToolsToggle[aria-pressed="false"] {
+  opacity: 0.55;
 }
-@media (prefers-reduced-motion: reduce) {
-  .switch, .switch::after, .devToolsToggle svg:last-child { transition: none; }
+.devToolsToggle:focus-visible {
+  outline: 2px solid var(--white-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
 }

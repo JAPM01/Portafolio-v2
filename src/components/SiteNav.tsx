@@ -6,16 +6,9 @@ import { MorphIcon } from "morphicons/react";
 import { ArrowUpRight, Globe, Menu, Moon, Sun, X } from "lucide";
 import { px } from "../lib/paths";
 import styles from "./site-nav.module.css";
-import {
-  getHeaderPreview,
-  getServerHeaderPreview,
-  hydrateHeaderPreview,
-  subscribeHeaderPreview,
-} from "../lib/header-preview";
 
 // The WebGL liquidGL layer reads the canvas while rendering, so it must not
 // be pre-rendered by Next.js during static export.
-const LiquidGlass = dynamic(() => import("liquid-glass-react"), { ssr: false });
 const HeaderLiquidGL = dynamic(() => import("./HeaderLiquidGL"), { ssr: false });
 
 const LINKS = [
@@ -73,23 +66,8 @@ export default function SiteNav() {
   const theme = useSyncExternalStore(subscribeTheme, currentTheme, () => "dark");
   const scrolled = useSyncExternalStore(subscribeScroll, isScrolled, () => false);
   const overHero = useSyncExternalStore(subscribeScroll, isOverHero, () => false);
-  const headerPreview = useSyncExternalStore(
-    subscribeHeaderPreview,
-    getHeaderPreview,
-    getServerHeaderPreview
-  );
-
-  useEffect(() => {
-    hydrateHeaderPreview();
-  }, []);
 
   const [menuOpen, setMenuOpen] = useState(false);
-  // The upstream library only listens to mousemove. Feed touch contact
-  // coordinates to its external pointer API so the pill can deform on Android.
-  const [touchPoint, setTouchPoint] = useState<{
-    global: { x: number; y: number };
-    offset: { x: number; y: number };
-  } | null>(null);
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const isSpanish = language === "es";
@@ -137,21 +115,8 @@ export default function SiteNav() {
   }
 
   // No glass capsule over the hero at rest. On scroll (or elsewhere on
-  // the site), mount the actual LiquidGlass component around the same nav.
+  // the site), the liquidGL lens refracts the content behind the same nav.
   const showGlass = scrolled || !overHero;
-  function trackTouch(event: React.PointerEvent<HTMLDivElement>) {
-    if (event.pointerType !== "touch" || !showGlass) return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    setTouchPoint({
-      global: { x: event.clientX, y: event.clientY },
-      offset: {
-        x: ((event.clientX - centerX) / rect.width) * 100,
-        y: ((event.clientY - centerY) / rect.height) * 100,
-      },
-    });
-  }
 
   const navigation = (
           <nav
@@ -226,33 +191,8 @@ export default function SiteNav() {
       ref={headerRef}
       data-liquid-ignore=""
     >
-      <div
-        className={styles.glassStage}
-        onPointerDown={trackTouch}
-        onPointerUp={() => setTouchPoint(null)}
-        onPointerCancel={() => setTouchPoint(null)}
-      >
-        {headerPreview === "header1" ? (
-          <HeaderLiquidGL active={showGlass}>{navigation}</HeaderLiquidGL>
-        ) : !showGlass ? (
-          navigation
-        ) : (
-          <LiquidGlass
-            displacementScale={400}
-            mode="prominent"
-            aberrationIntensity={6.0}
-            saturation={180}
-            blurAmount={0}
-            cornerRadius={18}
-            padding="0px"
-            className={styles.liquidGlass}
-            style={{ position: "absolute", top: "50%", left: "50%", width: "100%", height: "100%" }}
-            globalMousePos={touchPoint?.global}
-            mouseOffset={touchPoint?.offset}
-          >
-            {navigation}
-          </LiquidGlass>
-        )}
+      <div className={styles.glassStage}>
+        <HeaderLiquidGL active={showGlass}>{navigation}</HeaderLiquidGL>
       </div>
 
       <div id="jpm-navigation-menu" className={styles.dropdown} hidden={!menuOpen}>
