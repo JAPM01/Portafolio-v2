@@ -33,25 +33,17 @@
 .scrolled { inset-block-start: 12px; }
 .glassStage { position: relative; z-index: 2; height: 70px; width: 100%; }
 
-/* Lente propio: refracción radial en el borde (filtro SVG
-   #liquid-glass-filter, mapa radial de jahed: centro neutro, borde con
-   desplazamiento máximo). Reemplaza a liquid-glass-react, cuya refracción
-   era demasiado sutil: subir displacementScale de 120 a 400 no la
-   aumentaba. Lección: `backdrop-filter: url()` NO refracta en Chromium
-   (ni en el sandbox ni, probablemente, en general: el test de rayas con
-   scale 150 no dobló nada); el desplazamiento va en `filter: url()` sobre
-   una capa de fondo (.lensWarp), con el contenido (.lensContent) encima
-   sin distorsionar — la misma estructura que usa liquid-glass-react. */
-.lensPill {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
+/* liquid-glass-react: la librería es dueña del warp y del filtro de
+   desplazamiento. Aquí solo la dimensionamos al stage y le damos a su
+   píldora (.glass) el tinte, el borde y el rim. Nada de filtros propios. */
+.liquidGlass {
+  width: 100%;
+  height: 100%;
+}
+.liquidGlass :global(.glass) {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  border-radius: var(--header-glass-radius);
   border: 1px solid var(--header-edge);
   background: linear-gradient(
     130deg,
@@ -61,45 +53,20 @@
     color-mix(in srgb, var(--brand-blue-1) 2.20%, transparent) 100%
   );
   /* Tinte oscuro base: cuando pasa el título gigante del hero detrás,
-     la píldora lo atenúa para que JPM e iconos sigan legibles.
-     La refracción del borde sigue visible. */
+     la píldora lo atenúa para que JPM e iconos sigan legibles. */
   background-color: color-mix(in srgb, var(--brand-gray-1) 55%, transparent);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--brand-gray-7) 34.00%, transparent),
     inset 0 -1px 0 color-mix(in srgb, var(--brand-gray-7) 4.50%, transparent),
     0 10px 30px color-mix(in srgb, var(--brand-gray-1) 19.00%, transparent);
-  overflow: hidden;
 }
-.lensWarp {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  /* Centro casi transparente como el video de referencia: la refracción
-     del borde hace el efecto lente, no el escarchado. */
-  backdrop-filter: blur(2px) saturate(180%);
-  filter: url(#liquid-glass-filter);
-}
-.lensContent {
-  position: relative;
-  z-index: 1;
+/* La envoltura de contenido de la librería (hija div de .glass) debe
+   llenar la píldora para que el nav (width 100%) se extienda de borde
+   a borde; si no, se encoge al ancho intrínseco de JPM + iconos. */
+.liquidGlass :global(.glass) > div {
   width: 100%;
-  min-width: 0;
+  height: 100%;
   display: flex;
-}
-.lensPill::after {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  pointer-events: none;
-  z-index: 2;
-  background:
-    linear-gradient(115deg, color-mix(in srgb, var(--brand-gray-7) 32.00%, transparent), transparent 27% 72%, color-mix(in srgb, var(--brand-blue-6) 12.00%, transparent)),
-    radial-gradient(ellipse 54% 24% at 42% 0%, color-mix(in srgb, var(--brand-gray-7) 32.00%, transparent), transparent);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--brand-gray-7) 34.00%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--brand-blue-4) 18.00%, transparent);
 }
 
 .nav {
