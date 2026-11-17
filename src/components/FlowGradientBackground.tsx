@@ -65,18 +65,24 @@ float blob(vec2 p, vec2 c, vec2 r, float soft) {
 
 vec3 paint(vec2 uv) {
   // keep the shapes' proportions on any screen (designed at ~3:2)
-  // * 1.4 zooms out: the shapes were too large (too much zoom)
-  vec2 p = (uv - 0.5) * vec2(u_res.x / u_res.y / 1.54, 1.0) * 1.4 + 0.5;
+  // zoom out more on portrait screens: on a narrow screen the blobs
+  // look huge (too much zoom) — 2.5x on portrait vs 1.4x on landscape.
+  float zoom = 1.4;
+  if (u_res.x < u_res.y) zoom = 2.5;
+  vec2 p = (uv - 0.5) * vec2(u_res.x / u_res.y / 1.54, 1.0) * zoom + 0.5;
   float soft = clamp(0.06 + 0.5 * (1.32 - 1.64 * distance(uv, vec2(0.5))), 0.06, 0.5);
   vec3 c = u_bg;
   c = mix(c, u_deep, blob(p, vec2(0.52, 0.62), vec2(0.62, 0.78), soft));
-  c = mix(c, u_body, blob(p, vec2(0.58, 0.8), vec2(0.42, 0.42), soft) * 0.95);
-  c = mix(c, u_hot, blob(p, vec2(0.64, 1.02), vec2(0.26, 0.2), soft) * 0.85);
+  c = mix(c, u_body, blob(p, vec2(0.58, 0.8), vec2(0.55, 0.32), soft) * 0.95);
+  // hot spot: a corner accent (top-right), not a band across the top —
+  // like the orange corner in the Sentos reference.
+  c = mix(c, u_hot, blob(p, vec2(0.88, 1.05), vec2(0.20, 0.15), soft) * 0.75);
   // dark folds cut back into the colour
   c = mix(c, u_bg, blob(p, vec2(0.14, 0.42), vec2(0.24, 0.7), soft) * 0.92);
   c = mix(c, u_bg, blob(p, vec2(0.42, 0.18), vec2(0.36, 0.22), soft) * 0.7);
   c = mix(c, u_bg * 0.6, blob(p, vec2(0.9, 0.36), vec2(0.16, 0.5), soft) * 0.75);
-  c += u_accent * blob(p, vec2(0.97, 0.55), vec2(0.07, 0.22), soft) * 0.5;
+  // bright wave on the right side (more visible than a thin edge glint).
+  c += u_accent * blob(p, vec2(0.88, 0.62), vec2(0.12, 0.28), soft) * 0.6;
   return c;
 }
 
