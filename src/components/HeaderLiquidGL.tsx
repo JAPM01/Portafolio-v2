@@ -90,6 +90,7 @@ export default function HeaderLiquidGL({
   useEffect(() => {
     let mounted = true;
     let refreshTimer: ReturnType<typeof setTimeout> | null = null;
+    let geometryTimer: ReturnType<typeof setTimeout> | null = null;
     let toneFrame: number | null = null;
     const tone = { logo: false, actions: false };
     const scheduleTone = () => {
@@ -115,11 +116,46 @@ export default function HeaderLiquidGL({
       }, delay);
     };
 
-    // Scroll moves the snapshot's viewport mapping; it does NOT require a
-    // fresh whole-document rasterization. Refresh only when the DOM changes.
-    const onScroll = () => scheduleTone();
+    const reportGeometry = (lens: LiquidGLLens | undefined) => {
+      if (!mounted || !activeRef.current || !lens) return;
+      const rect = lensRef.current?.getBoundingClientRect();
+      const gpu = lens.rectPx;
+      const delta = rect && gpu
+        ? Math.max(
+            Math.abs(rect.left - gpu.left),
+            Math.abs(rect.top - gpu.top),
+            Math.abs(rect.width - gpu.width),
+            Math.abs(rect.height - gpu.height)
+          )
+        : null;
+      const backend = lens.renderer?.backend?.constructor?.name || "motor no identificado";
+      const scale = lens.renderer?.scaleFactor;
+      setHeaderPreviewStatus(
+        "liquidGL: " + backend +
+        (typeof scale === "number" ? " · captura " + scale.toFixed(2) + "x" : "") +
+        (delta !== null ? " · geometría Δ" + delta.toFixed(1) + "px" : "")
+      );
+    };
+    const scheduleGeometry = () => {
+      if (geometryTimer) clearTimeout(geometryTimer);
+      geometryTimer = setTimeout(() => {
+        const lens = lensInstanceRef.current;
+        if (!mounted || !activeRef.current || !lens) return;
+        // Header width transitions end before measuring; synchronize the
+        // shader geometry without refreshing the entire body texture.
+        lens.updateMetrics?.();
+        lens.renderer?.render?.();
+        reportGeometry(lens);
+      }, 360);
+    };
+    // Scroll changes geometry; it does not require re-rasterizing the body.
+    const onScroll = () => {
+      scheduleTone();
+      scheduleGeometry();
+    };
     const onResize = () => {
       scheduleTone();
+      scheduleGeometry();
       refresh(700);
     };
     const onLanguage = () => refresh(450);
@@ -145,15 +181,15 @@ export default function HeaderLiquidGL({
           // under the navigation at local z=3.
           zIndex: 10001,
           content: false,
-          // Offset is now normalized to the lens in our reproducible shader patch.
-          // Keep letter edges inside a narrow, physically plausible displacement.
-          refraction: 0.014,
+          // Physical lens-relative displacement: ~4.3px maximum for 62px
+          // mobile glass; high-contrast glyph guard remains enabled.
+          refraction: 0.024,
           aberration: 0,
-          bevelDepth: 0.009,
-          bevelWidth: 0.068,
+          bevelDepth: 0.046,
+          bevelWidth: 0.15,
           frost: 0,
           shadow: false,
-          specular: false,
+          specular: true,
           reveal: "none",
           draggable: false,
           tilt: false,
@@ -166,12 +202,7 @@ export default function HeaderLiquidGL({
           on: {
             init(instance) {
               if (!mounted) return;
-              const backend = instance.renderer?.backend?.constructor?.name || "motor no identificado";
-              const scale = instance.renderer?.scaleFactor;
-              setHeaderPreviewStatus(
-                "liquidGL: " + backend +
-                (typeof scale === "number" ? " · captura " + scale.toFixed(2) + "x" : "")
-              );
+              reportGeometry(instance);
               scheduleTone();
             },
           },
@@ -205,6 +236,7 @@ export default function HeaderLiquidGL({
       window.removeEventListener("resize", onResize);
       window.removeEventListener("site-lang", onLanguage);
       if (refreshTimer) clearTimeout(refreshTimer);
+      if (geometryTimer) clearTimeout(geometryTimer);
       if (toneFrame !== null) cancelAnimationFrame(toneFrame);
       const header = lensRef.current?.closest("header");
       header?.style.removeProperty("--header-logo-foreground");

@@ -8,6 +8,7 @@
  *  - Upstream displacement is expressed in whole-snapshot UV coordinates,
  *    so identical settings warp farther as the document grows.
  *  - Upstream applies a five-tap box blur even when frost === 0.
+ *  - Flat rim lighting and unbounded specular whiten light backgrounds.
  *
  * Both GLSL/WebGL and WGSL/WebGPU are patched; fail closed if upstream
  * changes, rather than silently shipping the original artifacts.
@@ -27,6 +28,22 @@ function replaceOnce(label, original, replacement) {
   }
   source = source.slice(0, i) + replacement + source.slice(i + original.length);
   modified++;
+}
+
+/** Also upgrades an already patched node_modules from earlier previews. */
+function replaceOneOf(label, originals, replacement) {
+  if (source.includes(replacement)) return;
+  for (const original of originals) {
+    const at = source.indexOf(original);
+    if (at < 0) continue;
+    if (source.indexOf(original, at + original.length) >= 0) {
+      throw new Error("Non-unique liquidGL source: " + label);
+    }
+    source = source.slice(0, at) + replacement + source.slice(at + original.length);
+    modified++;
+    return;
+  }
+  throw new Error("liquidGL 3.0.0 source mismatch: " + label);
 }
 
 replaceOnce(
@@ -90,25 +107,36 @@ replaceOnce(
 
 // Use the GPU's *deformed silhouette*, not a second static CSS outline,
 // to show a delicate rim over both white and black surfaces.
+replaceOneOf(
+  "GLSL optical bevel and rim",
+  ["final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);\nfloat rimLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));\nfloat rimWeight = pow(edge, 8.0) * 0.28;\nfinal.rgb = clamp(final.rgb + vec3(0.45 - rimLum) * rimWeight, vec3(0.0), vec3(1.0));", "final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);"],
+  "final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);\nfloat rimLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));\nfloat rimTarget = mix(0.63, 0.55, smoothstep(0.28, 0.80, rimLum));\nfloat rimWeight = pow(edge, 2.4) * 0.27 + pow(edge, 7.0) * 0.09;\nfinal.rgb = clamp(mix(final.rgb, vec3(rimTarget), rimWeight), vec3(0.0), vec3(1.0));",
+);
+replaceOneOf(
+  "WGSL optical bevel and rim",
+  ["finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);\nlet rimLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));\nlet rimWeight = pow(edge, 8.0) * 0.28;\nfinalCol = vec4<f32>(clamp(finalCol.rgb + vec3<f32>(0.45 - rimLum) * rimWeight, vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);", "finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);"],
+  "finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);\nlet rimLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));\nlet rimTarget = mix(0.63, 0.55, smoothstep(0.28, 0.80, rimLum));\nlet rimWeight = pow(edge, 2.4) * 0.27 + pow(edge, 7.0) * 0.09;\nfinalCol = vec4<f32>(clamp(mix(finalCol.rgb, vec3<f32>(rimTarget), rimWeight), vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);",
+);
+
+// Respect the current background luminance: strong reflections over dark
+// mesh, restrained reflections over light panels. This keeps one lens.
 replaceOnce(
-  "GLSL adaptive rim",
-  "final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);",
+  "GLSL adaptive specular",
+  "final.rgb += h;",
   [
-    "final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);",
-    "float rimLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));",
-    "float rimWeight = pow(edge, 8.0) * 0.28;",
-    "final.rgb = clamp(final.rgb + vec3(0.45 - rimLum) * rimWeight, vec3(0.0), vec3(1.0));",
-  ].join("\n"),
+    "float surfaceLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));",
+    "float reflectionStrength = 0.10 + 0.90 * (1.0 - smoothstep(0.32, 0.86, surfaceLum));",
+    "final.rgb = clamp(final.rgb + (vec3(1.0) - final.rgb) * h * reflectionStrength, vec3(0.0), vec3(1.0));",
+  ].join("\n            "),
 );
 replaceOnce(
-  "WGSL adaptive rim",
-  "finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);",
+  "WGSL adaptive specular",
+  "finalCol = vec4<f32>(finalCol.rgb + vec3<f32>(h), finalCol.a);",
   [
-    "finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);",
-    "let rimLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));",
-    "let rimWeight = pow(edge, 8.0) * 0.28;",
-    "finalCol = vec4<f32>(clamp(finalCol.rgb + vec3<f32>(0.45 - rimLum) * rimWeight, vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);",
-  ].join("\n"),
+    "let surfaceLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));",
+    "let reflectionStrength = 0.10 + 0.90 * (1.0 - smoothstep(0.32, 0.86, surfaceLum));",
+    "finalCol = vec4<f32>(clamp(finalCol.rgb + (vec3<f32>(1.0) - finalCol.rgb) * h * reflectionStrength, vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);",
+  ].join("\n    "),
 );
 
 await writeFile(modulePath, source, "utf8");

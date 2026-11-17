@@ -2,12 +2,15 @@ declare module "liquid-gl" {
   export type LiquidGLEngine = "auto" | "webgpu" | "webgl2" | "webgl";
   export interface LiquidGLLens {
     destroy(): void;
+    rectPx?: { left: number; top: number; width: number; height: number };
+    updateMetrics?(): void;
     renderer?: {
       backend?: { constructor?: { name?: string }; maxTextureSize?: number };
       scaleFactor?: number;
       staticSnapshotCanvas?: HTMLCanvasElement;
       snapshotTarget?: HTMLElement;
       captureSnapshot(): Promise<boolean>;
+      render?(): void;
     };
   }
   export interface LiquidGLSettings {

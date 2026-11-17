@@ -48,15 +48,15 @@ offsetUV = direction * amount * centreBlend
 De ese modo, `refraction` y `bevelDepth` producen desplazamientos
 proporcionales al tamaño físico de la píldora, no al alto de la página.
 
-Para una píldora móvil de 62px, los valores actuales `0.050` y
-`0.045` limitan el desplazamiento nominal combinado a
-aproximadamente 5.9px antes de las atenuaciones del shader.
+Para una píldora móvil de 62px, los valores actuales `0.024` y
+`0.046` limitan el desplazamiento nominal combinado a
+aproximadamente 4.3px antes de las atenuaciones del shader.
 `aberration` permanece en `0`, `frost` en `0`,
 `bevelWidth` en `0.071`, `magnify` en `1` y
 `interaction: "fluid"` sigue habilitado.
 
-**Control de integridad:** el script exige cuatro coincidencias únicas
-(dos mapeos y dos kernels) y falla si la versión de la librería
+**Control de integridad:** el script exige diez sustituciones verificables
+(desplazamiento, muestreo, bordes de texto, iluminación del bisel y reflejos en ambos shaders) y falla si la versión de la librería
 cambia de forma incompatible, en vez de aplicar un parche parcial.
 
 ## Límites y validación real
@@ -127,3 +127,14 @@ No se utilizan otros colores base de la paleta.
 - Los iconos y JPM eligen de forma independiente un tono de la escala neutra autorizada, según la luminancia mediana de sus respectivas regiones en la captura real. Se utiliza histéresis para evitar parpadeos. Si la captura no permite lectura, siguen usando los colores semánticos del tema.
 - La barra y la superficie óptica tienen exactamente la misma altura en móvil y escritorio.
 - Los controles y el menú permanecen como DOM interactivo, encima del canvas GPU.
+
+
+## Recuperación de profundidad sin doble cápsula (noviembre 2026)
+
+La lente actual conserva una sola máscara GPU. Su versión anterior usaba `refraction=0.014`, `bevelDepth=0.009`, `bevelWidth=0.068` y `specular=false`; por ello resultaba casi plana. Ahora utiliza `0.024 / 0.046 / 0.15` y `specular=true`.
+
+Los diez parches reproducibles en WebGL y WebGPU mantienen los ocho cambios previos y amplían la iluminación: el bisel usa una transición de perfil amplio (con una cresta fina), mientras que el reflejo especular se modula por luminosidad. Esto permite recuperar volumen sobre el mesh oscuro sin blanquear fondos claros. La protección de texto de alto contraste, la ausencia de cromatismo y el muestreo nítido permanecen.
+
+La sombra difusa se aplica al **canvas con transparencia** de la GPU, siguiendo su silueta, nunca mediante una segunda píldora ni un pseudo-elemento con bordes. El padding horizontal de la navegación queda simétrico: 17px en móvil y 24px en escritorio.
+
+El estado del menú de desarrollo ahora muestra `geometría ΔNpx`, que compara los rectángulos CSS y GPU de la lente al iniciar y al terminar de desplazarse o cambiar el tamaño, para detectar discrepancias reales en dispositivos. Un Δ cercano a cero demuestra alineación de las dimensiones medidas, pero no valida por sí mismo el aspecto final del shader.
