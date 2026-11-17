@@ -11,26 +11,26 @@ type Word = { text: string; tone: Tone };
 
 const MANIFESTO: Record<Lang, Word[]> = {
   es: [
-    "Me", "muevo", "entre", "el", "diseño", "y", "la", "tecnología",
-    "para", "abordar", "cada", "reto", "desde", "la", "raíz,",
-    "tomando", "decisiones", "claras", "que", "se", "miden", "por",
-    "resultados", "reales.",
+    "Me", "muevo", "entre", "el", "diseño,", "la", "tecnología",
+    "y", "la", "usabilidad", "para", "abordar", "cada", "reto",
+    "desde", "la", "raíz,", "tomando", "decisiones", "claras",
+    "que", "se", "miden", "por", "resultados", "reales.",
   ].map((text) => ({
     text,
-    tone: text === "diseño" || text === "tecnología"
+    tone: text === "diseño," || text === "tecnología" || text === "usabilidad"
       ? "blue"
       : text === "resultados" || text === "reales."
         ? "white"
         : "gray",
   })),
   en: [
-    "Moving", "between", "design", "and", "technology", "to",
-    "tackle", "every", "challenge", "from", "the", "root,",
+    "Moving", "between", "design,", "technology,", "and", "usability",
+    "to", "tackle", "every", "challenge", "from", "the", "root,",
     "making", "clear", "decisions", "measured", "by", "real",
     "outcomes.",
   ].map((text) => ({
     text,
-    tone: text === "design" || text === "technology"
+    tone: text === "design," || text === "technology," || text === "usability"
       ? "blue"
       : text === "real" || text === "outcomes."
         ? "white"
@@ -40,21 +40,21 @@ const MANIFESTO: Record<Lang, Word[]> = {
 
 const CONTENT = {
   es: {
-    eyebrow: "Manifiesto",
-    heading: "01. Mi forma de trabajar",
+    eyebrow: "SOBRE MI MÉTODO",
+    heading: "01. Mi filosofía",
     thoughts: [
       "Entender a las personas.",
-      "Cuestionar lo convencional.",
-      "Conectar ideas con intención.",
+      "Observar antes de actuar.",
+      "Definir los resultados.",
     ],
   },
   en: {
-    eyebrow: "Manifesto",
-    heading: "01. How I work",
+    eyebrow: "ABOUT MY METHOD",
+    heading: "01. My philosophy",
     thoughts: [
-      "Understand people.",
-      "Challenge conventions.",
-      "Connect ideas with intention.",
+      "Understanding people.",
+      "Observing before acting.",
+      "Defining outcomes.",
     ],
   },
 } as const;
