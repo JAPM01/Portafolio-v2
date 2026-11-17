@@ -77,12 +77,21 @@ export default function HeaderLiquidGL({
   const lensRef = useRef<HTMLDivElement>(null);
   const activeRef = useRef(active);
   const lensInstanceRef = useRef<LiquidGLLens | undefined>(undefined);
+  // The snapshot re-capture lives in the mount effect; expose it so the
+  // activation effect can refresh the texture the moment the pill appears.
+  const refreshRef = useRef<(delay: number) => void>(() => {});
 
   useEffect(() => {
+    const wasActive = activeRef.current;
     activeRef.current = active;
     if (!active) {
       lensRef.current?.closest("header")?.style.removeProperty("--header-logo-foreground");
       lensRef.current?.closest("header")?.style.removeProperty("--header-actions-foreground");
+    } else if (!wasActive) {
+      // The pill just appeared. The snapshot can be stale (white hero
+      // before the mesh painted), so re-capture now instead of waiting
+      // for fonts/resize/theme to fix it seconds later.
+      refreshRef.current(150);
     }
   }, [active]);
 
@@ -114,6 +123,7 @@ export default function HeaderLiquidGL({
         }
       }, delay);
     };
+    refreshRef.current = refresh;
 
     const scheduleGeometry = () => {
       if (geometryTimer) clearTimeout(geometryTimer);
@@ -160,11 +170,12 @@ export default function HeaderLiquidGL({
           content: false,
           // Stronger refraction focused in the curved rim; clear optical center.
           // Content-aware contrast protection still limits glyph doubling.
-          refraction: 0.062,
+          // Refraction above the Alien preset (0.073) for a more liquid lens.
+          refraction: 0.075,
           // Dispersion follows the refracted vector, not a CSS color fringe.
-          aberration: 0.195,
-          bevelDepth: 0.15,
-          bevelWidth: 0.185,
+          aberration: 0.22,
+          bevelDepth: 0.18,
+          bevelWidth: 0.2,
           frost: 0,
           shadow: false,
           specular: true,
@@ -195,6 +206,11 @@ export default function HeaderLiquidGL({
         };
         withDynamics.registerDynamic?.("[data-hero-bg-source] canvas");
         scheduleTone();
+        // The first snapshot can be taken before the mesh has painted, so
+        // the hero bakes as solid white and the pill flashes white on the
+        // first scroll. Re-capture once the mesh is live so the texture
+        // the lens refracts is already correct before the user scrolls.
+        refresh(1000);
         // Fonts might settle after initial capture. Re-capture once, not
         // after each scroll frame, and whenever language/theme changes.
         void document.fonts.ready.then(() => {
