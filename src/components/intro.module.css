@@ -27,12 +27,13 @@
   }
 }
 
+/* Manifiesto = H2 de la escala única (48px móvil / 64px desktop). */
 .copy {
-  font-family: var(--font-body);
-  font-size: var(--text-heading-2xl);
-  line-height: var(--leading-heading-2xl);
-  letter-spacing: var(--tracking-heading-2xl);
-  font-weight: var(--weight-heading-2xl);
+  font-family: var(--font-display);
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-leading);
+  letter-spacing: var(--type-h2-tracking);
+  font-weight: 400;
   text-wrap: balance;
   margin: 0;
 }

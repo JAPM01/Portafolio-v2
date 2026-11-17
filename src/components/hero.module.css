@@ -280,12 +280,10 @@
   align-self: end;
   gap: calc(var(--space-16) * var(--ui-scale-desktop, 1));
   width: fit-content;
-  /* 24px/30px en desktop (16px/20px en móvil): el meta escala con el
-     título para mantener la proporción de móvil (título ~4.4× el meta).
-     Solo 3 tamaños en el hero: título, rol y párrafo, meta. */
-  font-size: 24px;
-  line-height: 30px;
-  letter-spacing: var(--tracking-body-sm, 0);
+  /* Sin font-size propio: los valores usan el token cuerpo y las
+     etiquetas el token caption (escala única). Antes todo el meta era
+     24px/30px en desktop (16px/20px en móvil) y etiquetas y valores
+     competían al mismo tamaño. */
   display: flex;
   text-shadow: 0px 2px 16px color-mix(in srgb, var(--brand-gray-1) 48.00%, transparent);
 }
@@ -295,10 +293,19 @@
   display: flex;
 }
 .metaLabel {
-  /* Color fijo claro (el hero siempre es oscuro). */
-  color: var(--brand-gray-6);
+  /* Etiqueta = caption de la escala única (16px móvil / 20px desktop),
+     más chica que el valor y en un gris más apagado (brand-gray-5). */
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+  letter-spacing: var(--type-caption-tracking);
+  color: var(--brand-gray-5);
 }
 .metaValue {
+  /* Valor = cuerpo de la escala única (20px móvil / 28px desktop),
+     mismo tamaño que el rol y el párrafo. */
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  letter-spacing: var(--type-body-tracking);
   color: var(--brand-gray-6);
 }
 a.metaValue {
@@ -320,24 +327,23 @@ a.metaValue.ctaLink:hover {
   opacity: 0.7;
 }
 .ctaIcon {
-  /* Flecha ↘ de 24px en desktop (16px en móvil), igual que el texto
-     del meta. */
-  inline-size: 24px;
-  block-size: 24px;
+  /* Flecha ↘ de 28px en desktop (20px en móvil), igual que el texto
+     del valor de meta (cuerpo). */
+  inline-size: 28px;
+  block-size: 28px;
   flex: none;
 }
 
 .pitch {
   z-index: 1;
-  /* Rol y párrafo a 28px/35px en desktop (20px/25px en móvil): escalan
-     con el título para mantener la proporción de móvil (título ~3.5×
-     el rol). En desktop van en la columna DERECHA (cols 8-13, filas
+  /* Rol y párrafo = cuerpo de la escala única (20px móvil / 28px
+     desktop). En desktop van en la columna DERECHA (cols 8-13, filas
      6-10), como estaban antes — Jafet corrigió que NO van en la misma
      columna que el título. align-self: end (abajo del span): con el
      título a 176px, la 2ª línea ("con sentido") llega hasta la columna
      del pitch, así que el pitch se apoya abajo para no chocar con ella. */
-  font-size: 28px;
-  line-height: 35px;
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
   flex-direction: column;
   gap: 0;
   display: flex;
@@ -347,9 +353,9 @@ a.metaValue.ctaLink:hover {
   align-self: end;
 }
 .role {
-  font-size: 28px;
-  line-height: 35px;
-  letter-spacing: var(--tracking-heading-lg, -0.015em);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  letter-spacing: var(--type-body-tracking);
   /* Color fijo claro (el hero siempre es oscuro). */
   color: var(--brand-gray-6);
   align-items: center;
@@ -368,9 +374,9 @@ a.metaValue.ctaLink:hover {
   flex: none;
 }
 .sub {
-  font-size: 28px;
-  line-height: 35px;
-  letter-spacing: var(--tracking-heading-lg, -0.015em);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+  letter-spacing: var(--type-body-tracking);
   /* Color fijo claro (el hero siempre es oscuro). */
   color: var(--brand-gray-6);
   /* Sin max-width ni balance: el texto llena las columnas del pitch y la
@@ -433,19 +439,12 @@ a.metaValue.ctaLink:hover {
     grid-column: 1 / 5;
     grid-row: 8 / 11;
     align-self: start;
-    /* 20px/25px en móvil (28px/35px en desktop). */
-    font-size: 20px;
-    line-height: 25px;
+    /* Cuerpo de la escala única (20px móvil): el token ya es 20px en
+       móvil, no hace falta sobreescribirlo aquí. */
   }
   .role {
     /* Un solo gutter de separación con el párrafo (16px en móvil). */
     margin-block-end: var(--space-4);
-    font-size: 20px;
-    line-height: 25px;
-  }
-  .sub {
-    font-size: 20px;
-    line-height: 25px;
   }
   .roleIcon {
     --role-icon-size: 32px;
@@ -454,9 +453,8 @@ a.metaValue.ctaLink:hover {
     grid-column: 1 / 5;
     grid-row: 12 / 13;
     align-self: end;
-    /* 16px/20px en móvil (24px/30px en desktop). */
-    font-size: 16px;
-    line-height: 20px;
+    /* Sin font-size propio: los valores usan el token cuerpo (20px
+       móvil) y las etiquetas el token caption (16px móvil). */
     /* Dos columnas en móvil: "Portafolio de trabajo / Jafet Pérez" a la
        izquierda y "Contact / Conectemos" a la derecha, con un gutter de
        separación — antes quedaban apilados, Contact debajo del nombre. */
@@ -466,8 +464,8 @@ a.metaValue.ctaLink:hover {
     width: auto;
   }
   .ctaIcon {
-    inline-size: 16px;
-    block-size: 16px;
+    inline-size: 20px;
+    block-size: 20px;
   }
 }
 
