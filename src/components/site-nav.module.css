@@ -30,7 +30,7 @@
 }
 
 .scrolled { inset-block-start: 12px; }
-.glassStage { position: relative; height: 70px; width: 100%; }
+.glassStage { position: relative; z-index: 2; height: 70px; width: 100%; }
 
 .glassRoot { position: absolute; }
 /* Let the library's refracted backdrop be the glass, not a solid overlay. */
@@ -207,28 +207,25 @@
   .header, .iconButton, .logo, .menuLink { transition: none; }
 }
 
-/* Single liquidGL optical surface. No second ::after lens or white overlay. */
+/* Single optical silhouette. The GPU canvas is painted at local z=1,
+   the stage at z=2, and navigation at z=3. No mix-blend-mode on icons:
+   difference blending turned the dark controls WHITE on white sections. */
 .previewGlassRoot {
   position: absolute;
   inset: 0;
+  box-sizing: border-box;
   width: 100%;
   height: 100%;
+  border: 1px solid color-mix(in srgb, var(--header-foreground) 22%, transparent);
   border-radius: 999px;
-  /* Outline belongs to this same geometry, rather than another pill. */
-  outline: 1px solid color-mix(in srgb, var(--header-foreground) 29%, transparent);
-  outline-offset: -1px;
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--brand-gray-1) 13%, transparent);
-  transition: outline-color 180ms ease;
+  box-shadow: 0 7px 18px color-mix(in srgb, var(--brand-gray-1) 10%, transparent);
+  transition: border-color 180ms ease;
 }
 .previewGlassInactive {
-  outline-color: transparent;
+  border-color: transparent;
   box-shadow: none;
 }
-/* liquidGL attaches its WebGL/WebGPU canvas directly to the fixed header.
-   Keep it mounted; conceal only its pixels before the scroll threshold. */
-.header.heroResting > canvas {
-  opacity: 0 !important;
-}
+.header.heroResting > canvas { opacity: 0 !important; }
 .previewLiquidLens {
   position: absolute;
   inset: 0;
@@ -247,11 +244,9 @@
   align-items: center;
   pointer-events: auto;
 }
-/* White-gray difference blending gives light controls over dark photos
-   and dark controls over light panels without injecting extra base colors. */
 .previewNavContent .nav {
-  color: var(--brand-gray-7);
-  mix-blend-mode: difference;
+  color: var(--header-foreground);
+  mix-blend-mode: normal;
 }
 @media (prefers-reduced-motion: reduce) {
   .previewGlassRoot { transition: none; }

@@ -14,14 +14,33 @@ export default function HeaderLiquidGL({ children, active }: { children: ReactNo
   const lensRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let active = true;
-    let lens: { destroy(): void } | undefined;
+    let mounted = true;
+    let lens: { destroy(): void; renderer?: { captureSnapshot(): Promise<boolean> } } | undefined;
+    let refreshTimer: ReturnType<typeof setTimeout> | null = null;
+    let lastRefresh = 0;
+    const refresh = (delay: number) => {
+      if (refreshTimer) clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(() => {
+        if (!mounted || !lens?.renderer || Date.now() - lastRefresh < 1000) return;
+        lastRefresh = Date.now();
+        void lens.renderer.captureSnapshot();
+      }, delay);
+    };
+    const onScrollEnd = () => refresh(330);
+    const onLanguageChange = () => refresh(250);
+    const themeObserver = new MutationObserver(() => refresh(450));
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme", "lang"],
+    });
+    window.addEventListener("scroll", onScrollEnd, { passive: true });
+    window.addEventListener("site-lang", onLanguageChange);
 
     setHeaderPreviewStatus("Inicializando refracción");
 
     import("liquid-gl")
       .then(({ default: liquidGL }) => {
-        if (!active || !lensRef.current) return;
+        if (!mounted || !lensRef.current) return;
 
         const result = liquidGL({
           target: "#jpm-preview-header1-lens",
@@ -30,12 +49,14 @@ export default function HeaderLiquidGL({ children, active }: { children: ReactNo
           // This avoids WebGPU-specific capture/edge artifacts on Android.
           engine: window.innerWidth < 768 ? "webgl2" : "auto",
           resolution: window.innerWidth < 768 ? 1.25 : 1.6,
-          zIndex: 9998,
+          // Anchor .header has z-index 9999. This yields GPU canvas z=1
+          // inside the header, below the real navigation at z=3.
+          zIndex: 10001,
           content: false,
           // Shader patched to use lens-pixel units (not page-height UV).
-          refraction: 0.050,
+          refraction: 0.026,
           aberration: 0,
-          bevelDepth: 0.045,
+          bevelDepth: 0.018,
           bevelWidth: 0.071,
           frost: 0,
           shadow: false,
@@ -45,14 +66,14 @@ export default function HeaderLiquidGL({ children, active }: { children: ReactNo
           draggable: false,
           tilt: false,
           interaction: "fluid",
-          interactionStrength: 0.44,
+          interactionStrength: 0.22,
           interactionRadius: 0.35,
           interactionViscosity: 0.65,
           magnify: 1,
           tint: null,
           on: {
             init(instance) {
-              if (!active) return;
+              if (!mounted) return;
               // Report the actual renderer, not merely the requested engine.
               const backend = (instance as {
                 renderer?: {
@@ -70,6 +91,9 @@ export default function HeaderLiquidGL({ children, active }: { children: ReactNo
           },
         });
         lens = Array.isArray(result) ? result[0] : result;
+        // Layout fonts and dynamic hero content may settle after the first
+        // full-document capture. Refresh once without remounting the lens.
+        refresh(700);
         {
           try {
             // Live hero canvas is registered. The header itself is excluded
@@ -83,11 +107,15 @@ export default function HeaderLiquidGL({ children, active }: { children: ReactNo
         if (!lens) setHeaderPreviewStatus("liquidGL: sin motor disponible");
       })
       .catch(() => {
-        if (active) setHeaderPreviewStatus("liquidGL: error de inicialización");
+        if (mounted) setHeaderPreviewStatus("liquidGL: error de inicialización");
       });
 
     return () => {
-      active = false;
+      mounted = false;
+      themeObserver.disconnect();
+      window.removeEventListener("scroll", onScrollEnd);
+      window.removeEventListener("site-lang", onLanguageChange);
+      if (refreshTimer) clearTimeout(refreshTimer);
       lens?.destroy();
     };
   }, []);

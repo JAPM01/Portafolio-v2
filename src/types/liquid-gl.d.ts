@@ -5,6 +5,7 @@ declare module "liquid-gl" {
     renderer?: {
       backend?: { constructor?: { name?: string }; maxTextureSize?: number };
       scaleFactor?: number;
+      captureSnapshot(): Promise<boolean>;
     };
   }
   export interface LiquidGLSettings {

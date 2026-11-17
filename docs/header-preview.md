@@ -71,3 +71,35 @@ cambia de forma incompatible, en vez de aplicar un parche parcial.
   ausencia de artefactos ópticos en un teléfono.
 - Revisar fondos claros, oscuros, letras detrás de la lente, continuidad
   al hacer scroll, contraste de iconos y comportamiento táctil en Android.
+
+## Iteración de contraste, capas y refresco — Android
+
+- En `liquidGL`, `zIndex` es **global**. El renderer resta el z-index
+  del ancestro fijo antes de establecer el z-index local del canvas.
+  El header tiene `z-index: 9999`; usar `zIndex: 10001` sitúa el
+  canvas en `z-index: 1`, por debajo de la navegación (`z-index: 3`).
+- Eliminamos `mix-blend-mode: difference` de la navegación. Este modo
+  invertía los colores semánticos: los controles oscuros terminaban blancos
+  sobre los paneles claros y parecían desaparecer. Ahora heredan
+  `--header-foreground`, que depende del tema y de la ubicación del hero.
+- El contorno se pinta **dentro** de la misma geometría, con un borde
+  de 1px. Ya no hay outline exterior ni pseudo-elementos que puedan
+  generar una segunda píldora.
+- El desplazamiento óptico de la lente baja a `refraction: 0.026` y
+  `bevelDepth: 0.018`, manteniendo `aberration: 0`.
+- `NaughtyDOM.rasteriseAsync` captura una textura del documento que no
+  reacciona automáticamente a cambios de `data-theme`, idioma o a todos
+  los elementos que entran con animaciones. Para evitar mostrar estados
+  anteriores, recapturamos después de cada scroll detenido (330 ms),
+  cambio de tema (450 ms) y cambio de idioma (250 ms), con una ventana
+  mínima de 1000 ms entre capturas. La textura anterior sigue activa
+  mientras termina el refresco.
+- El backend GPU sigue montado durante el scroll. El shader modificado
+  en `postinstall` permanece igual.
+
+### Validación pendiente
+
+Capturas de Chrome Android sobre fondo negro, fondo blanco, textos
+grandes y secciones intermedias. Comprobar que no exista texto
+desplazado ni controles invisibles, y que el refresco de la captura no
+provoque saltos o retardos perceptibles.
