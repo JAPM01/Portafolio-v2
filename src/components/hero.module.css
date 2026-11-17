@@ -222,21 +222,25 @@
      entre este valor y lo que cabe en su span de 4 filas — sin él, el
      título de 200px desbordaba sus filas en desktop y el rol/párrafo/
      meta se veían diminutos (10× vs 3.5× en móvil). El tope por alto
-     lleva × 1.25: el título sube un 25% (porcentaje aproximado de
-     Jafet) — de ~94px a ~118px a 900px de alto. Peso regular
+     lleva × 1.875: +25% y luego +50% más (porcentajes aproximados de
+     Jafet) — de ~94px a ~176px a 900px de alto. Se redondea a múltiplos
+     de 8px (escala de 8). Peso regular
      (400): solo regular en ambas tipografías, nada de bold. El
      line-height y el tracking son relativos (0.95 / -0.036em), así
      que escalan solos. */
   font-size: calc(24px + 12.2vw);
   font-size: min(
     round(calc(24px + 12.2vw), 8px),
-    calc(
-      (
+    round(
+      calc(
         (
-          (100svh - var(--space-6) - var(--space-6) - 11 * var(--space-6)) /
-          12
-        ) * 4 + 3 * var(--space-6)
-      ) / 2.85 * 1.25
+          (
+            (100svh - var(--space-6) - var(--space-6) - 11 * var(--space-6)) /
+            12
+          ) * 4 + 3 * var(--space-6)
+        ) / 2.85 * 1.875
+      ),
+      8px
     ),
     200px
   );
@@ -307,8 +311,10 @@ a.metaValue.ctaLink:hover {
   /* Rol y párrafo a 28px/35px en desktop (20px/25px en móvil): escalan
      con el título para mantener la proporción de móvil (título ~3.5×
      el rol). En desktop van en la columna DERECHA (cols 8-13, filas
-     6-10, centrado vertical), como estaban antes — Jafet corrigió que
-     NO van en la misma columna que el título. */
+     6-10), como estaban antes — Jafet corrigió que NO van en la misma
+     columna que el título. align-self: end (abajo del span): con el
+     título a 176px, la 2ª línea ("con sentido") llega hasta la columna
+     del pitch, así que el pitch se apoya abajo para no chocar con ella. */
   font-size: 28px;
   line-height: 35px;
   flex-direction: column;
@@ -317,7 +323,7 @@ a.metaValue.ctaLink:hover {
   position: relative;
   grid-column: 8 / 13;
   grid-row: 6 / 10;
-  align-self: center;
+  align-self: end;
 }
 .role {
   font-size: 28px;
