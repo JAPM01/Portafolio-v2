@@ -191,10 +191,11 @@
   /* Cols 1-11 (no 1-8): la línea larga del título ("con sentido") mide
      ~1100px a 200px y no cabe en las 8 columnas (921px); con 11 columnas
      (1158px) el texto queda DENTRO de su caja sin invadir los gutters de
-     las columnas 8-11. Filas 2-11: 3 líneas a 200px miden ~570px y
-     caben en el span de 9 filas (633px a 900px de alto). */
+     las columnas 8-11. Filas 3-7 (igual que en móvil): el título ocupa
+     4 filas, con 2 filas de hueco arriba (separado del header) — antes
+     era 2-11 (9 filas) y el título de 200px dominaba todo el hero. */
   grid-column: 1 / 11;
-  grid-row: 2 / 11;
+  grid-row: 3 / 7;
   align-self: start;
   position: relative;
 }
@@ -217,13 +218,26 @@
      caracteres). Tamaño fluido por ANCHO: 72px en 390px y 200px en
      1440px, con tope en 200px; se redondea a múltiplos de 8px con
      round() (la primera línea es el fallback para navegadores sin
-     round()). En móvil se le aplica además un tope por ALTO (ver la
-     media query): el menor entre este valor y lo que cabe en su span
-     de 4 filas. Peso regular (400): solo regular en ambas tipografías,
-     nada de bold. El line-height y el tracking son relativos (0.95 /
-     -0.036em), así que escalan solos. */
+     round()). Además un tope por ALTO (igual que en móvil): el menor
+     entre este valor y lo que cabe en su span de 4 filas — sin él, el
+     título de 200px desbordaba sus filas en desktop y el rol/párrafo/
+     meta se veían diminutos (10× vs 3.5× en móvil). Peso regular
+     (400): solo regular en ambas tipografías, nada de bold. El
+     line-height y el tracking son relativos (0.95 / -0.036em), así
+     que escalan solos. */
   font-size: calc(24px + 12.2vw);
-  font-size: min(round(calc(24px + 12.2vw), 8px), 200px);
+  font-size: min(
+    round(calc(24px + 12.2vw), 8px),
+    calc(
+      (
+        (
+          (100svh - var(--space-6) - var(--space-6) - 11 * var(--space-6)) /
+          12
+        ) * 4 + 3 * var(--space-6)
+      ) / 2.85
+    ),
+    200px
+  );
   line-height: var(--leading-heading-5-5xl);
   letter-spacing: var(--tracking-heading-5-5xl);
   font-weight: 400;
@@ -235,14 +249,16 @@
 .meta {
   z-index: 1;
   grid-column: 1 / 7;
-  grid-row: 11 / 13;
+  /* Fila 12 (igual que en móvil): el meta va en la última fila. */
+  grid-row: 12 / 13;
   align-self: end;
   gap: calc(var(--space-16) * var(--ui-scale-desktop, 1));
   width: fit-content;
-  /* 16px/20px: el meta es más chico que el rol (20px). Solo 3 tamaños
-     en el hero: título 72/200, rol y párrafo 20, meta 16. */
-  font-size: 16px;
-  line-height: 20px;
+  /* 24px/30px en desktop (16px/20px en móvil): el meta escala con el
+     título para mantener la proporción de móvil (título ~4.4× el meta).
+     Solo 3 tamaños en el hero: título, rol y párrafo, meta. */
+  font-size: 24px;
+  line-height: 30px;
   letter-spacing: var(--tracking-body-sm, 0);
   display: flex;
   text-shadow: 0px 2px 20px rgba(0, 0, 0, 1);
@@ -277,30 +293,33 @@ a.metaValue.ctaLink:hover {
   opacity: 0.7;
 }
 .ctaIcon {
-  /* Flecha ↘ de 16px, igual que el texto del meta. */
-  inline-size: 16px;
-  block-size: 16px;
+  /* Flecha ↘ de 24px en desktop (16px en móvil), igual que el texto
+     del meta. */
+  inline-size: 24px;
+  block-size: 24px;
   flex: none;
 }
 
 .pitch {
   z-index: 1;
-  /* Rol y párrafo a 20px/25px: el párrafo llena todo lo ancho del
-     pitch. Solo 3 tamaños en el hero: título 72/200, rol y párrafo 20,
-     meta 16. */
-  font-size: 20px;
-  line-height: 25px;
+  /* Rol y párrafo a 28px/35px en desktop (20px/25px en móvil): escalan
+     con el título para mantener la proporción de móvil (título ~3.5×
+     el rol). Filas 8-11 y cols 1-11 (igual que en móvil): el pitch va
+     DEBAJO del título, no en una columna a la derecha — antes era
+     cols 8-13 / filas 6-10, al lado de "humano.". */
+  font-size: 28px;
+  line-height: 35px;
   flex-direction: column;
   gap: 0;
   display: flex;
   position: relative;
-  grid-column: 8 / 13;
-  grid-row: 6 / 10;
-  align-self: center;
+  grid-column: 1 / 11;
+  grid-row: 8 / 11;
+  align-self: start;
 }
 .role {
-  font-size: 20px;
-  line-height: 25px;
+  font-size: 28px;
+  line-height: 35px;
   letter-spacing: var(--tracking-heading-lg, -0.015em);
   color: var(--white-primary);
   align-items: center;
@@ -311,16 +330,16 @@ a.metaValue.ctaLink:hover {
   display: inline-flex;
 }
 .roleIcon {
-  /* La flecha ↘ de 32px fijos (múltiplo de 8). */
-  --role-icon-size: 32px;
+  /* La flecha ↘ de 40px en desktop (32px en móvil, múltiplos de 8). */
+  --role-icon-size: 40px;
   inline-size: var(--role-icon-size);
   block-size: var(--role-icon-size);
   translate: 0 calc(var(--role-icon-size) / 24);
   flex: none;
 }
 .sub {
-  font-size: 20px;
-  line-height: 25px;
+  font-size: 28px;
+  line-height: 35px;
   letter-spacing: var(--tracking-heading-lg, -0.015em);
   color: var(--white-primary);
   /* Sin max-width ni balance: el texto llena las columnas del pitch y la
@@ -371,15 +390,30 @@ a.metaValue.ctaLink:hover {
     grid-column: 1 / 5;
     grid-row: 8 / 11;
     align-self: start;
+    /* 20px/25px en móvil (28px/35px en desktop). */
+    font-size: 20px;
+    line-height: 25px;
   }
   .role {
     /* Un solo gutter de separación con el párrafo (16px en móvil). */
     margin-block-end: var(--space-4);
+    font-size: 20px;
+    line-height: 25px;
+  }
+  .sub {
+    font-size: 20px;
+    line-height: 25px;
+  }
+  .roleIcon {
+    --role-icon-size: 32px;
   }
   .meta {
     grid-column: 1 / 5;
     grid-row: 12 / 13;
     align-self: end;
+    /* 16px/20px en móvil (24px/30px en desktop). */
+    font-size: 16px;
+    line-height: 20px;
     /* Dos columnas en móvil: "Portafolio de trabajo / Jafet Pérez" a la
        izquierda y "Contact / Conectemos" a la derecha, con un gutter de
        separación — antes quedaban apilados, Contact debajo del nombre. */
@@ -387,6 +421,10 @@ a.metaValue.ctaLink:hover {
     grid-template-columns: 1fr 1fr;
     gap: var(--space-4);
     width: auto;
+  }
+  .ctaIcon {
+    inline-size: 16px;
+    block-size: 16px;
   }
 }
 
