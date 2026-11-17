@@ -2,7 +2,7 @@
 .header {
   --header-foreground: #f5f7fd;
   --header-hover: rgba(255, 255, 255, .10);
-  --header-glass: rgba(241, 246, 255, .065);
+  --header-glass: rgba(241, 246, 255, .025);
   --header-edge: rgba(255, 255, 255, .28);
   --header-divider: rgba(255, 255, 255, .23);
   --header-panel: rgba(18, 20, 34, .78);
@@ -47,10 +47,28 @@
     0 10px 30px rgba(2, 6, 22, .19) !important;
 }
 .glassRoot :global(.glass__warp) {
-  background: var(--header-glass);
-  /* Prefixed backdrop filtering for mobile WebKit; unprefixed blur and
-     refraction continue to be applied by liquid-glass-react itself. */
-  -webkit-backdrop-filter: blur(7px) saturate(145%);
+  /* No secondary backdrop-filter: let the library apply its own SVG
+     displacement + chromatic aberration to the backdrop. */
+  background: linear-gradient(
+    130deg,
+    rgba(238, 248, 255, 0.075) 0%,
+    rgba(255, 255, 255, 0.018) 42%,
+    rgba(0, 208, 240, 0.055) 75%,
+    rgba(17, 0, 255, 0.038) 100%
+  );
+}
+.glassRoot :global(.glass)::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.18), transparent 27% 72%, rgba(195, 215, 255, 0.09)),
+    radial-gradient(ellipse 54% 24% at 42% 0%, rgba(255, 255, 255, .17), transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.19),
+    inset 0 -1px 0 rgba(120, 138, 255, 0.12);
 }
 .glassRoot :global(.glass > div:last-child) {
   width: 100%;
@@ -80,10 +98,11 @@
 .logo:hover { color: #fe0149; }
 .logo {
   font-family: var(--font-display), "Google Sans", sans-serif;
-  font-size: 38px;
+  font-size: 24px;
   font-weight: 400;
   line-height: 1;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.025em;
+  font-kerning: normal;
   white-space: nowrap;
 }
 /* On the hero the navigation sits directly on the artwork. Liquid glass
@@ -163,7 +182,7 @@
   .scrolled { inset-block-start: 8px; }
   .glassStage { height: 62px; }
   .nav { height: 60px; padding-inline: 17px 11px; }
-  .logo { font-size: 34px; }
+  .logo { font-size: 23px; }
   .heroResting { inset-block-start: 12px; width: calc(100% - 2 * var(--space-4)); }
   .heroResting .nav { padding-inline: 0; }
   .actions { gap: 1px; }

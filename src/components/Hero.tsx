@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import styles from "./hero.module.css";
-import { CharRise, WordFade } from "../lib/anim";
+import { WordFade } from "../lib/anim";
 import { px } from "../lib/paths";
 import DevBubble from "./DevBubble";
 import HeroBackground from "./HeroBackground";
@@ -103,7 +103,7 @@ export default function Hero() {
                 <HeroBackground />
               </div>
             </div>
-            <div className={styles.veil} style={{ background: "#080405", opacity: 0.07 }} />
+            <div className={styles.veil} style={{ background: "#080405", opacity: 0.015 }} />
             <div className={styles.topFade} aria-hidden="true">
               <div className={styles.topFadeLayer} />
             </div>
@@ -125,15 +125,19 @@ export default function Hero() {
           <h1
             id="hero-title"
             className={`${styles.titleBase} ${styles.title55} clipped`}
-            style={{ textShadow: "0px 2px 28px rgba(0, 0, 0, 0.45)" }}
+            style={{ textShadow: "0px 2px 18px rgba(0, 0, 0, 0.32)" }}
           >
             {t.title.map((line, li) => (
-              <span key={li} style={{ "--anim-base": "0ms" } as React.CSSProperties}>
-                <span className="sr-only">{line.join(" ")}</span>
+              <span className={styles.titleLine} key={li}>
                 {line.map((word, wi) => (
                   <span key={wi}>
                     {wi > 0 ? " " : null}
-                    <CharRise word={word} base="0ms" />
+                    <span
+                      className={styles.titleWord}
+                      style={{ "--word-index": li * 3 + wi } as React.CSSProperties}
+                    >
+                      {word}
+                    </span>
                   </span>
                 ))}
               </span>

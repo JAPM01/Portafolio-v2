@@ -91,7 +91,7 @@
 .topFadeLayer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(8, 4, 5, 0.30) 0%, rgba(8, 4, 5, 0) 100%);
+  background: linear-gradient(to bottom, rgba(8, 4, 5, 0.12) 0%, rgba(8, 4, 5, 0) 100%);
 }
 .bottomDark {
   opacity: 0;
@@ -101,10 +101,10 @@
   background: linear-gradient(
     to bottom,
     rgb(0 0 0 / 0) 0%,
-    rgb(0 0 0 / 0.06) 35%,
-    rgb(0 0 0 / 0.25) 65%,
-    rgb(0 0 0 / 0.5) 88%,
-    rgb(0 0 0 / 0.68) 100%
+    rgb(0 0 0 / 0.015) 35%,
+    rgb(0 0 0 / 0.09) 65%,
+    rgb(0 0 0 / 0.22) 88%,
+    rgb(0 0 0 / 0.35) 100%
   );
 }
 /* Sin overrides en modo claro: el hero siempre es oscuro (el mesh no
@@ -177,9 +177,9 @@
   opacity: 0;
   --scrim-from: 0;
   background:
-    radial-gradient(78% 118px at 44% 188px, #00000057, #0000 72%),
-    radial-gradient(78% 104px at 44% calc(50% + 42px), #0000004d, #0000 72%),
-    radial-gradient(78% 98px at 44% calc(100% - 98px), #0000004d, #0000 72%);
+    radial-gradient(78% 118px at 44% 188px, #00000020, #0000 72%),
+    radial-gradient(78% 104px at 44% calc(50% + 42px), #0000001a, #0000 72%),
+    radial-gradient(78% 98px at 44% calc(100% - 98px), #0000001a, #0000 72%);
   position: absolute;
   inset: 0;
 }
@@ -203,9 +203,11 @@
 }
 .titleBase {
   font-optical-sizing: auto;
-  /* Color fijo claro (el hero siempre es oscuro, en ambos temas). */
-  color: #e7e7eb;
-  text-wrap: nowrap;
+  font-kerning: normal;
+  font-feature-settings: "kern" 1, "liga" 1;
+  text-rendering: optimizeLegibility;
+  color: #d6d9e2;
+  text-wrap: wrap;
   flex-direction: column;
   max-width: 22ch;
   display: flex;
@@ -247,9 +249,24 @@
     ),
     200px
   );
-  line-height: var(--leading-heading-5-5xl);
-  letter-spacing: var(--tracking-heading-5-5xl);
+  line-height: 0.93;
+  letter-spacing: -0.046em;
   font-weight: 400;
+}
+.titleLine {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+}
+.titleWord {
+  display: inline-block;
+  white-space: nowrap;
+  animation: heroWordReveal 660ms cubic-bezier(.2,.8,.2,1) both;
+  animation-delay: calc(var(--word-index, 0) * 48ms);
+}
+@keyframes heroWordReveal {
+  from { opacity: 0; transform: translateY(.25em); }
+  to { opacity: 1; transform: translateY(0); }
 }
 :global(html:not([data-perf-off~="title-layer"])) .titleBase {
   will-change: transform;
@@ -270,7 +287,7 @@
   line-height: 30px;
   letter-spacing: var(--tracking-body-sm, 0);
   display: flex;
-  text-shadow: 0px 2px 20px rgba(0, 0, 0, 1);
+  text-shadow: 0px 2px 16px rgba(0, 0, 0, .48);
 }
 .metaItem {
   gap: calc(var(--space-2) * var(--ui-scale-desktop, 1));
@@ -279,10 +296,10 @@
 }
 .metaLabel {
   /* Color fijo claro (el hero siempre es oscuro). */
-  color: #bababe;
+  color: #b7bbc7;
 }
 .metaValue {
-  color: #e7e7eb;
+  color: #d6d9e2;
 }
 a.metaValue {
   transition: opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1);
@@ -334,7 +351,7 @@ a.metaValue.ctaLink:hover {
   line-height: 35px;
   letter-spacing: var(--tracking-heading-lg, -0.015em);
   /* Color fijo claro (el hero siempre es oscuro). */
-  color: #e7e7eb;
+  color: #d6d9e2;
   align-items: center;
   gap: var(--space-2);
   /* Un solo gutter de separación con el párrafo (24px desktop / 16px
@@ -355,7 +372,7 @@ a.metaValue.ctaLink:hover {
   line-height: 35px;
   letter-spacing: var(--tracking-heading-lg, -0.015em);
   /* Color fijo claro (el hero siempre es oscuro). */
-  color: #e7e7eb;
+  color: #d6d9e2;
   /* Sin max-width ni balance: el texto llena las columnas del pitch y la
      línea larga llega al margen derecho, como en la referencia. Antes el
      límite de 34ch lo partía en líneas cortas y dejaba ~210px vacíos a la
@@ -401,12 +418,8 @@ a.metaValue.ctaLink:hover {
     );
     font-size: var(--mobile-title-size);
   }
-  /* Exactly the same typography as Spanish: only the font size is 2px
-     smaller. Allow long English word groups to wrap without horizontal
-     viewport overflow; letter-spacing and line-height are inherited. */
-  :global(html[lang="en"]) .title55 {
-    font-size: calc(var(--mobile-title-size) - 2px);
-  }
+  /* Spanish and English use one identical title scale, tracking,
+     kerning and leading. Longer phrases wrap at natural word breaks. */
   .titleBase {
     text-wrap: wrap;
     max-width: 100%;

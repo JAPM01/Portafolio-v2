@@ -70,6 +70,12 @@ export default function SiteNav() {
   const overHero = useSyncExternalStore(subscribeScroll, isOverHero, () => false);
 
   const [menuOpen, setMenuOpen] = useState(false);
+  // The upstream library only listens to mousemove. Feed touch contact
+  // coordinates to its external pointer API so the pill can deform on Android.
+  const [touchPoint, setTouchPoint] = useState<{
+    global: { x: number; y: number };
+    offset: { x: number; y: number };
+  } | null>(null);
   const headerRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const isSpanish = language === "es";
@@ -119,6 +125,20 @@ export default function SiteNav() {
   // No glass capsule over the hero at rest. On scroll (or elsewhere on
   // the site), mount the actual LiquidGlass component around the same nav.
   const showGlass = scrolled || !overHero;
+  function trackTouch(event: React.PointerEvent<HTMLDivElement>) {
+    if (event.pointerType !== "touch" || !showGlass) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    setTouchPoint({
+      global: { x: event.clientX, y: event.clientY },
+      offset: {
+        x: ((event.clientX - centerX) / rect.width) * 100,
+        y: ((event.clientY - centerY) / rect.height) * 100,
+      },
+    });
+  }
+
   const navigation = (
           <nav
             className={styles.nav}
@@ -191,20 +211,27 @@ export default function SiteNav() {
       className={styles.header + (scrolled ? " " + styles.scrolled : "") + (overHero ? " " + styles.overHero : "") + (!showGlass ? " " + styles.heroResting : "")}
       ref={headerRef}
     >
-      <div className={styles.glassStage}>
+      <div
+        className={styles.glassStage}
+        onPointerDown={trackTouch}
+        onPointerUp={() => setTouchPoint(null)}
+        onPointerCancel={() => setTouchPoint(null)}
+      >
         {showGlass ? (
         <LiquidGlass
           className={styles.glassRoot}
           style={{ position: "absolute", top: "50%", left: "50%", width: "100%", height: "100%" }}
           padding="0px"
           cornerRadius={999}
-          displacementScale={48}
-          blurAmount={0.09}
-          saturation={135}
-          aberrationIntensity={1.5}
-          elasticity={0.06}
-          mode="standard"
+          displacementScale={90}
+          blurAmount={0.035}
+          saturation={155}
+          aberrationIntensity={2.8}
+          elasticity={0.26}
+          mode="prominent"
           overLight={false}
+          globalMousePos={touchPoint?.global}
+          mouseOffset={touchPoint?.offset}
         >
             {navigation}
 
