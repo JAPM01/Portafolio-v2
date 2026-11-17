@@ -14,6 +14,14 @@
   stroke-width: var(--border-width);
   vector-effect: non-scaling-stroke;
 }
+/* Contorno encendido: mismo círculo, ligeramente más ancho (2.5px
+   frente a 1px del base) y con el degradado del mesh. Solo se ve
+   mientras el círculo "prende"; el círculo nunca se rellena. */
+.litCircle {
+  fill: none;
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+}
 /* Etiquetas del diagrama (Diseño, Tecnología, Usabilidad): tamaño y
    estilo meta, como "Portafolio de trabajo" del hero (Manrope, caption
    16/20), no H5. La etiqueta "Resultado" se eliminó (no va). */

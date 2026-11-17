@@ -16,68 +16,26 @@ const G = {
   technology: { x: 400, y: 188 },
   usability: { x: 320, y: 315 },
   convergence: { x: 320, y: 252 },
-  particle: { length: 54, thickness: 9, blur: 2.2 },
+  liquidRadius: 58,
 } as const;
 
-type Center = typeof G.design | typeof G.technology | typeof G.usability;
-const point = (p: Point) => `${p.x} ${p.y}`;
+const CENTERS = [G.design, G.technology, G.usability] as const;
 
-function crossings(a: Center, b: Center): [Point, Point] {
-  const dx = b.x - a.x, dy = b.y - a.y;
-  const d = Math.hypot(dx, dy);
-  const h = Math.sqrt(G.radius ** 2 - (d / 2) ** 2);
-  const x = (a.x + b.x) / 2, y = (a.y + b.y) / 2;
-  return [
-    { x: x - dy / d * h, y: y + dx / d * h },
-    { x: x + dy / d * h, y: y - dx / d * h },
-  ];
-}
-
-const designToTechnology = crossings(G.design, G.technology)
-  .reduce((a, b) => a.y < b.y ? a : b);
-const technologyToUsability = crossings(G.technology, G.usability)
-  .reduce((a, b) => a.x > b.x ? a : b);
-
-function fullOrbit(center: Center, start: Point) {
-  const opposite = { x: 2 * center.x - start.x, y: 2 * center.y - start.y };
-  return [
-    `M ${point(start)}`,
-    `A ${G.radius} ${G.radius} 0 0 1 ${point(opposite)}`,
-    `A ${G.radius} ${G.radius} 0 0 1 ${point(start)}`,
-  ].join(" ");
-}
-
-function connectOnCircle(center: Center, start: Point, end: Point) {
-  const initial = Math.atan2(start.y - center.y, start.x - center.x);
-  const final = Math.atan2(end.y - center.y, end.x - center.x);
-  const sweep = (final - initial + Math.PI * 4) % (Math.PI * 2);
-  const large = sweep > Math.PI ? 1 : 0;
-  return `M ${point(start)} A ${G.radius} ${G.radius} 0 ${large} 1 ${point(end)}`;
-}
-
-/** Cinco segmentos enlazados exactamente en sus extremos:
- *  órbita Diseño → órbita Tecnología → enlace circular →
- *  órbita Usabilidad → convergencia interior. */
-const TRACKS = [
-  fullOrbit(G.design, designToTechnology),
-  fullOrbit(G.technology, designToTechnology),
-  connectOnCircle(G.technology, designToTechnology, technologyToUsability),
-  fullOrbit(G.usability, technologyToUsability),
-  [
-    `M ${point(technologyToUsability)}`,
-    `C ${technologyToUsability.x} ${technologyToUsability.y + G.radius * .12},`,
-    `${G.convergence.x + G.radius * .46} ${G.convergence.y + G.radius * .38},`,
-    point(G.convergence),
-  ].join(" "),
-] as const;
-
-const T = {
-  begin: .04,
-  end: .82,
-  impact: .83,
-  flashEnd: .92,
-  fillStart: .86,
-  fillEnd: .98,
+/**
+ * Ventanas de la animación, en fracción del ciclo (8 s):
+ * cada círculo se enciende (contorno más ancho + degradado del mesh)
+ * y se apaga, uno por uno; luego el centro hace el pulse que avisa
+ * que el recorrido terminó y deja el líquido en la convergencia.
+ * Los círculos NUNCA se rellenan: solo su contorno prende.
+ */
+const P = {
+  on: [
+    [0.02, 0.07, 0.17, 0.23],
+    [0.21, 0.26, 0.36, 0.42],
+    [0.40, 0.45, 0.55, 0.61],
+  ],
+  pulse: [0.63, 0.78],
+  liquidIn: [0.78, 0.90],
 } as const;
 
 const clamp = (n: number) => Math.min(1, Math.max(0, n));
@@ -85,56 +43,71 @@ function smooth(a: number, b: number, t: number) {
   const x = clamp((t - a) / (b - a));
   return x * x * (3 - 2 * x);
 }
-const legEase = (t: number) => t * .3 + smooth(0, 1, t) * .7;
+function easeOutBack(t: number) {
+  const c1 = 1.70158, c3 = c1 + 1;
+  return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+
+/** Gota orgánica: contorno cerrado y suave con radio modulado. */
+function blobPath(cx: number, cy: number, r: number) {
+  const N = 10;
+  const pts: Point[] = [];
+  for (let i = 0; i < N; i++) {
+    const a = (i / N) * Math.PI * 2;
+    const w = 1 + 0.09 * Math.sin(3 * a + 0.7) + 0.05 * Math.cos(5 * a);
+    pts.push({ x: cx + Math.cos(a) * r * w, y: cy + Math.sin(a) * r * w });
+  }
+  const mid = (p: Point, q: Point) => ({ x: (p.x + q.x) / 2, y: (p.y + q.y) / 2 });
+  const f = (n: number) => n.toFixed(1);
+  let d = `M ${f(mid(pts[N - 1], pts[0]).x)} ${f(mid(pts[N - 1], pts[0]).y)}`;
+  for (let i = 0; i < N; i++) {
+    const p = pts[i];
+    const m = mid(p, pts[(i + 1) % N]);
+    d += ` Q ${f(p.x)} ${f(p.y)} ${f(m.x)} ${f(m.y)}`;
+  }
+  return `${d} Z`;
+}
+
+const LIQUID_D = blobPath(G.convergence.x, G.convergence.y, G.liquidRadius);
 
 function durationMs(el: HTMLElement) {
   const value = getComputedStyle(el).getPropertyValue("--motion-diagram-cycle").trim();
   const duration = Number.parseFloat(value);
-  if (!Number.isFinite(duration) || duration <= 0) return 24000;
+  if (!Number.isFinite(duration) || duration <= 0) return 8000;
   return value.endsWith("ms") ? duration : duration * 1000;
 }
 
 export default function VennFlow({ lang }: { lang: Lang }) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const trackRefs = useRef<(SVGPathElement | null)[]>([]);
-  const particleRef = useRef<SVGGElement>(null);
-  const fillRef = useRef<SVGCircleElement>(null);
+  const litRefs = useRef<(SVGCircleElement | null)[]>([]);
   const flashRef = useRef<SVGCircleElement>(null);
   const ringRef = useRef<SVGCircleElement>(null);
+  const liquidRef = useRef<SVGPathElement>(null);
 
   const id = useId().replace(/:/g, "");
-  const beamId = `venn-beam-${id}`;
-  const blurId = `venn-blur-${id}`;
-  const fillId = `venn-fill-${id}`;
+  const meshId = `venn-mesh-${id}`;
+  const liquidId = `venn-liquid-${id}`;
   const flashId = `venn-flash-${id}`;
-  const clipD = `venn-d-${id}`;
-  const clipT = `venn-t-${id}`;
-  const clipU = `venn-u-${id}`;
+  const glowId = `venn-glow-${id}`;
+  const softId = `venn-soft-${id}`;
 
   useEffect(() => {
-    const root = rootRef.current, particle = particleRef.current;
-    const fill = fillRef.current, flash = flashRef.current;
-    const ring = ringRef.current;
-    const paths = trackRefs.current.slice(0, TRACKS.length);
-    if (!root || !particle || !fill || !flash || !ring ||
-        paths.length !== TRACKS.length || paths.some(p => !p)) return;
-
-    const sections = (paths as SVGPathElement[]).map(path => ({
-      path, length: path.getTotalLength(),
-    }));
-    const total = sections.reduce((n, section) => n + section.length, 0);
-    if (!total) return;
+    const root = rootRef.current;
+    const lit = litRefs.current.slice(0, 3);
+    const flash = flashRef.current, ring = ringRef.current, liquid = liquidRef.current;
+    if (!root || !flash || !ring || !liquid ||
+        lit.length !== 3 || lit.some(c => !c)) return;
 
     const duration = durationMs(root);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     let visible = false, completed = false, elapsed = 0, last = 0, raf = 0;
 
     const settle = () => {
-      particle.setAttribute("opacity", "0");
-      fill.setAttribute("opacity", "1");
-      fill.setAttribute("r", String(G.radius * 1.2));
+      lit.forEach(c => c!.setAttribute("opacity", "0"));
       flash.setAttribute("opacity", "0");
       ring.setAttribute("opacity", "0");
+      liquid.setAttribute("opacity", "1");
+      liquid.setAttribute("transform", "");
     };
 
     const tick = (now: number) => {
@@ -144,40 +117,29 @@ export default function VennFlow({ lang }: { lang: Lang }) {
       last = now;
       const phase = clamp(elapsed / duration);
 
-      // Una pequeña partícula, orientada por la tangente real al círculo.
-      const distance = clamp((phase - T.begin) / (T.end - T.begin)) * total;
-      let remaining = distance, current = sections[sections.length - 1];
-      let local = 1;
-      for (const section of sections) {
-        if (remaining <= section.length) {
-          current = section;
-          local = legEase(remaining / section.length);
-          break;
-        }
-        remaining -= section.length;
-      }
-      const pathPosition = local * current.length;
-      const at = current.path.getPointAtLength(pathPosition);
-      const before = current.path.getPointAtLength(Math.max(0, pathPosition - 1.5));
-      const after = current.path.getPointAtLength(Math.min(current.length, pathPosition + 1.5));
-      const angle = Math.atan2(after.y - before.y, after.x - before.x) * 180 / Math.PI;
-      particle.setAttribute("transform", `translate(${at.x} ${at.y}) rotate(${angle})`);
+      // Cada círculo se enciende y se apaga: el contorno pasa de gris
+      // delgado a más ancho con el degradado del mesh. El siguiente
+      // empieza antes de que el anterior se apague del todo.
+      P.on.forEach((w, i) => {
+        const v = smooth(w[0], w[1], phase) * (1 - smooth(w[2], w[3], phase));
+        lit[i]!.setAttribute("opacity", String(v));
+      });
 
-      const appearance = smooth(T.begin * .5, T.begin + .025, phase) *
-        (1 - smooth(T.end - .012, T.impact + .02, phase));
-      particle.setAttribute("opacity", String(appearance));
+      // Pulse en el centro: avisa que el recorrido terminó.
+      const pulseT = clamp((phase - P.pulse[0]) / (P.pulse[1] - P.pulse[0]));
+      const pulsePeak = Math.sin(Math.PI * pulseT);
+      const inPulse = phase > P.pulse[0] && phase < P.pulse[1] ? 1 : 0;
+      flash.setAttribute("opacity", String(pulsePeak * 0.7 * inPulse));
+      flash.setAttribute("r", String(18 + 55 * pulseT));
+      ring.setAttribute("r", String(10 + 100 * pulseT));
+      ring.setAttribute("opacity", String(inPulse * (1 - pulseT) * 0.85));
 
-      const pulse = Math.max(0, Math.sin(Math.PI * clamp(
-        (phase - T.impact) / (T.flashEnd - T.impact)
-      )));
-      flash.setAttribute("opacity", String(pulse * .68));
-      flash.setAttribute("r", String(G.radius * (.13 + .31 * smooth(T.impact, T.flashEnd, phase))));
-      ring.setAttribute("opacity", String(pulse * .68));
-      ring.setAttribute("r", String(G.radius * (.04 + .28 * smooth(T.impact, T.flashEnd, phase))));
-
-      const reveal = smooth(T.fillStart, T.fillEnd, phase);
-      fill.setAttribute("opacity", String(reveal));
-      fill.setAttribute("r", String(reveal * G.radius * 1.2));
+      // El líquido cae en la convergencia y se queda ahí.
+      const li = smooth(P.liquidIn[0], P.liquidIn[1], phase);
+      const scale = 0.5 + 0.5 * easeOutBack(li);
+      liquid.setAttribute("opacity", String(li));
+      liquid.setAttribute("transform",
+        `translate(${G.convergence.x} ${G.convergence.y}) scale(${scale.toFixed(3)}) translate(${-G.convergence.x} ${-G.convergence.y})`);
 
       if (phase < 1) raf = requestAnimationFrame(tick);
       else { completed = true; settle(); }
@@ -203,75 +165,73 @@ export default function VennFlow({ lang }: { lang: Lang }) {
     <div className={styles.root} ref={rootRef}>
       <svg className={styles.svg} viewBox={`0 0 ${G.width} ${G.height}`}
         role="img" aria-label={lang === "es"
-          ? "Diseño, Tecnología y Usabilidad: una partícula recorre los tres círculos y culmina en la intersección común."
-          : "Design, Technology and Usability: a particle orbits each circle and finishes at their shared intersection."}>
+          ? "Diseño, Tecnología y Usabilidad: cada círculo se enciende en secuencia y el centro deja una gota del degradado del mesh."
+          : "Design, Technology and Usability: each circle lights up in sequence and the center leaves a drop of the mesh gradient."}>
         <defs>
-          {TRACKS.map((d, i) => (
-            <path key={i} d={d} ref={element => { trackRefs.current[i] = element; }} />
-          ))}
-
-          {/* La textura pertenece al propio beam: mismo color desde
-              el primer hasta el último punto, independientemente de
-              dónde se encuentre en el diagrama. */}
-          <linearGradient id={beamId} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor={HERO_MESH.blue} stopOpacity="0" />
-            <stop offset="18%" stopColor={HERO_MESH.blue} stopOpacity=".85" />
-            <stop offset="40%" stopColor={HERO_MESH.cyan} stopOpacity=".96" />
-            <stop offset="57%" stopColor={HERO_MESH.ice} />
-            <stop offset="76%" stopColor={HERO_MESH.cyan} />
-            <stop offset="88%" stopColor={HERO_MESH.orange} stopOpacity=".78" />
-            <stop offset="100%" stopColor={HERO_MESH.blue} stopOpacity="0" />
+          {/* Un solo degradado espacial para todo el diagrama, como el
+              mesh del hero: los tres círculos se leen como un flujo. */}
+          <linearGradient id={meshId} gradientUnits="userSpaceOnUse"
+            x1="120" y1="60" x2="520" y2="470">
+            <stop offset="0%" stopColor={HERO_MESH.blue} />
+            <stop offset="35%" stopColor={HERO_MESH.cyan} />
+            <stop offset="55%" stopColor={HERO_MESH.ice} />
+            <stop offset="75%" stopColor={HERO_MESH.cyan} />
+            <stop offset="90%" stopColor={HERO_MESH.orange} />
+            <stop offset="100%" stopColor={HERO_MESH.blue} />
           </linearGradient>
-          <linearGradient id={fillId} x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop stopColor={HERO_MESH.blue} />
-            <stop offset=".4" stopColor={HERO_MESH.cyan} />
-            <stop offset=".67" stopColor={HERO_MESH.ice} />
-            <stop offset=".85" stopColor={HERO_MESH.orange} />
-            <stop offset="1" stopColor={HERO_MESH.blue} />
-          </linearGradient>
+          <radialGradient id={liquidId} cx="50%" cy="42%" r="68%">
+            <stop offset="0%" stopColor={HERO_MESH.ice} />
+            <stop offset="32%" stopColor={HERO_MESH.cyan} />
+            <stop offset="62%" stopColor={HERO_MESH.blue} />
+            <stop offset="88%" stopColor={HERO_MESH.orange} stopOpacity=".9" />
+            <stop offset="100%" stopColor={HERO_MESH.orange} stopOpacity="0" />
+          </radialGradient>
           <radialGradient id={flashId}>
             <stop stopColor={HERO_MESH.ice} stopOpacity=".8" />
             <stop offset=".4" stopColor={HERO_MESH.cyan} stopOpacity=".48" />
             <stop offset="1" stopColor={HERO_MESH.blue} stopOpacity="0" />
           </radialGradient>
-          <filter id={blurId} x="-30%" y="-100%" width="160%" height="300%">
-            <feGaussianBlur stdDeviation={G.particle.blur} />
+          <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
           </filter>
-          <clipPath id={clipD}><circle cx={G.design.x} cy={G.design.y} r={G.radius} /></clipPath>
-          <clipPath id={clipT}><circle cx={G.technology.x} cy={G.technology.y} r={G.radius} /></clipPath>
-          <clipPath id={clipU}><circle cx={G.usability.x} cy={G.usability.y} r={G.radius} /></clipPath>
+          <filter id={softId} x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" />
+          </filter>
         </defs>
 
-        <circle className={styles.circle} cx={G.design.x} cy={G.design.y} r={G.radius} />
-        <circle className={styles.circle} cx={G.technology.x} cy={G.technology.y} r={G.radius} />
-        <circle className={styles.circle} cx={G.usability.x} cy={G.usability.y} r={G.radius} />
+        {/* Círculos base: línea gris delgada, el estado "apagado". */}
+        {CENTERS.map(c => (
+          <circle key={`base-${c.x}-${c.y}`} className={styles.circle}
+            cx={c.x} cy={c.y} r={G.radius} />
+        ))}
 
-        {/* El gradiente llena únicamente el volumen compartido por los tres. */}
-        <g clipPath={`url(#${clipD})`}>
-          <g clipPath={`url(#${clipT})`}>
-            <g clipPath={`url(#${clipU})`}>
-              <circle ref={fillRef} cx={G.convergence.x} cy={G.convergence.y}
-                r="0" opacity="0" fill={`url(#${fillId})`} />
-            </g>
-          </g>
+        {/* Contorno encendido: mismo círculo, más ancho y con el
+            degradado del mesh. Solo se ve mientras "prende". */}
+        <g filter={`url(#${glowId})`} aria-hidden="true">
+          {CENTERS.map((c, i) => (
+            <circle key={`lit-${c.x}-${c.y}`}
+              ref={el => { litRefs.current[i] = el; }}
+              className={styles.litCircle} cx={c.x} cy={c.y} r={G.radius}
+              opacity="0" stroke={`url(#${meshId})`} />
+          ))}
         </g>
 
-        {/* Beam corto (54x9 en unidades del SVG) y halo de 2.2 unidades.
-            SVG puro: no se renderiza ni recorta un canvas WebGL gigante. */}
-        <g ref={particleRef} opacity="0" aria-hidden="true">
-          <rect x={-G.particle.length / 2} y={-G.particle.thickness / 2}
-            width={G.particle.length} height={G.particle.thickness}
-            rx={G.particle.thickness / 2} opacity=".4"
-            fill={`url(#${beamId})`} filter={`url(#${blurId})`} />
-          <rect x={-G.particle.length / 2} y={-G.particle.thickness / 2}
-            width={G.particle.length} height={G.particle.thickness}
-            rx={G.particle.thickness / 2} fill={`url(#${beamId})`} />
-        </g>
+        {/* Pulse: destello + anillo que se expande en el centro. */}
         <circle ref={flashRef} cx={G.convergence.x} cy={G.convergence.y}
           r="0" opacity="0" fill={`url(#${flashId})`} aria-hidden="true" />
         <circle ref={ringRef} cx={G.convergence.x} cy={G.convergence.y}
           r="0" opacity="0" fill="none" stroke={HERO_MESH.cyan}
           className={styles.pulseRing} aria-hidden="true" />
+
+        {/* El líquido: gota orgánica del mesh que queda en la
+            convergencia cuando termina el recorrido. Sin recorte:
+            es una gota, no un relleno de la intersección. */}
+        <path ref={liquidRef} d={LIQUID_D} opacity="0"
+          fill={`url(#${liquidId})`} filter={`url(#${softId})`} aria-hidden="true" />
 
         <text className={styles.circleLabel} x={G.design.x - G.radius * .42}
           y={G.design.y} textAnchor="middle">{lang === "es" ? "Diseño" : "Design"}</text>

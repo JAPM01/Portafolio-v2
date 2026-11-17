@@ -6,7 +6,9 @@ import VennFlow from "./VennFlow";
 import styles from "./intro.module.css";
 
 type Lang = "es" | "en";
-type Tone = "gray" | "blue" | "white";
+/* Tonos del manifiesto: cada dominio con su color de marca —
+   diseño naranja, tecnología azul, usabilidad cian. */
+type Tone = "gray" | "blue" | "orange" | "cyan" | "white";
 type Word = { text: string; tone: Tone };
 
 const MANIFESTO: Record<Lang, Word[]> = {
@@ -17,8 +19,9 @@ const MANIFESTO: Record<Lang, Word[]> = {
     "que", "se", "miden", "por", "resultados", "reales.",
   ].map((text) => ({
     text,
-    tone: text === "diseño," || text === "tecnología" || text === "usabilidad"
-      ? "blue"
+    tone: text === "diseño," ? "orange"
+      : text === "tecnología" ? "blue"
+      : text === "usabilidad" ? "cyan"
       : text === "resultados" || text === "reales."
         ? "white"
         : "gray",
@@ -30,8 +33,9 @@ const MANIFESTO: Record<Lang, Word[]> = {
     "outcomes.",
   ].map((text) => ({
     text,
-    tone: text === "design," || text === "technology," || text === "usability"
-      ? "blue"
+    tone: text === "design," ? "orange"
+      : text === "technology," ? "blue"
+      : text === "usability" ? "cyan"
       : text === "real" || text === "outcomes."
         ? "white"
         : "gray",
@@ -62,6 +66,8 @@ const CONTENT = {
 const TONE_CLASS: Record<Tone, string> = {
   gray: styles.toneGray,
   blue: styles.toneBlue,
+  orange: styles.toneOrange,
+  cyan: styles.toneCyan,
   white: styles.toneWhite,
 };
 
