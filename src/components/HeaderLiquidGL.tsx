@@ -181,13 +181,13 @@ export default function HeaderLiquidGL({
           // under the navigation at local z=3.
           zIndex: 10001,
           content: false,
-          // Stronger optical bend, concentrated around a deeper, wider bevel.
-          // The shader's contrast guard protects high-contrast glyphs.
-          refraction: 0.046,
-          // RGB dispersion follows the refracted edge; not a colored CSS rim.
-          aberration: 0.14,
-          bevelDepth: 0.11,
-          bevelWidth: 0.22,
+          // Stronger refraction focused in the curved rim; clear optical center.
+          // Content-aware contrast protection still limits glyph doubling.
+          refraction: 0.062,
+          // Dispersion follows the refracted vector, not a CSS color fringe.
+          aberration: 0.195,
+          bevelDepth: 0.15,
+          bevelWidth: 0.185,
           frost: 0,
           shadow: false,
           specular: true,
@@ -195,7 +195,7 @@ export default function HeaderLiquidGL({
           draggable: false,
           tilt: false,
           interaction: "fluid",
-          interactionStrength: 0.34,
+          interactionStrength: 0.42,
           interactionRadius: 0.35,
           interactionViscosity: 0.65,
           magnify: 1,
