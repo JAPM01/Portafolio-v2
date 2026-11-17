@@ -15,9 +15,6 @@ const G = {
   technology: { x: 400, y: 188 },
   usability: { x: 320, y: 315 },
   convergence: { x: 320, y: 252 },
-  // La lente (triple intersección) va de x≈258–382, y≈173–305.
-  // El degradado del relleno se reparte por esa diagonal.
-  lens: { x1: 255, y1: 308, x2: 385, y2: 170 },
 } as const;
 
 const CENTERS = [G.design, G.technology, G.usability] as const;
@@ -62,10 +59,12 @@ function durationMs(el: HTMLElement) {
 export default function VennFlow({ lang }: { lang: Lang }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const litRefs = useRef<(SVGCircleElement | null)[]>([]);
-  const fillRef = useRef<SVGCircleElement>(null);
+  const fillRef = useRef<SVGGElement>(null);
 
   const id = useId().replace(/:/g, "");
-  const fillId = `venn-fill-${id}`;
+  const cyanId = `venn-cyan-${id}`;
+  const iceId = `venn-ice-${id}`;
+  const orangeId = `venn-orange-${id}`;
   const glowId = `venn-glow-${id}`;
   const clipD = `venn-d-${id}`;
   const clipT = `venn-t-${id}`;
@@ -86,7 +85,7 @@ export default function VennFlow({ lang }: { lang: Lang }) {
     const settle = () => {
       lit.forEach(c => c!.setAttribute("opacity", "0"));
       fill.setAttribute("opacity", "1");
-      fill.setAttribute("r", String(G.radius * 1.2));
+      fill.setAttribute("transform", "");
     };
 
     const tick = (now: number) => {
@@ -109,6 +108,7 @@ export default function VennFlow({ lang }: { lang: Lang }) {
       // La intersección se rellena del líquido del mesh, late (el pulse
       // es ella misma, no hay ningún círculo detrás), queda unos
       // segundos con el relleno y luego se apaga para repetirse.
+      // El líquido "florece" desde el centro al entrar.
       const fillIn = smooth(P.fillIn[0], P.fillIn[1], phase);
       const pulseT = clamp((phase - P.pulse[0]) / (P.pulse[1] - P.pulse[0]));
       const inPulse = phase > P.pulse[0] && phase < P.pulse[1] ? 1 : 0;
@@ -116,7 +116,9 @@ export default function VennFlow({ lang }: { lang: Lang }) {
       const beat = inPulse * Math.pow(Math.sin(pulseT * Math.PI * 2), 2);
       const fillOut = 1 - smooth(P.fillOut[0], P.fillOut[1], phase);
       fill.setAttribute("opacity", String(fillIn * (1 - 0.25 * beat) * fillOut));
-      fill.setAttribute("r", String(fillIn * G.radius * 1.2));
+      const s = 0.5 + 0.5 * fillIn;
+      fill.setAttribute("transform",
+        `translate(${G.convergence.x} ${G.convergence.y}) scale(${s}) translate(${-G.convergence.x} ${-G.convergence.y})`);
 
       raf = requestAnimationFrame(tick);
     };
@@ -149,23 +151,27 @@ export default function VennFlow({ lang }: { lang: Lang }) {
           ? "Diseño, Tecnología y Usabilidad: cada círculo se enciende con su color en secuencia, la intersección se rellena del líquido del mesh, late y se repite."
           : "Design, Technology and Usability: each circle lights up in its color in sequence, the intersection fills with the mesh liquid, pulses and repeats."}>
         <defs>
-          {/* El líquido del mesh: mismo degradado del hero, en miniatura.
-              userSpaceOnUse y no el bbox del círculo: el degradado se
-              reparte por toda la lente (si se mapeara al círculo de
-              relleno, de 340×340, la lente solo mostraría el centro y
-              se vería solo cian). Diagonal inferior-izquierda a
-              superior-derecha, como el hero: azul dominante, onda cian,
-              brillo hielo y naranja solo en la esquina superior derecha. */}
-          <linearGradient id={fillId} gradientUnits="userSpaceOnUse"
-            x1={G.lens.x1} y1={G.lens.y1} x2={G.lens.x2} y2={G.lens.y2}>
-            <stop offset="0" stopColor={HERO_MESH.blue} />
-            <stop offset="0.3" stopColor={HERO_MESH.blue} />
-            <stop offset="0.48" stopColor={HERO_MESH.cyan} />
-            <stop offset="0.62" stopColor={HERO_MESH.ice} />
-            <stop offset="0.78" stopColor={HERO_MESH.ice} />
-            <stop offset="0.9" stopColor={HERO_MESH.orange} />
-            <stop offset="1" stopColor={HERO_MESH.orange} />
-          </linearGradient>
+          {/* El líquido del mesh, en miniatura: NO un degradado lineal
+              (eso dejaba franjas: azul, blanco, naranja) sino las
+              mismas manchas suaves y difusas del hero — campo azul,
+              onda cian, brillo hielo y naranja en la esquina superior
+              derecha. Cada mancha es un radial que se desvanece a
+              transparente, así se funden como líquido, sin bordes. */}
+          <radialGradient id={cyanId}>
+            <stop offset="0" stopColor={HERO_MESH.cyan} stopOpacity="0.95" />
+            <stop offset="0.7" stopColor={HERO_MESH.cyan} stopOpacity="0.5" />
+            <stop offset="1" stopColor={HERO_MESH.cyan} stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id={iceId}>
+            <stop offset="0" stopColor={HERO_MESH.ice} stopOpacity="1" />
+            <stop offset="0.6" stopColor={HERO_MESH.ice} stopOpacity="0.85" />
+            <stop offset="1" stopColor={HERO_MESH.ice} stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id={orangeId}>
+            <stop offset="0" stopColor={HERO_MESH.orange} stopOpacity="0.9" />
+            <stop offset="0.7" stopColor={HERO_MESH.orange} stopOpacity="0.45" />
+            <stop offset="1" stopColor={HERO_MESH.orange} stopOpacity="0" />
+          </radialGradient>
           <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="4" result="blur" />
             <feMerge>
@@ -195,14 +201,22 @@ export default function VennFlow({ lang }: { lang: Lang }) {
           ))}
         </g>
 
-        {/* La intersección se rellena del líquido del mesh: el gradiente
-            solo se ve en el volumen compartido por los tres círculos.
+        {/* La intersección se rellena del líquido del mesh: las manchas
+            solo se ven en el volumen compartido por los tres círculos.
             Es ella la que late; no hay ningún círculo de pulse detrás. */}
         <g clipPath={`url(#${clipD})`}>
           <g clipPath={`url(#${clipT})`}>
             <g clipPath={`url(#${clipU})`}>
-              <circle ref={fillRef} cx={G.convergence.x} cy={G.convergence.y}
-                r="0" opacity="0" fill={`url(#${fillId})`} />
+              <g ref={fillRef} opacity="0">
+                {/* Campo azul del mesh. */}
+                <rect x="200" y="120" width="240" height="240" fill={HERO_MESH.blue} />
+                {/* Onda cian, mancha grande y suave. */}
+                <ellipse cx="335" cy="240" rx="85" ry="75" fill={`url(#${cyanId})`} />
+                {/* Brillo hielo: el núcleo luminoso del mesh. */}
+                <ellipse cx="348" cy="228" rx="52" ry="46" fill={`url(#${iceId})`} />
+                {/* Naranja en la esquina superior derecha, como el hero. */}
+                <ellipse cx="380" cy="182" rx="42" ry="36" fill={`url(#${orangeId})`} />
+              </g>
             </g>
           </g>
         </g>
