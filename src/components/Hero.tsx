@@ -103,7 +103,7 @@ export default function Hero() {
                 <HeroBackground />
               </div>
             </div>
-            <div className={styles.veil} style={{ background: "#080405", opacity: 0.015 }} />
+            <div className={styles.veil} style={{ background: "var(--brand-gray-1)", opacity: 0.015 }} />
             <div className={styles.topFade} aria-hidden="true">
               <div className={styles.topFadeLayer} />
             </div>
@@ -125,7 +125,7 @@ export default function Hero() {
           <h1
             id="hero-title"
             className={`${styles.titleBase} ${styles.title55} clipped`}
-            style={{ textShadow: "0px 2px 18px rgba(0, 0, 0, 0.32)" }}
+            style={{ textShadow: "0px 2px 18px rgba(7, 7, 7, 0.32)" }}
           >
             {t.title.map((line, li) => (
               <span className={styles.titleLine} key={li}>

@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { BRAND_PALETTE, brandRgb01 } from "../lib/brand-palette";
 
 /** Tinta líquida viva: simulación de fluido WebGL (stable fluids, Jos Stam)
     a pantalla completa, sin zoom ni recorte. El puntero perturba el líquido
     (empuja la tinta y deja estela) y unos splats ambientales suaves lo
     mantienen vivo sin interacción. La tinta usa la paleta de identidad de
-    Jafet: negro de fondo, azul como masa principal, rojo de acento y cian
-    para brillos. El canvas se expone con preserveDrawingBuffer para que el
+    Jafet: gris oscuro de fondo, azul como masa principal, naranja de acento
+    y azules claros para brillos. El canvas se expone con preserveDrawingBuffer para que el
     fluted glass lo capture en vivo. */
 
 type GL = WebGL2RenderingContext;
@@ -26,10 +27,10 @@ const CONFIG = {
 
 // Paleta de identidad (RGB 0-1). El azul pesa doble en el ciclo.
 const PALETTE: Array<[number, number, number]> = [
-  [0.07, 0.0, 1.0], // #1100ff azul
-  [0.07, 0.0, 1.0],
-  [0.996, 0.004, 0.286], // #fe0149 rojo
-  [0.0, 0.816, 0.941], // #00d0f0 cian
+  brandRgb01(BRAND_PALETTE.blue[0]),
+  brandRgb01(BRAND_PALETTE.blue[0]),
+  brandRgb01(BRAND_PALETTE.orange[0]),
+  brandRgb01(BRAND_PALETTE.blue[3]),
 ];
 
 const BASE_VERTEX = `precision highp float;
@@ -599,21 +600,21 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
       g.height = gh;
       const ctx = g.getContext("2d");
       if (!ctx) return;
-      ctx.fillStyle = "#000000";
+      ctx.fillStyle = BRAND_PALETTE.gray[0];
       ctx.fillRect(0, 0, gw, gh);
       ctx.globalCompositeOperation = "lighter";
       const radial = (x: number, y: number, r: number, color: string) => {
         const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
         grad.addColorStop(0, color);
-        grad.addColorStop(1, "rgba(0,0,0,0)");
+        grad.addColorStop(1, "transparent");
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, gw, gh);
       };
-      radial(gw * 0.55, gh * 0.45, gw * 0.55, "#1100ff"); // azul, masa principal
-      radial(gw * 0.3, gh * 0.8, gw * 0.3, "#1100ff"); // azul abajo
-      radial(gw * 0.1, gh * 0.4, gw * 0.3, "#fe0149"); // rojo a la izquierda
-      radial(gw * 0.75, gh * 0.2, gw * 0.2, "#fe0149"); // rojo arriba a la derecha
-      radial(gw * 0.9, gh * 0.6, gw * 0.25, "#00d0f0"); // cian a la derecha
+      radial(gw * 0.55, gh * 0.45, gw * 0.55, BRAND_PALETTE.blue[0]); // azul, masa principal
+      radial(gw * 0.3, gh * 0.8, gw * 0.3, BRAND_PALETTE.blue[0]); // azul abajo
+      radial(gw * 0.1, gh * 0.4, gw * 0.3, BRAND_PALETTE.orange[0]); // rojo a la izquierda
+      radial(gw * 0.75, gh * 0.2, gw * 0.2, BRAND_PALETTE.orange[0]); // rojo arriba a la derecha
+      radial(gw * 0.9, gh * 0.6, gw * 0.25, BRAND_PALETTE.blue[3]); // cian a la derecha
       const tex = gl.createTexture();
       if (!tex) return;
       gl.activeTexture(gl.TEXTURE0);

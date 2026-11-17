@@ -91,7 +91,7 @@
 .topFadeLayer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(8, 4, 5, 0.12) 0%, rgba(8, 4, 5, 0) 100%);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--brand-gray-1) 12.00%, transparent) 0%, transparent 100%);
 }
 .bottomDark {
   opacity: 0;
@@ -100,11 +100,11 @@
   height: auto;
   background: linear-gradient(
     to bottom,
-    rgb(0 0 0 / 0) 0%,
-    rgb(0 0 0 / 0.015) 35%,
-    rgb(0 0 0 / 0.09) 65%,
-    rgb(0 0 0 / 0.22) 88%,
-    rgb(0 0 0 / 0.35) 100%
+    transparent 0%,
+    color-mix(in srgb, var(--brand-gray-1) 1.50%, transparent) 35%,
+    color-mix(in srgb, var(--brand-gray-1) 9.00%, transparent) 65%,
+    color-mix(in srgb, var(--brand-gray-1) 22.00%, transparent) 88%,
+    color-mix(in srgb, var(--brand-gray-1) 35.00%, transparent) 100%
   );
 }
 /* Sin overrides en modo claro: el hero siempre es oscuro (el mesh no
@@ -177,9 +177,9 @@
   opacity: 0;
   --scrim-from: 0;
   background:
-    radial-gradient(78% 118px at 44% 188px, #00000020, #0000 72%),
-    radial-gradient(78% 104px at 44% calc(50% + 42px), #0000001a, #0000 72%),
-    radial-gradient(78% 98px at 44% calc(100% - 98px), #0000001a, #0000 72%);
+    radial-gradient(78% 118px at 44% 188px, color-mix(in srgb, var(--brand-gray-1) 12.55%, transparent), transparent 72%),
+    radial-gradient(78% 104px at 44% calc(50% + 42px), color-mix(in srgb, var(--brand-gray-1) 10.20%, transparent), transparent 72%),
+    radial-gradient(78% 98px at 44% calc(100% - 98px), color-mix(in srgb, var(--brand-gray-1) 10.20%, transparent), transparent 72%);
   position: absolute;
   inset: 0;
 }
@@ -206,7 +206,7 @@
   font-kerning: normal;
   font-feature-settings: "kern" 1, "liga" 1;
   text-rendering: optimizeLegibility;
-  color: #d6d9e2;
+  color: var(--brand-gray-6);
   text-wrap: wrap;
   flex-direction: column;
   max-width: 22ch;
@@ -287,7 +287,7 @@
   line-height: 30px;
   letter-spacing: var(--tracking-body-sm, 0);
   display: flex;
-  text-shadow: 0px 2px 16px rgba(0, 0, 0, .48);
+  text-shadow: 0px 2px 16px color-mix(in srgb, var(--brand-gray-1) 48.00%, transparent);
 }
 .metaItem {
   gap: calc(var(--space-2) * var(--ui-scale-desktop, 1));
@@ -296,10 +296,10 @@
 }
 .metaLabel {
   /* Color fijo claro (el hero siempre es oscuro). */
-  color: #b7bbc7;
+  color: var(--brand-gray-6);
 }
 .metaValue {
-  color: #d6d9e2;
+  color: var(--brand-gray-6);
 }
 a.metaValue {
   transition: opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1);
@@ -351,7 +351,7 @@ a.metaValue.ctaLink:hover {
   line-height: 35px;
   letter-spacing: var(--tracking-heading-lg, -0.015em);
   /* Color fijo claro (el hero siempre es oscuro). */
-  color: #d6d9e2;
+  color: var(--brand-gray-6);
   align-items: center;
   gap: var(--space-2);
   /* Un solo gutter de separación con el párrafo (24px desktop / 16px
@@ -372,7 +372,7 @@ a.metaValue.ctaLink:hover {
   line-height: 35px;
   letter-spacing: var(--tracking-heading-lg, -0.015em);
   /* Color fijo claro (el hero siempre es oscuro). */
-  color: #d6d9e2;
+  color: var(--brand-gray-6);
   /* Sin max-width ni balance: el texto llena las columnas del pitch y la
      línea larga llega al margen derecho, como en la referencia. Antes el
      límite de 34ch lo partía en líneas cortas y dejaba ~210px vacíos a la
@@ -496,8 +496,8 @@ a.metaValue.ctaLink:hover {
   z-index: 0;
 }
 .gridOverlayCell {
-  border: 1px solid rgba(190, 255, 0, 0.55);
-  background: rgba(190, 255, 0, 0.08);
+  border: 1px solid color-mix(in srgb, var(--brand-orange-3) 55.00%, transparent);
+  background: color-mix(in srgb, var(--brand-orange-3) 8.00%, transparent);
 }
 @media (max-width: 1023px) {
   .gridOverlay {

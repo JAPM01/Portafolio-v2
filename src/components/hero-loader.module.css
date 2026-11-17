@@ -1,7 +1,7 @@
 .overlay {
   --tile: 118px;
   --big: min(40vw, 80vh);
-  --ink-on: #fff;
+  --ink-on: var(--brand-gray-7);
   --ink-off: color-mix(in oklab, var(--neutral-12) 13%, var(--loader-ground));
   --rise: linear-gradient(
     to top,

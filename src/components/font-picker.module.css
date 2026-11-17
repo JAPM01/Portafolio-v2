@@ -6,16 +6,16 @@
   width: 46px;
   height: 46px;
   border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 0.18);
-  background: rgb(19 19 24 / 0.94);
-  color: #fff;
+  border: 1px solid color-mix(in srgb, var(--brand-gray-7) 18.00%, transparent);
+  background: color-mix(in srgb, var(--brand-gray-1) 94.00%, transparent);
+  color: var(--brand-gray-7);
   font: 700 16px/1 "Manrope", ui-sans-serif, system-ui, sans-serif;
   cursor: pointer;
   backdrop-filter: blur(8px);
-  box-shadow: 0 8px 28px rgb(0 0 0 / 0.45);
+  box-shadow: 0 8px 28px color-mix(in srgb, var(--brand-gray-1) 45.00%, transparent);
 }
 .toggle:hover {
-  border-color: rgb(255 255 255 / 0.4);
+  border-color: color-mix(in srgb, var(--brand-gray-7) 40.00%, transparent);
 }
 
 .panel {
@@ -25,11 +25,11 @@
   z-index: 999;
   width: min(288px, calc(100vw - 32px));
   border-radius: 16px;
-  border: 1px solid rgb(255 255 255 / 0.14);
-  background: rgb(19 19 24 / 0.97);
-  color: #fff;
+  border: 1px solid color-mix(in srgb, var(--brand-gray-7) 14.00%, transparent);
+  background: color-mix(in srgb, var(--brand-gray-1) 97.00%, transparent);
+  color: var(--brand-gray-7);
   padding: 14px;
-  box-shadow: 0 16px 48px rgb(0 0 0 / 0.55);
+  box-shadow: 0 16px 48px color-mix(in srgb, var(--brand-gray-1) 55.00%, transparent);
   backdrop-filter: blur(12px);
   /* El panel siempre usa Manrope para que la vista previa no mueva sus controles. */
   font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
@@ -50,34 +50,34 @@
   appearance: none;
   border: 0;
   background: transparent;
-  color: rgb(255 255 255 / 0.65);
+  color: color-mix(in srgb, var(--brand-gray-7) 65.00%, transparent);
   font-size: 18px;
   line-height: 1;
   cursor: pointer;
   padding: 4px 6px;
 }
 .close:hover {
-  color: #fff;
+  color: var(--brand-gray-7);
 }
 
 .current {
   font-size: 12.5px;
-  color: rgb(255 255 255 / 0.75);
+  color: color-mix(in srgb, var(--brand-gray-7) 75.00%, transparent);
   margin-bottom: 10px;
   overflow-wrap: anywhere;
 }
 .current b {
-  color: #fff;
+  color: var(--brand-gray-7);
   font-weight: 700;
 }
 .status {
   display: block;
   margin-top: 2px;
   font-size: 11.5px;
-  color: #8ab4ff;
+  color: var(--brand-blue-5);
 }
 .statusError {
-  color: #ff9d9d;
+  color: var(--brand-orange-2);
 }
 
 .label {
@@ -86,7 +86,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgb(255 255 255 / 0.5);
+  color: color-mix(in srgb, var(--brand-gray-7) 50.00%, transparent);
   margin: 10px 0 5px;
 }
 .select,
@@ -94,19 +94,19 @@
   width: 100%;
   box-sizing: border-box;
   border-radius: 9px;
-  border: 1px solid rgb(255 255 255 / 0.18);
-  background: rgb(255 255 255 / 0.06);
-  color: #fff;
+  border: 1px solid color-mix(in srgb, var(--brand-gray-7) 18.00%, transparent);
+  background: color-mix(in srgb, var(--brand-gray-7) 6.00%, transparent);
+  color: var(--brand-gray-7);
   font: 500 13px/1.3 "Manrope", ui-sans-serif, system-ui, sans-serif;
   padding: 8px 10px;
   outline: none;
 }
 .select:focus,
 .input:focus {
-  border-color: rgb(126 155 255 / 0.8);
+  border-color: color-mix(in srgb, var(--brand-blue-4) 80.00%, transparent);
 }
 .select option {
-  color: #111;
+  color: var(--brand-gray-1);
 }
 .row {
   display: flex;
@@ -120,24 +120,24 @@
 .button {
   appearance: none;
   border-radius: 9px;
-  border: 1px solid rgb(255 255 255 / 0.18);
-  background: rgb(255 255 255 / 0.08);
-  color: #fff;
+  border: 1px solid color-mix(in srgb, var(--brand-gray-7) 18.00%, transparent);
+  background: color-mix(in srgb, var(--brand-gray-7) 8.00%, transparent);
+  color: var(--brand-gray-7);
   font: 600 12.5px/1 "Manrope", ui-sans-serif, system-ui, sans-serif;
   padding: 9px 12px;
   cursor: pointer;
   white-space: nowrap;
 }
 .button:hover {
-  background: rgb(255 255 255 / 0.16);
+  background: color-mix(in srgb, var(--brand-gray-7) 16.00%, transparent);
 }
 .buttonPrimary {
-  background: #7e9bff;
-  border-color: #7e9bff;
-  color: #0a0a0e;
+  background: var(--brand-blue-4);
+  border-color: var(--brand-blue-4);
+  color: var(--brand-gray-1);
 }
 .buttonPrimary:hover {
-  background: #93abff;
+  background: var(--brand-blue-5);
 }
 .reset {
   width: 100%;
@@ -148,5 +148,5 @@
   margin-top: 10px;
   font-size: 11px;
   line-height: 1.45;
-  color: rgb(255 255 255 / 0.45);
+  color: color-mix(in srgb, var(--brand-gray-7) 45.00%, transparent);
 }

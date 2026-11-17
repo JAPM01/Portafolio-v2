@@ -3,6 +3,7 @@
 'use client'
 
 import {useEffect, useRef} from 'react'
+import { BRAND_PALETTE } from '../lib/brand-palette'
 
 export type FlowGradientBackgroundProps = {
   /** background, deep body, bright body, hot spot, cool accent */
@@ -110,7 +111,7 @@ const SCALE = 0.75
 // middle of the frame like a depth blur. One WebGL pass, no dependencies;
 // it pauses off screen and holds still for reduced motion.
 export default function FlowGradientBackground({
-  colors = ['#0b0807', '#a3120b', '#ff3b1f', '#ff8a3d', '#5b2bd1'],
+  colors = [BRAND_PALETTE.gray[0], BRAND_PALETTE.blue[0], BRAND_PALETTE.blue[3], BRAND_PALETTE.orange[0], BRAND_PALETTE.blue[6]],
   flow = 1,
   speed = 1,
   follow = 0.05,

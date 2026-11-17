@@ -34,13 +34,13 @@
   animation-range: cover;
 }
 
-/* La marca 3D de la referencia es cromo claro (#f0f0f2) sobre blanco:
+/* La marca 3D de la referencia es cromo claro (var(--brand-gray-7)) sobre blanco:
    casi invisible. Aproximación: el glifo como máscara con degradado
    metálico claro. */
 .mark {
   block-size: 62%;
   aspect-ratio: 2175.7 / 1470;
-  background: linear-gradient(135deg, #e9e9ed, #f7f7f9 45%, #d4d4da 70%, #f0f0f2);
+  background: linear-gradient(135deg, var(--brand-gray-7), var(--brand-gray-7) 45%, var(--brand-gray-6) 70%, var(--brand-gray-7));
   -webkit-mask-image: url(/brand/mark.svg);
   mask-image: url(/brand/mark.svg);
   -webkit-mask-size: contain;

@@ -26,34 +26,34 @@
   position: absolute;
   inset: 0;
   -webkit-mask-image: linear-gradient(
-    #0000 0% 27%,
-    #0000 33.5%,
-    #00000002 40%,
-    #00000007 46.5%,
-    #00000010 53%,
-    #00000020 59.5%,
-    #00000037 66%,
-    #00000057 72.5%,
-    #00000083 79%,
-    #000000ba 85.5%,
-    #000 92%,
-    #00000073 97%,
-    #0000 100%
+    transparent 0% 27%,
+    transparent 33.5%,
+    color-mix(in srgb, var(--brand-gray-1) 0.78%, transparent) 40%,
+    color-mix(in srgb, var(--brand-gray-1) 2.75%, transparent) 46.5%,
+    color-mix(in srgb, var(--brand-gray-1) 6.27%, transparent) 53%,
+    color-mix(in srgb, var(--brand-gray-1) 12.55%, transparent) 59.5%,
+    color-mix(in srgb, var(--brand-gray-1) 21.57%, transparent) 66%,
+    color-mix(in srgb, var(--brand-gray-1) 34.12%, transparent) 72.5%,
+    color-mix(in srgb, var(--brand-gray-1) 51.37%, transparent) 79%,
+    color-mix(in srgb, var(--brand-gray-1) 72.94%, transparent) 85.5%,
+    var(--brand-gray-1) 92%,
+    color-mix(in srgb, var(--brand-gray-1) 45.10%, transparent) 97%,
+    transparent 100%
   );
   mask-image: linear-gradient(
-    #0000 0% 27%,
-    #0000 33.5%,
-    #00000002 40%,
-    #00000007 46.5%,
-    #00000010 53%,
-    #00000020 59.5%,
-    #00000037 66%,
-    #00000057 72.5%,
-    #00000083 79%,
-    #000000ba 85.5%,
-    #000 92%,
-    #00000073 97%,
-    #0000 100%
+    transparent 0% 27%,
+    transparent 33.5%,
+    color-mix(in srgb, var(--brand-gray-1) 0.78%, transparent) 40%,
+    color-mix(in srgb, var(--brand-gray-1) 2.75%, transparent) 46.5%,
+    color-mix(in srgb, var(--brand-gray-1) 6.27%, transparent) 53%,
+    color-mix(in srgb, var(--brand-gray-1) 12.55%, transparent) 59.5%,
+    color-mix(in srgb, var(--brand-gray-1) 21.57%, transparent) 66%,
+    color-mix(in srgb, var(--brand-gray-1) 34.12%, transparent) 72.5%,
+    color-mix(in srgb, var(--brand-gray-1) 51.37%, transparent) 79%,
+    color-mix(in srgb, var(--brand-gray-1) 72.94%, transparent) 85.5%,
+    var(--brand-gray-1) 92%,
+    color-mix(in srgb, var(--brand-gray-1) 45.10%, transparent) 97%,
+    transparent 100%
   );
 }
 
@@ -64,19 +64,19 @@
 
 .paneHaze {
   filter: blur(26px);
-  -webkit-mask-image: linear-gradient(#000 0 46%, #0000008c 60%, #0000 72%);
-  mask-image: linear-gradient(#000 0 46%, #0000008c 60%, #0000 72%);
+  -webkit-mask-image: linear-gradient(var(--brand-gray-1) 0 46%, color-mix(in srgb, var(--brand-gray-1) 54.90%, transparent) 60%, transparent 72%);
+  mask-image: linear-gradient(var(--brand-gray-1) 0 46%, color-mix(in srgb, var(--brand-gray-1) 54.90%, transparent) 60%, transparent 72%);
 }
 
 .paneSoft {
   filter: blur(10px);
-  -webkit-mask-image: linear-gradient(#0000 40%, #000 58% 74%, #0000 88% 91%, #000000d9 97%, #000 100%);
-  mask-image: linear-gradient(#0000 40%, #000 58% 74%, #0000 88% 91%, #000000d9 97%, #000 100%);
+  -webkit-mask-image: linear-gradient(transparent 40%, var(--brand-gray-1) 58% 74%, transparent 88% 91%, color-mix(in srgb, var(--brand-gray-1) 85.10%, transparent) 97%, var(--brand-gray-1) 100%);
+  mask-image: linear-gradient(transparent 40%, var(--brand-gray-1) 58% 74%, transparent 88% 91%, color-mix(in srgb, var(--brand-gray-1) 85.10%, transparent) 97%, var(--brand-gray-1) 100%);
 }
 
 .paneCrisp {
-  -webkit-mask-image: linear-gradient(#0000 66%, #000 84% 91%, #00000026 97%, #0000 100%);
-  mask-image: linear-gradient(#0000 66%, #000 84% 91%, #00000026 97%, #0000 100%);
+  -webkit-mask-image: linear-gradient(transparent 66%, var(--brand-gray-1) 84% 91%, color-mix(in srgb, var(--brand-gray-1) 14.90%, transparent) 97%, transparent 100%);
+  mask-image: linear-gradient(transparent 66%, var(--brand-gray-1) 84% 91%, color-mix(in srgb, var(--brand-gray-1) 14.90%, transparent) 97%, transparent 100%);
 }
 
 .layer {
@@ -296,13 +296,13 @@
   mask-repeat: no-repeat;
   -webkit-mask-image: linear-gradient(
     to bottom,
-    #000 0 var(--closer-fade-start),
-    #0000 var(--closer-crop-at)
+    var(--brand-gray-1) 0 var(--closer-fade-start),
+    transparent var(--closer-crop-at)
   );
   mask-image: linear-gradient(
     to bottom,
-    #000 0 var(--closer-fade-start),
-    #0000 var(--closer-crop-at)
+    var(--brand-gray-1) 0 var(--closer-fade-start),
+    transparent var(--closer-crop-at)
   );
   transition: color var(--theme-ms) linear;
   position: relative;
@@ -333,7 +333,7 @@
   --closer-hover-reach-y: 1.6em;
   --closer-hover-core: 33%;
   --closer-ink: var(--text-primary);
-  color: #0000;
+  color: transparent;
   position: relative;
 }
 
@@ -368,17 +368,17 @@
     ellipse var(--closer-hover-reach-x) var(--closer-hover-reach-y) at
       calc(var(--mx, 50%) + var(--closer-glyph-pad))
       calc(var(--my, 50%) + var(--closer-glyph-pad)),
-    rgb(0 0 0 / var(--on, 0)) 0%,
-    rgb(0 0 0 / var(--on, 0)) var(--closer-hover-core),
-    #0000 100%
+    rgb(7 7 7 / var(--on, 0)) 0%,
+    rgb(7 7 7 / var(--on, 0)) var(--closer-hover-core),
+    transparent 100%
   );
   mask-image: radial-gradient(
     ellipse var(--closer-hover-reach-x) var(--closer-hover-reach-y) at
       calc(var(--mx, 50%) + var(--closer-glyph-pad))
       calc(var(--my, 50%) + var(--closer-glyph-pad)),
-    rgb(0 0 0 / var(--on, 0)) 0%,
-    rgb(0 0 0 / var(--on, 0)) var(--closer-hover-core),
-    #0000 100%
+    rgb(7 7 7 / var(--on, 0)) 0%,
+    rgb(7 7 7 / var(--on, 0)) var(--closer-hover-core),
+    transparent 100%
   );
 }
 
@@ -388,17 +388,17 @@
     ellipse var(--closer-hover-reach-x) var(--closer-hover-reach-y) at
       calc(var(--mx, 50%) + var(--closer-glyph-pad))
       calc(var(--my, 50%) + var(--closer-glyph-pad)),
-    rgb(0 0 0 / calc(1 - var(--on, 0))) 0%,
-    rgb(0 0 0 / calc(1 - var(--on, 0))) var(--closer-hover-core),
-    #000 100%
+    rgb(7 7 7 / calc(1 - var(--on, 0))) 0%,
+    rgb(7 7 7 / calc(1 - var(--on, 0))) var(--closer-hover-core),
+    var(--brand-gray-1) 100%
   );
   mask-image: radial-gradient(
     ellipse var(--closer-hover-reach-x) var(--closer-hover-reach-y) at
       calc(var(--mx, 50%) + var(--closer-glyph-pad))
       calc(var(--my, 50%) + var(--closer-glyph-pad)),
-    rgb(0 0 0 / calc(1 - var(--on, 0))) 0%,
-    rgb(0 0 0 / calc(1 - var(--on, 0))) var(--closer-hover-core),
-    #000 100%
+    rgb(7 7 7 / calc(1 - var(--on, 0))) 0%,
+    rgb(7 7 7 / calc(1 - var(--on, 0))) var(--closer-hover-core),
+    var(--brand-gray-1) 100%
   );
 }
 
@@ -408,8 +408,8 @@
   --band-end: calc(var(--closer-fade-start) + (var(--closer-crop-at) - var(--closer-fade-start)) * var(--e));
   -webkit-backdrop-filter: blur(var(--closer-name-blur, 0px));
   backdrop-filter: blur(var(--closer-name-blur, 0px));
-  -webkit-mask-image: linear-gradient(to bottom, transparent var(--band-start), #000 var(--band-end));
-  mask-image: linear-gradient(to bottom, transparent var(--band-start), #000 var(--band-end));
+  -webkit-mask-image: linear-gradient(to bottom, transparent var(--band-start), var(--brand-gray-1) var(--band-end));
+  mask-image: linear-gradient(to bottom, transparent var(--band-start), var(--brand-gray-1) var(--band-end));
   position: absolute;
   inset: 0;
   -webkit-mask-repeat: no-repeat;

@@ -17,10 +17,10 @@
   gap: var(--space-2);
   border: 1px solid color-mix(in oklch, var(--white-primary) 40%, transparent);
   border-radius: 999px;
-  background: rgba(10, 10, 14, 0.85);
+  background: color-mix(in srgb, var(--brand-gray-1) 85.00%, transparent);
   color: var(--white-primary);
   padding: 8px 12px 8px 10px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--brand-gray-1) 35.00%, transparent);
   backdrop-filter: blur(8px);
   cursor: grab;
   touch-action: none;
@@ -28,11 +28,11 @@
   -webkit-user-select: none;
 }
 .devTools:hover {
-  background: rgba(10, 10, 14, 1);
+  background: color-mix(in srgb, var(--brand-gray-1) 100.00%, transparent);
 }
 .devToolsDragging {
   cursor: grabbing;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--brand-gray-1) 50.00%, transparent);
 }
 /* Agarre de arrastre (solo affordance visual; toda la burbuja se arrastra). */
 .devToolsGrip {
