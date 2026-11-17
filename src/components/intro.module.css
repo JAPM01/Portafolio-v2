@@ -115,26 +115,27 @@
 }
 
 /* 12 columnas existentes. Una columna completa de separación en
-   cada lado: 3 + 1 + 4 + 1 + 3 = 12; sin gap/width ad hoc. */
+   cada lado: 3 + 1 + 4 + 1 + 3 = 12; sin gap/width ad hoc.
+   Orden visual: manifiesto → diagrama → bullets. */
 @media (min-width: 1440px) {
   .layout {
     row-gap: var(--section-columns-desktop);
   }
-  .editorial { grid-column: 1 / 4; }
+  .copyColumn { grid-column: 1 / 4; }
   .diagram { grid-column: 5 / 9; }
-  .copyColumn { grid-column: 10 / 13; }
+  .editorial { grid-column: 10 / 13; }
 }
 
-/* Pantalla de laptop: 12 columnas, pero sin comprimir un párrafo
-   de 28px en tres columnas estrechas. Se reserva una columna
-   completa entre texto izquierdo y diagrama. */
+/* Pantalla de laptop: el manifiesto va a la izquierda (5 cols para
+   no comprimir el párrafo de 28px), el diagrama a la derecha y los
+   bullets abajo centrados. */
 @media (min-width: 1024px) and (max-width: 1439px) {
   .layout {
     row-gap: var(--section-columns-desktop);
   }
-  .editorial { grid-column: 1 / 5; }
-  .diagram { grid-column: 6 / 13; }
-  .copyColumn { grid-column: 3 / 11; }
+  .copyColumn { grid-column: 1 / 6; }
+  .diagram { grid-column: 7 / 13; }
+  .editorial { grid-column: 3 / 11; }
 }
 
 /* La retícula global es de cuatro columnas en tablet: los bloques

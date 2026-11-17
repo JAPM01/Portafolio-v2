@@ -123,6 +123,19 @@ export default function Intro() {
           <h2 className="type-h2" id="intro-heading">{t.heading}</h2>
         </div>
 
+        {/* Orden en el DOM: manifiesto → bullets → diagrama (así apila
+            en móvil). En desktop la retícula coloca el diagrama en el
+            centro y los bullets a la derecha con grid-column. */}
+        <div className={styles.copyColumn} data-scroll-highlight="">
+          <p
+            className={styles.copy}
+            data-intro-copy=""
+            style={{ "--n": total } as React.CSSProperties}
+          >
+            {units}
+          </p>
+        </div>
+
         <div className={styles.editorial}>
           <div className={styles.thoughts}>
             {t.thoughts.map((thought) => (
@@ -133,16 +146,6 @@ export default function Intro() {
 
         <div className={styles.diagram}>
           <VennFlow lang={lang} />
-        </div>
-
-        <div className={styles.copyColumn} data-scroll-highlight="">
-          <p
-            className={styles.copy}
-            data-intro-copy=""
-            style={{ "--n": total } as React.CSSProperties}
-          >
-            {units}
-          </p>
         </div>
       </div>
     </section>
