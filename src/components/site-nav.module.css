@@ -33,22 +33,26 @@
 .scrolled { inset-block-start: 12px; }
 .glassStage { position: relative; z-index: 2; height: 70px; width: 100%; }
 
-.glassRoot { position: absolute; }
-/* Let the library's refracted backdrop be the glass, not a solid overlay. */
-.glassRoot :global(.glass) {
-  display: flex !important;
-  width: 100% !important;
-  height: 100% !important;
+/* Lente propio: refracción radial en el borde (filtro SVG
+   #liquid-glass-filter, mapa radial de jahed: centro neutro, borde con
+   desplazamiento máximo). Reemplaza a liquid-glass-react, cuya refracción
+   era demasiado sutil: subir displacementScale de 120 a 400 no la
+   aumentaba. Lección: `backdrop-filter: url()` NO refracta en Chromium
+   (ni en el sandbox ni, probablemente, en general: el test de rayas con
+   scale 150 no dobló nada); el desplazamiento va en `filter: url()` sobre
+   una capa de fondo (.lensWarp), con el contenido (.lensContent) encima
+   sin distorsionar — la misma estructura que usa liquid-glass-react. */
+.lensPill {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  width: 100%;
+  height: 100%;
   box-sizing: border-box;
-  background: transparent !important;
+  border-radius: var(--header-glass-radius);
   border: 1px solid var(--header-edge);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--brand-gray-7) 34.00%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--brand-gray-7) 4.50%, transparent),
-    0 10px 30px color-mix(in srgb, var(--brand-gray-1) 19.00%, transparent) !important;
-}
-.glassRoot :global(.glass__warp) {
-  /* Portable baseline for engines without SVG backdrop displacement. */
   background: linear-gradient(
     130deg,
     color-mix(in srgb, var(--brand-gray-7) 5.20%, transparent) 0%,
@@ -56,31 +60,46 @@
     color-mix(in srgb, var(--brand-blue-5) 3.50%, transparent) 75%,
     color-mix(in srgb, var(--brand-blue-1) 2.20%, transparent) 100%
   );
-  backdrop-filter: blur(4px) saturate(155%);
-  -webkit-backdrop-filter: blur(4px) saturate(155%);
+  /* Tinte oscuro base: cuando pasa el título gigante del hero detrás,
+     la píldora lo atenúa para que JPM e iconos sigan legibles.
+     La refracción del borde sigue visible. */
+  background-color: color-mix(in srgb, var(--brand-gray-1) 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--brand-gray-7) 34.00%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--brand-gray-7) 4.50%, transparent),
+    0 10px 30px color-mix(in srgb, var(--brand-gray-1) 19.00%, transparent);
+  overflow: hidden;
 }
-/* El filtro propio de liquid-glass-react (mapa radial: refracción fuerte
-   en el borde, centro claro) es el que se usa. #jpm-glass-optics
-   (turbulencia uniforme) daba un aspecto escarchado sin el doblez
-   concentrado en el borde del cristal líquido real, así que no se
-   aplica. El componente JpmGlassOptics queda sin uso. */
-.glassRoot :global(.glass)::after {
+.lensWarp {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  /* Centro casi transparente como el video de referencia: la refracción
+     del borde hace el efecto lente, no el escarchado. */
+  backdrop-filter: blur(2px) saturate(180%);
+  filter: url(#liquid-glass-filter);
+}
+.lensContent {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-width: 0;
+  display: flex;
+}
+.lensPill::after {
   content: "";
   position: absolute;
   inset: 1px;
   border-radius: inherit;
   pointer-events: none;
+  z-index: 2;
   background:
     linear-gradient(115deg, color-mix(in srgb, var(--brand-gray-7) 32.00%, transparent), transparent 27% 72%, color-mix(in srgb, var(--brand-blue-6) 12.00%, transparent)),
     radial-gradient(ellipse 54% 24% at 42% 0%, color-mix(in srgb, var(--brand-gray-7) 32.00%, transparent), transparent);
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--brand-gray-7) 34.00%, transparent),
     inset 0 -1px 0 color-mix(in srgb, var(--brand-blue-4) 18.00%, transparent);
-}
-.glassRoot :global(.glass > div:last-child) {
-  width: 100%;
-  min-width: 0;
-  text-shadow: none !important;
 }
 
 .nav {

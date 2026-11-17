@@ -13,11 +13,10 @@ import {
   subscribeHeaderPreview,
 } from "../lib/header-preview";
 
-// This library reads navigator while rendering, so its glass layer must not
+import LiquidGlassFilter from "./LiquidGlassFilter";
+
+// The WebGL liquidGL layer reads the canvas while rendering, so it must not
 // be pre-rendered by Next.js during static export.
-const LiquidGlass = dynamic(() => import("liquid-glass-react"), {
-  ssr: false,
-});
 const HeaderLiquidGL = dynamic(() => import("./HeaderLiquidGL"), { ssr: false });
 
 const LINKS = [
@@ -239,25 +238,13 @@ export default function SiteNav() {
         ) : !showGlass ? (
           navigation
         ) : (
-          <LiquidGlass
-            className={styles.glassRoot}
-            style={{ position: "absolute", top: "50%", left: "50%", width: "100%", height: "100%" }}
-            padding="0px"
-            cornerRadius={18}
-            displacementScale={200}
-            blurAmount={0.035}
-            saturation={180}
-            aberrationIntensity={6.0}
-            elasticity={0.26}
-            mode="shader"
-            overLight={false}
-            globalMousePos={touchPoint?.global}
-            mouseOffset={touchPoint?.offset}
-          >
-            {navigation}
-          </LiquidGlass>
+          <div className={styles.lensPill}>
+            <div className={styles.lensWarp} aria-hidden="true" />
+            <div className={styles.lensContent}>{navigation}</div>
+          </div>
         )}
       </div>
+      <LiquidGlassFilter scale={40} />
 
       <div id="jpm-navigation-menu" className={styles.dropdown} hidden={!menuOpen}>
         <nav aria-label={isSpanish ? "Menú de navegación" : "Navigation menu"}>

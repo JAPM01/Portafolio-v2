@@ -8,7 +8,7 @@
 const MAP =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25' r='70%25'%3E%3Cstop offset='0%25' stop-color='%23808080'/%3E%3Cstop offset='70%25' stop-color='%23808080'/%3E%3Cstop offset='100%25' stop-color='%23ffffff'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect width='200' height='200' fill='url(%23g)'/%3E%3C/svg%3E";
 
-export default function LiquidGlassFilter() {
+export default function LiquidGlassFilter({ scale = 28 }: { scale?: number }) {
   return (
     <svg
       width="0"
@@ -37,7 +37,7 @@ export default function LiquidGlassFilter() {
           <feDisplacementMap
             in="SourceGraphic"
             in2="map"
-            scale="28"
+            scale={scale}
             xChannelSelector="R"
             yChannelSelector="G"
             result="disp"
