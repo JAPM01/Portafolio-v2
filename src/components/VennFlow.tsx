@@ -1,317 +1,289 @@
 "use client";
 
 import { useEffect, useId, useRef } from "react";
-import FlowGradientBackground from "./FlowGradientBackground";
 import { HERO_MESH } from "../lib/hero-mesh";
 import styles from "./venn-flow.module.css";
 
 type Lang = "es" | "en";
 type Point = { x: number; y: number };
 
-/** Solo geometría ilustrativa SVG: no son píxeles de layout ni tokens UI. */
-const VENN = {
+/** Geometría en coordenadas SVG, independiente del layout CSS. */
+const G = {
   width: 640,
   height: 530,
   radius: 142,
-  circles: {
-    design: { x: 240, y: 188 },
-    technology: { x: 400, y: 188 },
-    usability: { x: 320, y: 315 },
-  },
-  beam: { length: 132, thickness: 30 },
+  design: { x: 240, y: 188 },
+  technology: { x: 400, y: 188 },
+  usability: { x: 320, y: 315 },
+  convergence: { x: 320, y: 252 },
+  particle: { length: 54, thickness: 9, blur: 2.2 },
 } as const;
 
-const { design, technology, usability } = VENN.circles;
-const r = VENN.radius;
-const result: Point = { x: usability.x, y: 252 };
+type Center = typeof G.design | typeof G.technology | typeof G.usability;
+const point = (p: Point) => `${p.x} ${p.y}`;
 
-/** Intersecciones exactas de circunferencias con radio idéntico. */
-function intersections(a: Point, b: Point, radius: number): [Point, Point] {
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  const distance = Math.hypot(dx, dy);
-  const offset = Math.sqrt(radius ** 2 - (distance / 2) ** 2);
-  const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+function crossings(a: Center, b: Center): [Point, Point] {
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const d = Math.hypot(dx, dy);
+  const h = Math.sqrt(G.radius ** 2 - (d / 2) ** 2);
+  const x = (a.x + b.x) / 2, y = (a.y + b.y) / 2;
   return [
-    { x: mid.x - (dy / distance) * offset, y: mid.y + (dx / distance) * offset },
-    { x: mid.x + (dy / distance) * offset, y: mid.y - (dx / distance) * offset },
+    { x: x - dy / d * h, y: y + dx / d * h },
+    { x: x + dy / d * h, y: y - dx / d * h },
   ];
 }
 
-const upperCrossing = intersections(design, technology, r).sort((a, b) => a.y - b.y)[0];
-const rightCrossing = intersections(technology, usability, r).sort((a, b) => b.x - a.x)[0];
+const designToTechnology = crossings(G.design, G.technology)
+  .reduce((a, b) => a.y < b.y ? a : b);
+const technologyToUsability = crossings(G.technology, G.usability)
+  .reduce((a, b) => a.x > b.x ? a : b);
 
-function xy(p: Point) {
-  return `${p.x} ${p.y}`;
+function fullOrbit(center: Center, start: Point) {
+  const opposite = { x: 2 * center.x - start.x, y: 2 * center.y - start.y };
+  return [
+    `M ${point(start)}`,
+    `A ${G.radius} ${G.radius} 0 0 1 ${point(opposite)}`,
+    `A ${G.radius} ${G.radius} 0 0 1 ${point(start)}`,
+  ].join(" ");
 }
 
-/** Un recorrido continuo y sin saltos: círculo Diseño → círculo
- * Tecnología → círculo Usabilidad → intersección triple.
- * Cada arco usa el mismo centro y radio que su círculo visible.
- */
-const BEAM_ROUTE = [
-  `M ${design.x - r} ${design.y}`,
-  `A ${r} ${r} 0 1 0 ${xy(upperCrossing)}`,
-  `A ${r} ${r} 0 1 1 ${xy(rightCrossing)}`,
-  `A ${r} ${r} 0 0 1 ${usability.x} ${usability.y + r}`,
-  `A ${r} ${r} 0 0 1 ${usability.x - r} ${usability.y}`,
-  `A ${r} ${r} 0 0 1 ${usability.x} ${usability.y - r}`,
-  `L ${xy(result)}`,
-].join(" ");
+function connectOnCircle(center: Center, start: Point, end: Point) {
+  const initial = Math.atan2(start.y - center.y, start.x - center.x);
+  const final = Math.atan2(end.y - center.y, end.x - center.x);
+  const sweep = (final - initial + Math.PI * 4) % (Math.PI * 2);
+  const large = sweep > Math.PI ? 1 : 0;
+  return `M ${point(start)} A ${G.radius} ${G.radius} 0 ${large} 1 ${point(end)}`;
+}
 
-/** Una línea de tiempo normalizada; la duración vive en el design system. */
-const TIMELINE = {
-  departure: 0.04,
-  arrival: 0.72,
-  flashEnd: 0.86,
-  revealStart: 0.78,
-  revealEnd: 0.90,
+/** Cinco segmentos enlazados exactamente en sus extremos:
+ *  órbita Diseño → órbita Tecnología → enlace circular →
+ *  órbita Usabilidad → convergencia interior. */
+const TRACKS = [
+  fullOrbit(G.design, designToTechnology),
+  fullOrbit(G.technology, designToTechnology),
+  connectOnCircle(G.technology, designToTechnology, technologyToUsability),
+  fullOrbit(G.usability, technologyToUsability),
+  [
+    `M ${point(technologyToUsability)}`,
+    `C ${technologyToUsability.x} ${technologyToUsability.y + G.radius * .12},`,
+    `${G.convergence.x + G.radius * .46} ${G.convergence.y + G.radius * .38},`,
+    point(G.convergence),
+  ].join(" "),
+] as const;
+
+const T = {
+  begin: .04,
+  end: .82,
+  impact: .83,
+  flashEnd: .92,
+  fillStart: .86,
+  fillEnd: .98,
 } as const;
 
-const clamp = (value: number) => Math.min(1, Math.max(0, value));
-const smooth = (edge0: number, edge1: number, value: number) => {
-  const t = clamp((value - edge0) / (edge1 - edge0));
-  return t * t * (3 - 2 * t);
-};
+const clamp = (n: number) => Math.min(1, Math.max(0, n));
+function smooth(a: number, b: number, t: number) {
+  const x = clamp((t - a) / (b - a));
+  return x * x * (3 - 2 * x);
+}
+const legEase = (t: number) => t * .3 + smooth(0, 1, t) * .7;
+
+function durationMs(el: HTMLElement) {
+  const value = getComputedStyle(el).getPropertyValue("--motion-diagram-cycle").trim();
+  const duration = Number.parseFloat(value);
+  if (!Number.isFinite(duration) || duration <= 0) return 24000;
+  return value.endsWith("ms") ? duration : duration * 1000;
+}
 
 export default function VennFlow({ lang }: { lang: Lang }) {
-  const diagramRef = useRef<HTMLDivElement>(null);
-  const pathRef = useRef<SVGPathElement>(null);
-  const beamRef = useRef<SVGGElement>(null);
-  const filledRef = useRef<SVGGElement>(null);
-  const pulseRef = useRef<SVGCircleElement>(null);
-  const pulseRingRef = useRef<SVGCircleElement>(null);
-  const resultLabelRef = useRef<SVGTextElement>(null);
-  const uid = useId().replace(/:/g, "");
-  const maskId = `venn-liquid-mask-${uid}`;
-  const beamAlphaId = `venn-beam-alpha-${uid}`;
-  const designClipId = `venn-design-clip-${uid}`;
-  const techClipId = `venn-technology-clip-${uid}`;
-  const staticGradientId = `venn-fallback-mesh-${uid}`;
-  const pulseGradientId = `venn-pulse-mesh-${uid}`;
-  const glowId = `venn-glow-${uid}`;
+  const rootRef = useRef<HTMLDivElement>(null);
+  const trackRefs = useRef<(SVGPathElement | null)[]>([]);
+  const particleRef = useRef<SVGGElement>(null);
+  const fillRef = useRef<SVGCircleElement>(null);
+  const flashRef = useRef<SVGCircleElement>(null);
+  const ringRef = useRef<SVGCircleElement>(null);
+  const outcomeRef = useRef<SVGTextElement>(null);
+
+  const id = useId().replace(/:/g, "");
+  const beamId = `venn-beam-${id}`;
+  const blurId = `venn-blur-${id}`;
+  const fillId = `venn-fill-${id}`;
+  const flashId = `venn-flash-${id}`;
+  const clipD = `venn-d-${id}`;
+  const clipT = `venn-t-${id}`;
+  const clipU = `venn-u-${id}`;
 
   useEffect(() => {
-    const root = diagramRef.current;
-    const path = pathRef.current;
-    const beam = beamRef.current;
-    const filled = filledRef.current;
-    const pulse = pulseRef.current;
-    const ring = pulseRingRef.current;
-    const resultText = resultLabelRef.current;
-    if (!root || !path || !beam || !filled || !pulse || !ring || !resultText) return;
+    const root = rootRef.current, particle = particleRef.current;
+    const fill = fillRef.current, flash = flashRef.current;
+    const ring = ringRef.current, outcome = outcomeRef.current;
+    const paths = trackRefs.current.slice(0, TRACKS.length);
+    if (!root || !particle || !fill || !flash || !ring || !outcome ||
+        paths.length !== TRACKS.length || paths.some(p => !p)) return;
 
-    const prefersLessMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const cycleValue = getComputedStyle(root).getPropertyValue("--motion-diagram-cycle").trim();
-    const parsedCycle = Number.parseFloat(cycleValue);
-    const duration = (Number.isFinite(parsedCycle) && parsedCycle > 0 ? parsedCycle : 9) *
-      (cycleValue.endsWith("ms") ? 1 : 1000);
-    const length = path.getTotalLength();
-    let frame = 0;
-    let active = false;
-    let startedAt = 0;
-    let completed = false;
+    const sections = (paths as SVGPathElement[]).map(path => ({
+      path, length: path.getTotalLength(),
+    }));
+    const total = sections.reduce((n, section) => n + section.length, 0);
+    if (!total) return;
 
-    const staticState = () => {
-      beam.setAttribute("opacity", "0");
-      filled.setAttribute("opacity", "1");
-      pulse.setAttribute("opacity", "0");
+    const duration = durationMs(root);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let visible = false, completed = false, elapsed = 0, last = 0, raf = 0;
+
+    const settle = () => {
+      particle.setAttribute("opacity", "0");
+      fill.setAttribute("opacity", "1");
+      fill.setAttribute("r", String(G.radius * 1.2));
+      flash.setAttribute("opacity", "0");
       ring.setAttribute("opacity", "0");
-      resultText.setAttribute("opacity", "1");
+      outcome.setAttribute("opacity", "1");
     };
 
-    const render = (timestamp: number) => {
-      if (!active || prefersLessMotion.matches) return;
-      if (!startedAt) startedAt = timestamp;
-      const phase = Math.min(1, (timestamp - startedAt) / duration);
+    const tick = (now: number) => {
+      raf = 0;
+      if (!visible || reduced.matches || completed) return;
+      if (last) elapsed += Math.min(now - last, 64);
+      last = now;
+      const phase = clamp(elapsed / duration);
 
-      // La partícula larga lleva el líquido del shader, no un stroke estático.
-      const progress = smooth(TIMELINE.departure, TIMELINE.arrival, phase);
-      const position = path.getPointAtLength(progress * length);
-      const ahead = path.getPointAtLength(Math.min(length, progress * length + 1));
-      const behind = path.getPointAtLength(Math.max(0, progress * length - 1));
-      const angle = Math.atan2(ahead.y - behind.y, ahead.x - behind.x) * 180 / Math.PI;
-      const appearing = smooth(TIMELINE.departure / 2, TIMELINE.departure + 0.025, phase);
-      const disappearing = 1 - smooth(TIMELINE.arrival - 0.01, TIMELINE.arrival + 0.035, phase);
-
-      beam.setAttribute("transform", `translate(${position.x} ${position.y}) rotate(${angle})`);
-      beam.setAttribute("opacity", String(appearing * disappearing));
-
-      // Primero destella la zona de convergencia. Después el mismo
-      // lienzo WebGL queda visible dentro de la intersección exacta.
-      const flash = Math.sin(Math.PI * clamp((phase - TIMELINE.arrival) / (TIMELINE.flashEnd - TIMELINE.arrival)));
-      pulse.setAttribute("opacity", String(Math.max(0, flash) * 0.9));
-      pulse.setAttribute("r", String(r * (0.26 + 0.49 * smooth(TIMELINE.arrival, TIMELINE.flashEnd, phase))));
-      ring.setAttribute("opacity", String(Math.max(0, flash) * 0.85));
-      ring.setAttribute("r", String(r * (0.1 + 0.64 * smooth(TIMELINE.arrival, TIMELINE.flashEnd, phase))));
-
-      const fillAmount = smooth(TIMELINE.revealStart, TIMELINE.revealEnd, phase);
-      filled.setAttribute("opacity", String(fillAmount));
-      resultText.setAttribute("opacity", String(fillAmount));
-      // El recorrido concluye una sola vez: permanece el mismo mesh
-      // animado dentro de la intersección, sin reinicios de loader.
-      if (phase < 1) {
-        frame = window.requestAnimationFrame(render);
-      } else {
-        completed = true;
-        staticState();
+      // Una pequeña partícula, orientada por la tangente real al círculo.
+      const distance = clamp((phase - T.begin) / (T.end - T.begin)) * total;
+      let remaining = distance, current = sections[sections.length - 1];
+      let local = 1;
+      for (const section of sections) {
+        if (remaining <= section.length) {
+          current = section;
+          local = legEase(remaining / section.length);
+          break;
+        }
+        remaining -= section.length;
       }
+      const pathPosition = local * current.length;
+      const at = current.path.getPointAtLength(pathPosition);
+      const before = current.path.getPointAtLength(Math.max(0, pathPosition - 1.5));
+      const after = current.path.getPointAtLength(Math.min(current.length, pathPosition + 1.5));
+      const angle = Math.atan2(after.y - before.y, after.x - before.x) * 180 / Math.PI;
+      particle.setAttribute("transform", `translate(${at.x} ${at.y}) rotate(${angle})`);
+
+      const appearance = smooth(T.begin * .5, T.begin + .025, phase) *
+        (1 - smooth(T.end - .012, T.impact + .02, phase));
+      particle.setAttribute("opacity", String(appearance));
+
+      const pulse = Math.max(0, Math.sin(Math.PI * clamp(
+        (phase - T.impact) / (T.flashEnd - T.impact)
+      )));
+      flash.setAttribute("opacity", String(pulse * .68));
+      flash.setAttribute("r", String(G.radius * (.13 + .31 * smooth(T.impact, T.flashEnd, phase))));
+      ring.setAttribute("opacity", String(pulse * .68));
+      ring.setAttribute("r", String(G.radius * (.04 + .28 * smooth(T.impact, T.flashEnd, phase))));
+
+      const reveal = smooth(T.fillStart, T.fillEnd, phase);
+      fill.setAttribute("opacity", String(reveal));
+      fill.setAttribute("r", String(reveal * G.radius * 1.2));
+      outcome.setAttribute("opacity", String(reveal));
+
+      if (phase < 1) raf = requestAnimationFrame(tick);
+      else { completed = true; settle(); }
     };
 
-    const stop = () => {
-      if (frame) window.cancelAnimationFrame(frame);
-      frame = 0;
-    };
-    const setVisibility = (visible: boolean) => {
-      active = visible;
+    const stop = () => { if (raf) cancelAnimationFrame(raf); raf = 0; last = 0; };
+    const run = (isVisible: boolean) => {
+      visible = isVisible;
       stop();
-      if (prefersLessMotion.matches || completed) {
-        staticState();
-        return;
-      }
-      if (active) {
-        startedAt = 0;
-        frame = window.requestAnimationFrame(render);
-      }
+      if (reduced.matches || completed) settle();
+      else if (visible) raf = requestAnimationFrame(tick);
     };
     const observer = new IntersectionObserver(
-      ([entry]) => setVisibility(entry.isIntersecting),
-      { threshold: 0.12 }
+      ([entry]) => run(entry.isIntersecting), { threshold: .12 }
     );
     observer.observe(root);
-    const onMotionChange = () => setVisibility(active);
-    prefersLessMotion.addEventListener("change", onMotionChange);
-
-    return () => {
-      stop();
-      observer.disconnect();
-      prefersLessMotion.removeEventListener("change", onMotionChange);
-    };
+    const onReduced = () => run(visible);
+    reduced.addEventListener("change", onReduced);
+    return () => { stop(); observer.disconnect(); reduced.removeEventListener("change", onReduced); };
   }, []);
 
   return (
-    <div ref={diagramRef} className={styles.root}>
-      <svg
-        className={styles.svg}
-        viewBox={`0 0 ${VENN.width} ${VENN.height}`}
-        role="img"
-        aria-label={
-          lang === "es"
-            ? "Tres círculos de Venn: Diseño, Tecnología y Usabilidad. Una partícula de líquido del hero recorre los tres y converge en su intersección, donde destella y llena el resultado."
-            : "Three Venn circles: Design, Technology and Usability. A liquid particle travels the three circles and fills their shared intersection after a flash."
-        }
-      >
+    <div className={styles.root} ref={rootRef}>
+      <svg className={styles.svg} viewBox={`0 0 ${G.width} ${G.height}`}
+        role="img" aria-label={lang === "es"
+          ? "Diseño, Tecnología y Usabilidad: una partícula recorre los tres círculos y culmina en la intersección común."
+          : "Design, Technology and Usability: a particle orbits each circle and finishes at their shared intersection."}>
         <defs>
-          <path ref={pathRef} d={BEAM_ROUTE} id={`venn-route-${uid}`} />
-          <clipPath id={designClipId}>
-            <circle cx={design.x} cy={design.y} r={r} />
-          </clipPath>
-          <clipPath id={techClipId}>
-            <circle cx={technology.x} cy={technology.y} r={r} />
-          </clipPath>
-          <linearGradient id={beamAlphaId} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="white" stopOpacity="0" />
-            <stop offset="25%" stopColor="white" stopOpacity=".34" />
-            <stop offset="57%" stopColor="white" stopOpacity=".91" />
-            <stop offset="85%" stopColor="white" stopOpacity="1" />
-            <stop offset="100%" stopColor="white" stopOpacity="0" />
+          {TRACKS.map((d, i) => (
+            <path key={i} d={d} ref={element => { trackRefs.current[i] = element; }} />
+          ))}
+
+          {/* La textura pertenece al propio beam: mismo color desde
+              el primer hasta el último punto, independientemente de
+              dónde se encuentre en el diagrama. */}
+          <linearGradient id={beamId} x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor={HERO_MESH.blue} stopOpacity="0" />
+            <stop offset="18%" stopColor={HERO_MESH.blue} stopOpacity=".85" />
+            <stop offset="40%" stopColor={HERO_MESH.cyan} stopOpacity=".96" />
+            <stop offset="57%" stopColor={HERO_MESH.ice} />
+            <stop offset="76%" stopColor={HERO_MESH.cyan} />
+            <stop offset="88%" stopColor={HERO_MESH.orange} stopOpacity=".78" />
+            <stop offset="100%" stopColor={HERO_MESH.blue} stopOpacity="0" />
           </linearGradient>
-          <linearGradient id={staticGradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id={fillId} x1="0%" y1="100%" x2="100%" y2="0%">
             <stop stopColor={HERO_MESH.blue} />
-            <stop offset=".36" stopColor={HERO_MESH.cyan} />
-            <stop offset=".6" stopColor={HERO_MESH.ice} />
-            <stop offset=".83" stopColor={HERO_MESH.orange} />
+            <stop offset=".4" stopColor={HERO_MESH.cyan} />
+            <stop offset=".67" stopColor={HERO_MESH.ice} />
+            <stop offset=".85" stopColor={HERO_MESH.orange} />
             <stop offset="1" stopColor={HERO_MESH.blue} />
           </linearGradient>
-          <radialGradient id={pulseGradientId}>
-            <stop stopColor={HERO_MESH.ice} stopOpacity="1" />
-            <stop offset=".35" stopColor={HERO_MESH.cyan} stopOpacity=".7" />
-            <stop offset=".7" stopColor={HERO_MESH.blue} stopOpacity=".25" />
+          <radialGradient id={flashId}>
+            <stop stopColor={HERO_MESH.ice} stopOpacity=".8" />
+            <stop offset=".4" stopColor={HERO_MESH.cyan} stopOpacity=".48" />
             <stop offset="1" stopColor={HERO_MESH.blue} stopOpacity="0" />
           </radialGradient>
-          <filter id={glowId} x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation={VENN.beam.thickness / 5} result="glow" />
-            <feMerge>
-              <feMergeNode in="glow" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
+          <filter id={blurId} x="-30%" y="-100%" width="160%" height="300%">
+            <feGaussianBlur stdDeviation={G.particle.blur} />
           </filter>
-          <mask id={maskId} maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="0" y="0" width={VENN.width} height={VENN.height}>
-            <g ref={beamRef} opacity="0">
-              <rect
-                x={-VENN.beam.length / 2}
-                y={-VENN.beam.thickness / 2}
-                width={VENN.beam.length}
-                height={VENN.beam.thickness}
-                rx={VENN.beam.thickness / 2}
-                fill={`url(#${beamAlphaId})`}
-              />
-            </g>
-            <g ref={filledRef} opacity="0">
-              <g clipPath={`url(#${designClipId})`}>
-                <g clipPath={`url(#${techClipId})`}>
-                  <circle cx={usability.x} cy={usability.y} r={r} fill="white" />
-                </g>
-              </g>
-            </g>
-          </mask>
+          <clipPath id={clipD}><circle cx={G.design.x} cy={G.design.y} r={G.radius} /></clipPath>
+          <clipPath id={clipT}><circle cx={G.technology.x} cy={G.technology.y} r={G.radius} /></clipPath>
+          <clipPath id={clipU}><circle cx={G.usability.x} cy={G.usability.y} r={G.radius} /></clipPath>
         </defs>
 
-        <circle className={styles.circle} cx={design.x} cy={design.y} r={r} />
-        <circle className={styles.circle} cx={technology.x} cy={technology.y} r={r} />
-        <circle className={styles.circle} cx={usability.x} cy={usability.y} r={r} />
+        <circle className={styles.circle} cx={G.design.x} cy={G.design.y} r={G.radius} />
+        <circle className={styles.circle} cx={G.technology.x} cy={G.technology.y} r={G.radius} />
+        <circle className={styles.circle} cx={G.usability.x} cy={G.usability.y} r={G.radius} />
 
-        {/* Una sola textura WebGL, exactamente el shader animado del hero,
-            aparece mediante la máscara en la partícula y en el resultado. */}
-        <g mask={`url(#${maskId})`} filter={`url(#${glowId})`} aria-hidden="true">
-          <rect width={VENN.width} height={VENN.height} fill={`url(#${staticGradientId})`} />
-          <foreignObject x="0" y="0" width={VENN.width} height={VENN.height}>
-            <div className={styles.shaderHost}>
-              <FlowGradientBackground
-                colors={[
-                  HERO_MESH.background,
-                  HERO_MESH.blue,
-                  HERO_MESH.cyan,
-                  HERO_MESH.orange,
-                  HERO_MESH.ice,
-                ]}
-                className={styles.shaderCanvas}
-              />
-            </div>
-          </foreignObject>
+        {/* El gradiente llena únicamente el volumen compartido por los tres. */}
+        <g clipPath={`url(#${clipD})`}>
+          <g clipPath={`url(#${clipT})`}>
+            <g clipPath={`url(#${clipU})`}>
+              <circle ref={fillRef} cx={G.convergence.x} cy={G.convergence.y}
+                r="0" opacity="0" fill={`url(#${fillId})`} />
+            </g>
+          </g>
         </g>
 
-        <circle
-          ref={pulseRef}
-          cx={result.x}
-          cy={result.y}
-          r={r / 4}
-          opacity="0"
-          fill={`url(#${pulseGradientId})`}
-          pointerEvents="none"
-        />
-        <circle
-          ref={pulseRingRef}
-          cx={result.x}
-          cy={result.y}
-          r={r / 10}
-          opacity="0"
-          fill="none"
-          stroke={HERO_MESH.cyan}
-          className={styles.pulseRing}
-          pointerEvents="none"
-        />
+        {/* Beam corto (54x9 en unidades del SVG) y halo de 2.2 unidades.
+            SVG puro: no se renderiza ni recorta un canvas WebGL gigante. */}
+        <g ref={particleRef} opacity="0" aria-hidden="true">
+          <rect x={-G.particle.length / 2} y={-G.particle.thickness / 2}
+            width={G.particle.length} height={G.particle.thickness}
+            rx={G.particle.thickness / 2} opacity=".4"
+            fill={`url(#${beamId})`} filter={`url(#${blurId})`} />
+          <rect x={-G.particle.length / 2} y={-G.particle.thickness / 2}
+            width={G.particle.length} height={G.particle.thickness}
+            rx={G.particle.thickness / 2} fill={`url(#${beamId})`} />
+        </g>
+        <circle ref={flashRef} cx={G.convergence.x} cy={G.convergence.y}
+          r="0" opacity="0" fill={`url(#${flashId})`} aria-hidden="true" />
+        <circle ref={ringRef} cx={G.convergence.x} cy={G.convergence.y}
+          r="0" opacity="0" fill="none" stroke={HERO_MESH.cyan}
+          className={styles.pulseRing} aria-hidden="true" />
 
-        <text className={styles.circleLabel} x={design.x - r * .42} y={design.y} textAnchor="middle">
-          {lang === "es" ? "Diseño" : "Design"}
-        </text>
-        <text className={styles.circleLabel} x={technology.x + r * .42} y={technology.y} textAnchor="middle">
-          {lang === "es" ? "Tecnología" : "Technology"}
-        </text>
-        <text className={styles.circleLabel} x={usability.x} y={usability.y + r * .55} textAnchor="middle">
-          {lang === "es" ? "Usabilidad" : "Usability"}
-        </text>
-        <text ref={resultLabelRef} className={styles.resultLabel} x={result.x} y={result.y} textAnchor="middle" opacity="0">
+        <text className={styles.circleLabel} x={G.design.x - G.radius * .42}
+          y={G.design.y} textAnchor="middle">{lang === "es" ? "Diseño" : "Design"}</text>
+        <text className={styles.circleLabel} x={G.technology.x + G.radius * .42}
+          y={G.technology.y} textAnchor="middle">{lang === "es" ? "Tecnología" : "Technology"}</text>
+        <text className={styles.circleLabel} x={G.usability.x}
+          y={G.usability.y + G.radius * .55} textAnchor="middle">{lang === "es" ? "Usabilidad" : "Usability"}</text>
+        <text ref={outcomeRef} className={styles.resultLabel} x={G.convergence.x}
+          y={G.convergence.y} textAnchor="middle" opacity="0">
           {lang === "es" ? "Resultado" : "Outcome"}
         </text>
       </svg>
