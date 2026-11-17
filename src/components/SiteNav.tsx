@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import { MorphIcon } from "morphicons/react";
-import { ArrowUpRight, Globe, Menu, Moon, Sun, X } from "lucide";
+import { ArrowUpRight, Globe, Languages, Menu, Moon, Sun, X } from "lucide";
 import { px } from "../lib/paths";
 import styles from "./site-nav.module.css";
 
@@ -139,7 +139,11 @@ export default function SiteNav() {
                 aria-label={isSpanish ? "Cambiar idioma a inglés" : "Switch language to Spanish"}
                 title={isSpanish ? "ES · Switch to English" : "EN · Cambiar a español"}
               >
-                <MorphIcon icon={Globe} size={22} strokeWidth={1.9} reducedMotion="user" />
+                {/* Morphs on press so the language change has visible
+                    feedback (the static Globe never changed): Globe while
+                    the site is in Spanish, Languages once it is in
+                    English. The title still names the target language. */}
+                <MorphIcon icon={isSpanish ? Globe : Languages} size={22} strokeWidth={1.9} reducedMotion="user" />
               </button>
               <button
                 type="button"

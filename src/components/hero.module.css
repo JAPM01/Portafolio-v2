@@ -1,6 +1,14 @@
 /* Hero — valores medidos de la referencia (desktop ≥1024px primero). */
 .hero {
   isolation: isolate;
+  /* The hero is always dark (Sentos #030403) in both themes. The section
+     itself is in-flow (unlike .rippleWrap/.bgSource, which are fixed and
+     therefore ignored by the liquid-gl static snapshot), so a literal dark
+     background here makes the snapshot capture the hero as dark in light
+     mode too. The fixed mesh canvas paints over it, so nothing visible
+     changes; the lens just stops refracting a light hero and rendering
+     a solid white pill. */
+  background: #030403;
   flex-direction: column;
   /* height (no min-height): las filas 1fr del grid necesitan una altura
      definida. Con min-height, la altura del grid era indefinida y las 12

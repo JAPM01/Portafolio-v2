@@ -172,19 +172,25 @@ export default function HeaderLiquidGL({
           target: "#jpm-preview-header1-lens",
           snapshot: "body",
           engine: window.innerWidth < 768 ? "webgl2" : "auto",
-          resolution: window.innerWidth < 768 ? 1.25 : 1.6,
+          // Snapshot at the highest useful resolution; the document height
+          // clamps the effective scale, so a higher value only helps the
+          // lens render sharply and never hurts.
+          resolution: window.innerWidth < 768 ? 1.6 : 2.0,
           // Header stacking context is z=9999; the GPU canvas is local z=1,
           // under the navigation at local z=3.
           zIndex: 10001,
           content: false,
-          // Stronger refraction focused in the curved rim; clear optical center.
-          // Content-aware contrast protection still limits glyph doubling.
+          // Premium liquid-glass tuning: strong refraction focused in the
+          // curved rim with a clear optical centre, smooth wide bevel so
+          // the distortion ramps gradually (no hard pixelated edge), and
+          // visible chromatic dispersion concentrated at the rim, the way
+          // real glass disperses shorter wavelengths more strongly.
           // Refraction above the Alien preset (0.073) for a more liquid lens.
-          refraction: 0.075,
+          refraction: 0.08,
           // Dispersion follows the refracted vector, not a CSS color fringe.
-          aberration: 0.22,
-          bevelDepth: 0.18,
-          bevelWidth: 0.2,
+          aberration: 0.25,
+          bevelDepth: 0.2,
+          bevelWidth: 0.25,
           frost: 0,
           shadow: false,
           specular: true,
