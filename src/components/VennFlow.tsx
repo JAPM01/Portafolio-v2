@@ -66,7 +66,6 @@ const TIMELINE = {
   flashEnd: 0.86,
   revealStart: 0.78,
   revealEnd: 0.90,
-  resetStart: 0.97,
 } as const;
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
@@ -111,6 +110,7 @@ export default function VennFlow({ lang }: { lang: Lang }) {
     let frame = 0;
     let active = false;
     let startedAt = 0;
+    let completed = false;
 
     const staticState = () => {
       beam.setAttribute("opacity", "0");
@@ -123,7 +123,7 @@ export default function VennFlow({ lang }: { lang: Lang }) {
     const render = (timestamp: number) => {
       if (!active || prefersLessMotion.matches) return;
       if (!startedAt) startedAt = timestamp;
-      const phase = ((timestamp - startedAt) % duration) / duration;
+      const phase = Math.min(1, (timestamp - startedAt) / duration);
 
       // La partícula larga lleva el líquido del shader, no un stroke estático.
       const progress = smooth(TIMELINE.departure, TIMELINE.arrival, phase);
@@ -145,10 +145,17 @@ export default function VennFlow({ lang }: { lang: Lang }) {
       ring.setAttribute("opacity", String(Math.max(0, flash) * 0.85));
       ring.setAttribute("r", String(r * (0.1 + 0.64 * smooth(TIMELINE.arrival, TIMELINE.flashEnd, phase))));
 
-      const fillAmount = smooth(TIMELINE.revealStart, TIMELINE.revealEnd, phase) * (1 - smooth(TIMELINE.resetStart, 1, phase));
+      const fillAmount = smooth(TIMELINE.revealStart, TIMELINE.revealEnd, phase);
       filled.setAttribute("opacity", String(fillAmount));
       resultText.setAttribute("opacity", String(fillAmount));
-      frame = window.requestAnimationFrame(render);
+      // El recorrido concluye una sola vez: permanece el mismo mesh
+      // animado dentro de la intersección, sin reinicios de loader.
+      if (phase < 1) {
+        frame = window.requestAnimationFrame(render);
+      } else {
+        completed = true;
+        staticState();
+      }
     };
 
     const stop = () => {
@@ -158,7 +165,7 @@ export default function VennFlow({ lang }: { lang: Lang }) {
     const setVisibility = (visible: boolean) => {
       active = visible;
       stop();
-      if (prefersLessMotion.matches) {
+      if (prefersLessMotion.matches || completed) {
         staticState();
         return;
       }
