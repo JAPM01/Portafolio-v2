@@ -286,7 +286,7 @@
   --gate-fade: 0.9s;
   --gate-travel: 1.2s;
   --theme-ms: 0.35s;
-  --motion-diagram-cycle: 8s;
+  --motion-diagram-cycle: 12s;
   --parallax-travel: calc(var(--text-heading-2xl) * var(--leading-heading-2xl));
   --parallax-travel-photo: calc(var(--parallax-travel) * 0.38);
   --parallax-travel-photo-work: calc(var(--parallax-travel-photo) * 5);

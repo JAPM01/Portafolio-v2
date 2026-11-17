@@ -6,6 +6,9 @@
   color: var(--text-primary);
   padding-block: var(--section-pad-mobile);
   transition: background-color var(--theme-ms) linear, color var(--theme-ms) linear;
+  /* El diagrama es más ancho que el contenedor en móvil: recorta
+     el sobrante sin crear scroll horizontal. */
+  overflow-x: clip;
 }
 
 @media (min-width: 1024px) {
@@ -148,10 +151,13 @@
 
 /* La retícula global es de cuatro columnas en tablet: los bloques
    se apilan para conservar ancho legible, nunca se fuerzan cinco
-   pistas dentro de cuatro. */
+   pistas dentro de cuatro. El diagrama es más grande en móvil:
+   16% más ancho que el contenedor, centrado (el sobrante lo
+   recorta la sección con overflow-x: clip). */
 @media (max-width: 1023px) {
   .diagram {
     grid-column: 1 / -1;
+    inline-size: 116%;
   }
 }
 
