@@ -10,14 +10,14 @@ import styles from "./site-nav.module.css";
  * offset samples while preserving true refraction, specular and fluid touch.
  * Keep one instance with the upstream-recommended body snapshot across page scroll.
  */
-export default function HeaderLiquidGL({ children }: { children: ReactNode }) {
+export default function HeaderLiquidGL({ children, active }: { children: ReactNode; active: boolean }) {
   const lensRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let active = true;
     let lens: { destroy(): void } | undefined;
 
-    setHeaderPreviewStatus("Iniciando WebGPU/WebGL");
+    setHeaderPreviewStatus("Inicializando refracción");
 
     import("liquid-gl")
       .then(({ default: liquidGL }) => {
@@ -32,13 +32,15 @@ export default function HeaderLiquidGL({ children }: { children: ReactNode }) {
           resolution: window.innerWidth < 768 ? 1.25 : 1.6,
           zIndex: 9998,
           content: false,
-          refraction: 0.006,
+          // Shader patched to use lens-pixel units (not page-height UV).
+          refraction: 0.050,
           aberration: 0,
-          bevelDepth: 0.006,
-          bevelWidth: 0.055,
+          bevelDepth: 0.045,
+          bevelWidth: 0.071,
           frost: 0,
           shadow: false,
-          specular: true,
+          // Prevent a second bright white highlight on light surfaces.
+          specular: false,
           reveal: "none",
           draggable: false,
           tilt: false,
@@ -49,16 +51,29 @@ export default function HeaderLiquidGL({ children }: { children: ReactNode }) {
           magnify: 1,
           tint: null,
           on: {
-            init() {
-              if (active) setHeaderPreviewStatus("liquidGL: lente lista · " + (window.innerWidth < 768 ? "WebGL2" : "automático"));
+            init(instance) {
+              if (!active) return;
+              // Report the actual renderer, not merely the requested engine.
+              const backend = (instance as {
+                renderer?: {
+                  backend?: { constructor?: { name?: string }; maxTextureSize?: number };
+                  scaleFactor?: number;
+                };
+              }).renderer;
+              const engine = backend?.backend?.constructor?.name || "motor no identificado";
+              const scale = backend?.scaleFactor;
+              setHeaderPreviewStatus(
+                "liquidGL: " + engine +
+                (typeof scale === "number" ? " · captura " + scale.toFixed(2) + "x" : "")
+              );
             },
           },
         });
         lens = Array.isArray(result) ? result[0] : result;
         {
           try {
-            // Register the moving hero shader once. The body snapshot
-            // stays stable and the navbar is explicitly ignored by rasterization.
+            // Live hero canvas is registered. The header itself is excluded
+            // from the rasterizer and the GL canvas stays mounted on scroll.
             const withDynamics = liquidGL as typeof liquidGL & { registerDynamic?: (selector: string) => void };
             withDynamics.registerDynamic?.("[data-hero-bg-source] canvas");
           } catch {
@@ -78,7 +93,7 @@ export default function HeaderLiquidGL({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div className={styles.previewGlassRoot}>
+    <div className={`${styles.previewGlassRoot}${active ? "" : ` ${styles.previewGlassInactive}`}`}>
       <div
         id="jpm-preview-header1-lens"
         ref={lensRef}

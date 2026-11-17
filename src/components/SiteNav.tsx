@@ -236,10 +236,10 @@ export default function SiteNav() {
         onPointerUp={() => setTouchPoint(null)}
         onPointerCancel={() => setTouchPoint(null)}
       >
-        {!showGlass ? (
+        {headerPreview === "header1" ? (
+          <HeaderLiquidGL active={showGlass}>{navigation}</HeaderLiquidGL>
+        ) : !showGlass ? (
           navigation
-        ) : headerPreview === "header1" ? (
-          <HeaderLiquidGL>{navigation}</HeaderLiquidGL>
         ) : (
           <LiquidGlass
             className={styles.glassRoot}

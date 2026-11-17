@@ -2,6 +2,10 @@ declare module "liquid-gl" {
   export type LiquidGLEngine = "auto" | "webgpu" | "webgl2" | "webgl";
   export interface LiquidGLLens {
     destroy(): void;
+    renderer?: {
+      backend?: { constructor?: { name?: string }; maxTextureSize?: number };
+      scaleFactor?: number;
+    };
   }
   export interface LiquidGLSettings {
     target: string;

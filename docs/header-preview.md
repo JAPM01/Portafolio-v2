@@ -1,51 +1,73 @@
-# Liquid Glass — Header principal
+# Liquid Glass — implementación de la píldora
 
-Se seleccionó **liquidGL 3.0.0** de NaughtyDuk para el header de `preview`.
+Motor activo: **liquid-gl@3.0.0** (NaughtyDuk). Rama: `preview`.
 
-**Documentación oficial:** https://github.com/naughtyduk/liquidGL/blob/main/package/README.md
+Documentación: https://github.com/naughtyduk/liquidGL/blob/main/package/README.md
 
-**Demo oficial de referencia para una barra:** https://liquidgl.naughtyduk.com/demos/menu-bar.html
+## Causas verificadas en código
 
-## Configuración óptica
+1. **Desplazamiento ligado a la página.** El shader sumaba el
+   desplazamiento `offset` directamente a `mapped`, coordenadas UV
+   normalizadas de la textura completa. La cantidad de píxeles desplazados
+   aumentaba con las dimensiones de la captura, aunque la cápsula no
+   cambiara de tamaño. Se verifica en la fuente 3.0.0, shaders GLSL y WGSL.
+2. **Suavizado obligatorio de texto.** Incluso con `frost: 0`, ambos
+   shaders promediaban cinco muestras (`sampleUV` y sus cuatro vecinos).
+   Se reemplazó ese promedio por una sola muestra; el desenfoque explícito
+   de `frost > 0` permanece.
+3. **Contorno duplicado.** El contenedor `previewGlassRoot::after`
+   añadía otra superficie redondeada, con degradado blanco e iluminación,
+   encima de la lente GPU. Se eliminó. El contorno restante usa el
+   mismo rectángulo y radio que el objetivo óptico.
+4. **Brillo sobre blanco.** `specular: true` sumaba luminosidad en
+   el shader, además de los brillos CSS. Se desactivó hasta validar
+   una iluminación que funcione sobre fondos claros y oscuros.
+5. **Montaje dependiente del scroll.** `SiteNav` desmontaba la lente
+   cuando `showGlass` era falso. Ahora su instancia permanece montada
+   con `header1` seleccionado; el canvas se oculta al inicio del hero
+   mediante CSS y aparece al desplazarse.
+6. **Estado del motor.** El menú informaba «WebGL2» según el parámetro
+   solicitado, no según el motor real. Ahora lee la clase del backend
+   inicializado y, cuando existe, la escala de la captura.
 
-| Parámetro | Valor | Motivo |
-|---|---:|---|
-| `refraction` | `0.012` | Cerca del valor inicial `0.01` de la documentación |
-| `aberration` | `0` | Desactiva separación RGB que causaba halos y apariencia de imagen triplicada; recomendado para diagnosticar artefactos |
-| `bevelDepth` | `0.014` | Profundidad tomada de la demo oficial de menú |
-| `bevelWidth` | `0.071` | Banda del bisel estrecha, como la demo oficial |
-| `frost` | `0` | Mantiene transparente la superficie y la refracción visible |
-| `specular` | `true` | Reflejos animados |
-| `interaction` | `fluid` | Interacción viscosa por mouse o tacto |
-| `interactionStrength` | `0.44` | Interacción más contenida |
-| `interactionRadius` | `0.35` | Radio de interacción documentado |
-| `interactionViscosity` | `0.65` | Recuperación fluida |
-| `resolution` | `1.25` móvil / `1.6` escritorio | Equilibrio entre claridad y memoria |
+## Parche reproducible
 
-La aberración cromática es un efecto opcional, **no un requisito para producir refracción**. Debe volver a activarse solamente tras confirmar que no hay halos ni contornos duplicados en Chrome para Android; entonces probar un valor muy bajo separado del bisel.
+`scripts/patch-liquid-glass.mjs` se ejecuta en `postinstall` tras
+`npm ci` y `npm install`. Modifica exclusivamente el fichero instalado
+`node_modules/liquid-gl/liquidGL.js`, no la fuente del proyecto.
 
-## Continuidad del efecto
+En ambas variantes GLSL y WGSL se convierte la desviación a unidades
+de la lente:
 
-- El objetivo óptico ocupa exactamente el contenedor del header.
-- El snapshot es `body`, una fuente estable que excluye el propio header para evitar autocaptura. El proyecto usa `<main id="main">`.
-- Se registra el canvas dinámico del hero mediante `liquidGL.registerDynamic()` después de inicializar la lente.
-- No se emplean keys dependientes del scroll ni cambios de fuente al cambiar de sección.
-- Al inicio del hero no hay píldora; al desplazarse se monta la lente y queda activa mientras se continúa descendiendo.
-- El menú de desarrollo conserva una opción para regresar temporalmente al header anterior. La opción **Liquid Glass** es la predeterminada.
+```
+offsetUV = direction * amount * centreBlend
+         * min(lensWidth, lensHeight)
+         * (snapshotBoundsUVSize / lensSize)
+```
 
-## Validación en dispositivo
+De ese modo, `refraction` y `bevelDepth` producen desplazamientos
+proporcionales al tamaño físico de la píldora, no al alto de la página.
 
-Revisar que el borde sea neutral, sin verdes/amarillos; que el texto detrás no se triplique; que exista distorsión refractiva única; que los iconos permanezcan visibles y táctiles; y que no se remonte la lente al cambiar de sección. La compilación valida la integración de código, no el efecto óptico en el teléfono.
+Para una píldora móvil de 62px, los valores actuales `0.050` y
+`0.045` limitan el desplazamiento nominal combinado a
+aproximadamente 5.9px antes de las atenuaciones del shader.
+`aberration` permanece en `0`, `frost` en `0`,
+`bevelWidth` en `0.071`, `magnify` en `1` y
+`interaction: "fluid"` sigue habilitado.
 
-## Ajuste de artefactos sobre texto y bajo contraste
+**Control de integridad:** el script exige cuatro coincidencias únicas
+(dos mapeos y dos kernels) y falla si la versión de la librería
+cambia de forma incompatible, en vez de aplicar un parche parcial.
 
-- Captura `body` como recomienda el README de liquidGL, en lugar de `#main`.
-  El header fijo lleva `data-liquid-ignore` para no capturarse a sí mismo.
-- En móvil, se solicita `engine: "webgl2"` (con fallback automático
-  WebGL1/CSS) para evitar una discrepancia del backend WebGPU en Android.
-- Aberración cromática `0` y magnificación explícita `1`.
-  `refraction: 0.006`, `bevelDepth: 0.006`, `bevelWidth: 0.055`:
-  menor desplazamiento para evitar la apariencia de caracteres repetidos.
-- Los contornos se definen mediante un reflejo neutro semitransparente,
-  separado del shader, para mantener visibilidad en superficies negras.
-- Aún debe verificarse visualmente sobre texto y fondo oscuro en Chrome Android.
+## Límites y validación real
+
+- La textura `body` se limita a la dimensión máxima de textura que
+  permita la GPU. El motor puede reducir la escala en documentos muy largos.
+- El rasterizador de liquidGL es una representación del DOM, no una
+  captura nativa automática del compositor del navegador.
+- El shader del canvas del hero se registra como contenido dinámico.
+- La compilación confirma que Next.js acepta la integración y que
+  `postinstall` parchea la dependencia. No confirma por sí sola la
+  ausencia de artefactos ópticos en un teléfono.
+- Revisar fondos claros, oscuros, letras detrás de la lente, continuidad
+  al hacer scroll, contraste de iconos y comportamiento táctil en Android.
