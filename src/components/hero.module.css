@@ -431,3 +431,13 @@ a.metaValue.ctaLink:hover {
     display: none;
   }
 }
+
+/* Canvas del Flow Gradient: el componente trae clases de Tailwind
+   (pointer-events-none block size-full) pero este proyecto no tiene
+   Tailwind; esta clase le da el tamaño real (100% del wrapper). */
+.flowCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
