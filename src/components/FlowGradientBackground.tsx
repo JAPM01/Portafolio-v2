@@ -230,14 +230,11 @@ export default function FlowGradientBackground({
     io.observe(canvas)
 
     // the cursor anywhere over the canvas (read off the window, so content on top stays clickable)
-    // Mouse y touch usan EL MISMO handler (PointerEvent): no hay
+    // Mouse y touch usan LA MISMA lógica (updatePointer): no hay
     // divergencia de efectos entre modos. La velocidad del puntero
     // (mouse o dedo) impulsa el flujo: al deslizar, el líquido se
     // remueve y te sigue; al parar, vuelve a lo normal.
-    const onMove = (e: PointerEvent) => {
-      const r = canvas.getBoundingClientRect()
-      const px = (e.clientX - r.left) / r.width
-      const py = 1 - (e.clientY - r.top) / r.height
+    const updatePointer = (px: number, py: number, instant: boolean) => {
       const now = performance.now()
       if (lastPT !== 0) {
         const dt = Math.max(now - lastPT, 1)
@@ -249,18 +246,61 @@ export default function FlowGradientBackground({
       lastPT = now
       mouse.tx = px
       mouse.ty = py
+      if (instant) {
+        mouse.x = mouse.tx
+        mouse.y = mouse.ty
+      }
       if (still) start()
+    }
+    const onMove = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect()
+      updatePointer(
+        (e.clientX - r.left) / r.width,
+        1 - (e.clientY - r.top) / r.height,
+        false,
+      )
     }
     // En touch, un tap debe reaccionar al instante (no solo al arrastrar):
     // pointerdown mueve el objetivo del brillo al punto tocado de inmediato.
     const onDown = (e: PointerEvent) => {
-      onMove(e)
-      mouse.x = mouse.tx
-      mouse.y = mouse.ty
-      if (still) start()
+      const r = canvas.getBoundingClientRect()
+      updatePointer(
+        (e.clientX - r.left) / r.width,
+        1 - (e.clientY - r.top) / r.height,
+        true,
+      )
+    }
+    // CAUSA del bug en Android (diagnosticado 17 Nov 2026): al deslizar
+    // el dedo, el navegador dispara pointermove 1 sola vez y luego
+    // pointercancel (empieza el scroll nativo), así que el impulso del
+    // líquido se cortaba. touchmove SÍ sigue disparándose durante todo
+    // el arrastre (12 eventos en la prueba vs 1 pointermove). Por eso
+    // el touch usa touchmove/touchstart, con la misma lógica que el
+    // mouse, para que el líquido siga al dedo sin cortarse.
+    const onTouch = (e: TouchEvent) => {
+      const t = e.touches[0]
+      if (!t) return
+      const r = canvas.getBoundingClientRect()
+      updatePointer(
+        (t.clientX - r.left) / r.width,
+        1 - (t.clientY - r.top) / r.height,
+        false,
+      )
+    }
+    const onTouchStart = (e: TouchEvent) => {
+      const t = e.touches[0]
+      if (!t) return
+      const r = canvas.getBoundingClientRect()
+      updatePointer(
+        (t.clientX - r.left) / r.width,
+        1 - (t.clientY - r.top) / r.height,
+        true,
+      )
     }
     window.addEventListener('pointermove', onMove, {passive: true})
     window.addEventListener('pointerdown', onDown, {passive: true})
+    window.addEventListener('touchmove', onTouch, {passive: true})
+    window.addEventListener('touchstart', onTouchStart, {passive: true})
 
     return () => {
       cancelAnimationFrame(frame)
@@ -268,6 +308,8 @@ export default function FlowGradientBackground({
       io.disconnect()
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerdown', onDown)
+      window.removeEventListener('touchmove', onTouch)
+      window.removeEventListener('touchstart', onTouchStart)
       gl.deleteBuffer(buf)
       gl.deleteProgram(prog)
     }
