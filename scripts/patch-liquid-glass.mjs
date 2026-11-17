@@ -110,12 +110,12 @@ replaceOnce(
 replaceOneOf(
   "GLSL optical bevel and rim",
   ["final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);\nfloat rimLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));\nfloat rimWeight = pow(edge, 8.0) * 0.28;\nfinal.rgb = clamp(final.rgb + vec3(0.45 - rimLum) * rimWeight, vec3(0.0), vec3(1.0));", "final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);"],
-  "final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);\nfloat rimLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));\nfloat rimTarget = mix(0.63, 0.55, smoothstep(0.28, 0.80, rimLum));\nfloat rimWeight = pow(edge, 2.4) * 0.27 + pow(edge, 7.0) * 0.09;\nfinal.rgb = clamp(mix(final.rgb, vec3(rimTarget), rimWeight), vec3(0.0), vec3(1.0));",
+  "final.rgb = mix(final.rgb, final.rgb * u_tint.rgb, u_tint.a);\nfloat rimLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));\nfloat rimTarget = mix(0.80, 0.43, smoothstep(0.24, 0.86, rimLum));\nfloat rimWeight = pow(edge, 2.2) * 0.34 + pow(edge, 7.0) * 0.13;\nfinal.rgb = clamp(mix(final.rgb, vec3(rimTarget), rimWeight), vec3(0.0), vec3(1.0));",
 );
 replaceOneOf(
   "WGSL optical bevel and rim",
   ["finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);\nlet rimLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));\nlet rimWeight = pow(edge, 8.0) * 0.28;\nfinalCol = vec4<f32>(clamp(finalCol.rgb + vec3<f32>(0.45 - rimLum) * rimWeight, vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);", "finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);"],
-  "finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);\nlet rimLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));\nlet rimTarget = mix(0.63, 0.55, smoothstep(0.28, 0.80, rimLum));\nlet rimWeight = pow(edge, 2.4) * 0.27 + pow(edge, 7.0) * 0.09;\nfinalCol = vec4<f32>(clamp(mix(finalCol.rgb, vec3<f32>(rimTarget), rimWeight), vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);",
+  "finalCol = vec4<f32>(mix(finalCol.rgb, finalCol.rgb * u.tint.rgb, u.tint.a), finalCol.a);\nlet rimLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));\nlet rimTarget = mix(0.80, 0.43, smoothstep(0.24, 0.86, rimLum));\nlet rimWeight = pow(edge, 2.2) * 0.34 + pow(edge, 7.0) * 0.13;\nfinalCol = vec4<f32>(clamp(mix(finalCol.rgb, vec3<f32>(rimTarget), rimWeight), vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);",
 );
 
 // Respect the current background luminance: strong reflections over dark
@@ -125,8 +125,8 @@ replaceOnce(
   "final.rgb += h;",
   [
     "float surfaceLum = dot(final.rgb, vec3(0.2126, 0.7152, 0.0722));",
-    "float reflectionStrength = 0.10 + 0.90 * (1.0 - smoothstep(0.32, 0.86, surfaceLum));",
-    "final.rgb = clamp(final.rgb + (vec3(1.0) - final.rgb) * h * reflectionStrength, vec3(0.0), vec3(1.0));",
+    "float reflectionStrength = 0.18 + 0.82 * (1.0 - smoothstep(0.32, 0.86, surfaceLum));",
+    "final.rgb = clamp(final.rgb + (vec3(1.0) - final.rgb) * h * reflectionStrength * 1.15, vec3(0.0), vec3(1.0));",
   ].join("\n            "),
 );
 replaceOnce(
@@ -134,8 +134,8 @@ replaceOnce(
   "finalCol = vec4<f32>(finalCol.rgb + vec3<f32>(h), finalCol.a);",
   [
     "let surfaceLum = dot(finalCol.rgb, vec3<f32>(0.2126, 0.7152, 0.0722));",
-    "let reflectionStrength = 0.10 + 0.90 * (1.0 - smoothstep(0.32, 0.86, surfaceLum));",
-    "finalCol = vec4<f32>(clamp(finalCol.rgb + (vec3<f32>(1.0) - finalCol.rgb) * h * reflectionStrength, vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);",
+    "let reflectionStrength = 0.18 + 0.82 * (1.0 - smoothstep(0.32, 0.86, surfaceLum));",
+    "finalCol = vec4<f32>(clamp(finalCol.rgb + (vec3<f32>(1.0) - finalCol.rgb) * h * reflectionStrength * 1.15, vec3<f32>(0.0), vec3<f32>(1.0)), finalCol.a);",
   ].join("\n    "),
 );
 
