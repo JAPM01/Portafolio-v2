@@ -5,11 +5,12 @@ import type { ReactNode } from "react";
 import { setHeaderPreviewStatus } from "../lib/header-preview";
 import styles from "./site-nav.module.css";
 
-/** Preview 1: original NaughtyDuk liquidGL 3.0 WebGPU/WebGL.
- * The lens is only the backdrop; navigation remains actual interactive DOM.
- * The package hides its target element and draws a separate GPU layer.
+/** liquidGL v3.0: official menu-bar bevel geometry with neutral RGB
+ * sampling. Using aberration=0 during Android validation disables per-channel
+ * offset samples while preserving true refraction, specular and fluid touch.
+ * Keep one instance and a stable #main snapshot across page scroll.
  */
-export default function HeaderLiquidGL({ children, snapshotSelector }: { children: ReactNode; snapshotSelector: string }) {
+export default function HeaderLiquidGL({ children }: { children: ReactNode }) {
   const lensRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -24,25 +25,25 @@ export default function HeaderLiquidGL({ children, snapshotSelector }: { childre
 
         const result = liquidGL({
           target: "#jpm-preview-header1-lens",
-          snapshot: snapshotSelector,
+          snapshot: "#main",
           engine: "auto",
-          resolution: window.innerWidth < 768 ? 1.0 : 1.15,
+          resolution: window.innerWidth < 768 ? 1.25 : 1.6,
           zIndex: 9998,
           content: false,
-          refraction: 0.032,
-          aberration: 0.065,
-          bevelDepth: 0.085,
-          bevelWidth: 0.13,
-          frost: 0.15,
+          refraction: 0.012,
+          aberration: 0,
+          bevelDepth: 0.014,
+          bevelWidth: 0.071,
+          frost: 0,
           shadow: false,
           specular: true,
           reveal: "none",
           draggable: false,
           tilt: false,
           interaction: "fluid",
-          interactionStrength: 0.48,
-          interactionRadius: 0.34,
-          interactionViscosity: 0.78,
+          interactionStrength: 0.44,
+          interactionRadius: 0.35,
+          interactionViscosity: 0.65,
           tint: null,
           on: {
             init() {
@@ -51,7 +52,7 @@ export default function HeaderLiquidGL({ children, snapshotSelector }: { childre
           },
         });
         lens = Array.isArray(result) ? result[0] : result;
-        if (snapshotSelector === "#main") {
+        {
           try {
             // Register the moving hero shader once, while the snapshot root
             // remains stable throughout scrolling.
@@ -71,7 +72,7 @@ export default function HeaderLiquidGL({ children, snapshotSelector }: { childre
       active = false;
       lens?.destroy();
     };
-  }, [snapshotSelector]);
+  }, []);
 
   return (
     <div className={styles.previewGlassRoot}>

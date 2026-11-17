@@ -1,43 +1,38 @@
-# Comparación de motores Liquid Glass en `preview`
+# Liquid Glass — Header principal
 
-El menú flotante **Herramientas** (anteriormente «Retícula») permite
-activar una de dos opciones. El estado se guarda en
-`localStorage["jpm-header-preview"]` y aplica al header global.
+Se seleccionó **liquidGL 3.0.0** de NaughtyDuk para el header de `preview`.
 
-- **Retícula**: control independiente; muestra/oculta la cuadrícula
-  del hero sin afectar el efecto de vidrio.
-- **Header 1 — liquidGL**: `liquid-gl@3.0.0`, WebGPU / WebGL,
-  `interaction: "fluid"`, refracción, aberración y bisel.
-- **Header 2 — Simple Liquid Glass**: `simple-liquid-glass@6.0.0`,
-  React Interactive + WebGL, refracción de lente, dispersión y
-  elasticidad del puntero. Se muestra el diagnóstico del renderer.
-- **Desactivados**: conserva el header anterior y su vidrio actual.
+**Documentación oficial:** https://github.com/naughtyduk/liquidGL/blob/main/package/README.md
 
-Las dos opciones son excluyentes. Al empezar sobre el hero, el header
-sigue siendo transparente; **desplazarse** activa la cápsula de vidrio.
-La navegación, los controles ES/EN y el tema se mantienen iguales.
+**Demo oficial de referencia para una barra:** https://liquidgl.naughtyduk.com/demos/menu-bar.html
 
-Sobre el hero las dos opciones toman como fuente el **canvas animado
-real** (`[data-hero-bg-source] canvas`), sin volver a capturar
-todas las secciones. Al salir del hero, usan `#main` como referencia.
-Los motores se cargan solo cuando se seleccionan.
+## Configuración óptica
 
-Estas opciones son experimentales y deben validarse en Chrome Android,
-especialmente el rendimiento, el renderer real y la elasticidad táctil.
-Un build exitoso no demuestra fidelidad visual.
+| Parámetro | Valor | Motivo |
+|---|---:|---|
+| `refraction` | `0.012` | Cerca del valor inicial `0.01` de la documentación |
+| `aberration` | `0` | Desactiva separación RGB que causaba halos y apariencia de imagen triplicada; recomendado para diagnosticar artefactos |
+| `bevelDepth` | `0.014` | Profundidad tomada de la demo oficial de menú |
+| `bevelWidth` | `0.071` | Banda del bisel estrecha, como la demo oficial |
+| `frost` | `0` | Mantiene transparente la superficie y la refracción visible |
+| `specular` | `true` | Reflejos animados |
+| `interaction` | `fluid` | Interacción viscosa por mouse o tacto |
+| `interactionStrength` | `0.44` | Interacción más contenida |
+| `interactionRadius` | `0.35` | Radio de interacción documentado |
+| `interactionViscosity` | `0.65` | Recuperación fluida |
+| `resolution` | `1.25` móvil / `1.6` escritorio | Equilibrio entre claridad y memoria |
 
-## Corrección de continuidad y óptica
+La aberración cromática es un efecto opcional, **no un requisito para producir refracción**. Debe volver a activarse solamente tras confirmar que no hay halos ni contornos duplicados en Chrome para Android; entonces probar un valor muy bajo separado del bisel.
 
-Los motores utilizan una fuente estable `#main` durante todo el scroll.
-Nunca se cambia la `key` ni la fuente de refracción al cruzar el límite
-del hero: la instancia activa permanece montada hasta apagar el selector
-o regresar por completo a la cabecera sin cristal.
+## Continuidad del efecto
 
-- **Header 1:** aberración `0.065`, refracción `0.032`, bisel más
-  estrecho y sin halo cromático intenso; la lente ocupa el contenedor
-  del header y el canvas del hero se registra como contenido dinámico.
-- **Header 2:** perfil `player` (no `loupe`), sin la segunda lente
-  local de `followPointer`, borde único, dispersión y desplazamientos
-  reducidos. Se mantiene la elasticidad y el efecto de clic.
-- Ambos continúan siendo prototipos que deben comprobarse en el Chrome
-  Android donde se observaron los problemas.
+- El objetivo óptico ocupa exactamente el contenedor del header.
+- El snapshot es `#main`, una fuente estable que excluye el propio header para evitar autocaptura. El proyecto usa `<main id="main">`.
+- Se registra el canvas dinámico del hero mediante `liquidGL.registerDynamic()` después de inicializar la lente.
+- No se emplean keys dependientes del scroll ni cambios de fuente al cambiar de sección.
+- Al inicio del hero no hay píldora; al desplazarse se monta la lente y queda activa mientras se continúa descendiendo.
+- El menú de desarrollo conserva una opción para regresar temporalmente al header anterior. La opción **Liquid Glass** es la predeterminada.
+
+## Validación en dispositivo
+
+Revisar que el borde sea neutral, sin verdes/amarillos; que el texto detrás no se triplique; que exista distorsión refractiva única; que los iconos permanezcan visibles y táctiles; y que no se remonte la lente al cambiar de sección. La compilación valida la integración de código, no el efecto óptico en el teléfono.

@@ -20,7 +20,6 @@ const LiquidGlass = dynamic(() => import("liquid-glass-react"), {
   ssr: false,
 });
 const HeaderLiquidGL = dynamic(() => import("./HeaderLiquidGL"), { ssr: false });
-const HeaderSimpleGlass = dynamic(() => import("./HeaderSimpleGlass"), { ssr: false });
 
 const LINKS = [
   { href: px("/"), es: "Inicio", en: "Home" },
@@ -239,17 +238,7 @@ export default function SiteNav() {
         {!showGlass ? (
           navigation
         ) : headerPreview === "header1" ? (
-          <HeaderLiquidGL
-            snapshotSelector="#main"
-          >
-            {navigation}
-          </HeaderLiquidGL>
-        ) : headerPreview === "header2" ? (
-          <HeaderSimpleGlass
-            backdropSelector="#main"
-          >
-            {navigation}
-          </HeaderSimpleGlass>
+          <HeaderLiquidGL>{navigation}</HeaderLiquidGL>
         ) : (
           <LiquidGlass
             className={styles.glassRoot}

@@ -2,14 +2,15 @@
  * Kept outside components so the global navbar and floating development
  * menu stay synchronized without moving existing page markup.
  */
-export type HeaderPreview = "original" | "header1" | "header2";
+export type HeaderPreview = "original" | "header1";
 
 const STORAGE_KEY = "jpm-header-preview";
 const CHANGE_EVENT = "jpm-header-preview-change";
 const STATUS_EVENT = "jpm-header-preview-status";
 
 function parsePreview(value: string | undefined | null): HeaderPreview {
-  return value === "header1" || value === "header2" ? value : "original";
+  // Migrate the discontinued Header 2 selection to liquidGL.
+  return value === "original" ? "original" : "header1";
 }
 
 export function getHeaderPreview(): HeaderPreview {

@@ -191,17 +191,8 @@ export default function DevBubble({ visible, onToggle }: DevBubbleProps) {
             aria-pressed={selected === "header1"}
             onClick={() => setHeaderPreview(selected === "header1" ? "original" : "header1")}
           >
-            <span className={styles.optionCopy}><strong>Header 1</strong><small>liquidGL · WebGPU / WebGL</small></span>
+            <span className={styles.optionCopy}><strong>Liquid Glass</strong><small>liquidGL · WebGPU / WebGL</small></span>
             <span className={`${styles.switch}${selected === "header1" ? ` ${styles.switchOn}` : ""}`} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            className={styles.menuOption}
-            aria-pressed={selected === "header2"}
-            onClick={() => setHeaderPreview(selected === "header2" ? "original" : "header2")}
-          >
-            <span className={styles.optionCopy}><strong>Header 2</strong><small>Simple Liquid Glass · WebGL</small></span>
-            <span className={`${styles.switch}${selected === "header2" ? ` ${styles.switchOn}` : ""}`} aria-hidden="true" />
           </button>
           <p className={styles.status} role="status">
             {selected === "original" ? "Header actual" : status || "Motor pendiente; desplázate para verlo"}
