@@ -245,11 +245,11 @@ export default function SiteNav() {
             className={styles.glassRoot}
             style={{ position: "absolute", top: "50%", left: "50%", width: "100%", height: "100%" }}
             padding="0px"
-            cornerRadius={21}
-            displacementScale={108}
+            cornerRadius={18}
+            displacementScale={120}
             blurAmount={0.035}
             saturation={155}
-            aberrationIntensity={3.6}
+            aberrationIntensity={4.0}
             elasticity={0.26}
             mode="prominent"
             overLight={false}
