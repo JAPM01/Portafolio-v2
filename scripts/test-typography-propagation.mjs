@@ -10,7 +10,8 @@ const levels=["h1","h2","h3","h4","h5","body","meta"];
 test("Escala única: siete tamaños responsivos sin alias secundarios",()=>{
  for(const level of levels){
   const names=[...css.matchAll(new RegExp("--type-"+level+"-size\\s*:", "g"))];
-  assert.equal(names.length,2,"El token "+level+" debe declararse para móvil y desktop");
+  const expected=level==="body"?3:2;
+  assert.equal(names.length,expected,"El token "+level+" debe declararse en sus breakpoints oficiales");
  }
  assert.doesNotMatch(css,/--type-(?:caption|h6)-size\s*:/);
  assert.doesNotMatch(css,/--text-heading-[\w-]+\s*:/);
@@ -74,8 +75,8 @@ test("Chromium: siete categorías, ocho escenarios responsivos y propagación in
     const expected={
       390: {h1:76,h2:60,body:16,meta:14},
       768: {h1:100,h2:84,body:24,meta:16},
-      1440:{h1:160,h2:136,body:32,meta:20},
-      1920:{h1:184,h2:156,body:36,meta:24}
+      1440:{h1:160,h2:136,body:28,meta:20},
+      1920:{h1:184,h2:156,body:32,meta:24}
     };
     for(const [level,size] of Object.entries(expected[width])){
       assert.equal(parseFloat(before[level].size),size,

@@ -12,7 +12,7 @@
      Los demás tonos son funciones cromáticas de estas cinco bases.
      Cambiar aquí cualquier base actualiza UI, SVG, Canvas y WebGL
      (estos últimos leen los tokens CSS en el navegador). */
-  --brand-blue: #076DFA;
+  --brand-blue: #000AFF;
   --brand-orange: #FF9636;
   --brand-cyan: #6FD3FF;
   --brand-black: #010101;
@@ -330,8 +330,8 @@
 }
 
 /* Escala editorial fluida desde tablet, siempre desde los mismos tokens.
-   H2: 84/136/156, Body: 24/32/36, Meta: 16/20/24 @768/1440/1920.
-   Los dos tramos de H2 y Body mantienen crecimiento sin salto en 1440. */
+   H2: 84/136/156, Body tablet: 24px @768; Body desktop: 28/32px
+   @1440/1920, Meta: 16/20/24 @768/1440/1920. */
 @media (min-width: 768px) {
   :root {
     --type-h2-size: round(
@@ -346,9 +346,13 @@
   }
 }
 
-/* H3-H5 mantienen sus valores desktop aprobados (múltiplos de 8). */
+/* Desktop: un paso de 4px menos en Body a 1440/1920.
+   El tamaño de tablet (768-1023px) no se modifica; a 1024px ambas
+   fórmulas coinciden en 28px, sin salto en el breakpoint.
+   H3-H5 mantienen sus valores desktop aprobados. */
 @media (min-width: 1024px) {
   :root {
+    --type-body-size: round(clamp(28px, calc(16px + 0.833333vw), 32px), 4px);
     --type-h2-leading: 1.05;
     --type-h3-size: 48px;
     --type-h3-leading: 1.1;

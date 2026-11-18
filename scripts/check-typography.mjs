@@ -104,8 +104,9 @@ function validateRoot(code,errors){
   }
  }
  for(const token of SIZE_TOKENS){
-  if(counts.get(token)!==2){
-   errors.push(TYPE_FILE+": tamaño "+token+" necesita exactamente dos definiciones responsivas");
+  const expected=token==="--type-body-size"?3:2;
+  if(counts.get(token)!==expected){
+   errors.push(TYPE_FILE+": tamaño "+token+" necesita exactamente "+expected+" definiciones responsivas");
   }
  }
  for(const token of TYPE_COLORS){

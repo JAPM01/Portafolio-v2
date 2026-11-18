@@ -11,19 +11,23 @@ siete tokens: `--type-h1-size`, `--type-h2-size`, `--type-h3-size`,
 | H3 | 40px | 40px | 48px | 48px |
 | H4 | 32px | 32px | 40px | 40px |
 | H5 | 24px | 24px | 32px | 32px |
-| Body | 16px | 24px | 32px | 36px |
+| Body | 16px | 24px | 28px | 32px |
 | Meta | 14px | 16px | 20px | 24px |
 
 H1, H2, Body y Meta usan fórmulas fluidas, no tamaños específicos por
 dispositivo. La tabla representa resultados de referencia para esas resoluciones.
 H1 conserva el límite por altura basado en la retícula del hero; H2 y Body
-interpolan por tramos sin discontinuidad alrededor de 1440px. Los resultados
+interpolan por tramos. Body conserva 28px al cruzar de tablet a desktop y
+alcanza 32px a 1920px. Los resultados
 se redondean a múltiplos de 4 u 8px, salvo el ajuste óptico de 2px de Meta
 en móvil. H3-H5 conservan sus tamaños previos.
 
 En `:root` aparecen las bases y en los media queries globales sus variantes
-responsive. Cada componente referencia directamente el token, sin tamaños
-intermedios ni multiplicaciones; cambiar un token modifica todos sus usos.
+responsive. Body cuenta con una tercera definición en el breakpoint desktop
+(1024px), sin alterar móvil ni tablet. Los demás tamaños conservan sus dos
+definiciones responsivas. Cada componente referencia directamente el token,
+sin tamaños intermedios ni multiplicaciones; cambiar un token modifica todos
+sus usos.
 
 El texto principal usa `--type-ink: var(--brand-white)` (`#FEFEFE`).
 El texto meta usa `--type-meta-ink: var(--brand-gray-5)`, un paso más gris
