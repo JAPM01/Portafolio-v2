@@ -26,8 +26,8 @@ responsive. Cada componente referencia directamente el token, sin tamaños
 intermedios ni multiplicaciones; cambiar un token modifica todos sus usos.
 
 El texto principal usa `--type-ink: var(--brand-white)` (`#FEFEFE`).
-El texto meta usa `--type-meta-ink: var(--brand-gray-6)`, el segundo
-paso de gris desde el blanco. Ambos derivan exclusivamente de la paleta.
+El texto meta usa `--type-meta-ink: var(--brand-gray-5)`, un paso más gris
+que el anterior `--brand-gray-6`. Ambos tonos derivan exclusivamente de la paleta.
 
 Google Sans se reserva a títulos y Manrope al cuerpo y metadatos.
 

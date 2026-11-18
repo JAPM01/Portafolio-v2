@@ -16,7 +16,7 @@ test("Escala única: siete tamaños responsivos sin alias secundarios",()=>{
  assert.doesNotMatch(css,/--text-heading-[\w-]+\s*:/);
  assert.doesNotMatch(css,/--text-body-[\w-]+\s*:/);
  assert.match(css,/--type-ink:\s*var\(--brand-white\)/);
- assert.match(css,/--type-meta-ink:\s*var\(--brand-gray-6\)/);
+ assert.match(css,/--type-meta-ink:\s*var\(--brand-gray-5\)/);
 });
 
 test("Chromium: siete categorías, ocho escenarios responsivos y propagación individual",()=>{

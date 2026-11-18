@@ -63,54 +63,67 @@ vec2 flowUV(vec2 uv) {
   return mix(uv, clamp(st, 0.0, 1.0), 0.51);
 }
 
-// a soft ellipse; edges blur more toward the middle of the frame
-float blob(vec2 p, vec2 c, vec2 r, float soft) {
+// Soft area falloff used for the blue atmosphere and peripheral shadows.
+float blob(vec2 p, vec2 c, vec2 r, float feather) {
   float d = length((p - c) / r);
-  return 1.0 - smoothstep(1.0 - soft, 1.0 + soft, d);
+  return 1.0 - smoothstep(1.0 - feather, 1.0 + feather, d);
+}
+
+// A single serpentine spine, rather than independent circular blobs.
+// Its bend moves left through the upper middle and returns right below,
+// producing the broad continuous illuminated folds of a silk-like flow.
+float ribbon(vec2 uv, float shift, float halfWidth, float feather) {
+  bool portrait = u_res.x < u_res.y;
+  float x = (portrait ? 0.84 : 0.82)
+    - (portrait ? 0.20 : 0.17) * sin((uv.y - 0.24) * 4.6)
+    + 0.023 * sin(uv.y * 10.0 + u_time * 0.10);
+  float width = halfWidth * mix(0.78, 1.0, smoothstep(0.14, 0.85, uv.y));
+  return 1.0 - smoothstep(width - feather, width + feather, abs(uv.x - x - shift));
 }
 
 vec3 paint(vec2 uv) {
-  // keep the shapes' proportions on any screen (designed at ~3:2)
-  // zoom out on narrow screens and on desktop: on a narrow screen the
-  // blobs look huge (too much zoom), and on desktop (landscape) the
-  // cyan wash was too big/pale. Portrait 4.0x, landscape 2.0x — el mesh
-  // en móvil seguía muy cerca a 3.5x (Jafet 17 Nov 2026); 4.5x se pasó
-  // (quedaba casi todo negro, las ondas muy chicas), así que 4.0x es el
-  // punto medio: ondas más extendidas como en Sentos sin perder el azul
-  // dominante. Naranja solo en la esquina superior derecha.
-  float zoom = 2.0;
-  if (u_res.x < u_res.y) zoom = 4.0;
-  vec2 p = (uv - 0.5) * vec2(u_res.x / u_res.y / 1.54, 1.0) * zoom + 0.5;
-  float soft = clamp(0.06 + 0.5 * (1.32 - 1.64 * distance(uv, vec2(0.5))), 0.06, 0.5);
-  vec3 c = u_bg;
-  // Desplazar la luz en portrait conserva contraste sobre el H1 blanco.
   bool portrait = u_res.x < u_res.y;
-  // La pantalla debe ser MÁS azul brand que negro (Jafet 17 Nov 2026):
-  // el blob deep (azul) mucho más grande para que domine, y los
-  // pliegues oscuros mucho más débiles (solo dan profundidad, no
-  // grandes zonas negras). Sin nuevos colores, solo cantidades.
-  // El deep es más grande SOLO en portrait: en móvil (zoom 4.0x) el
-  // azul se quedaba corto y se veía negro arriba y abajo; en desktop
-  // (zoom 2.0x) el deep grande lavaba el texto con el óvalo blanco.
-  vec2 deepR = u_res.x < u_res.y ? vec2(1.05, 1.3) : vec2(0.9, 1.1);
-  c = mix(c, u_deep, blob(p, vec2(0.52, 0.62), deepR, soft));
-  // Cian con volumen, más a la derecha y ligeramente más abajo.
-  // Mezcla moderada: no lavar el contraste del título editorial.
-  vec2 bodyCenter = portrait ? vec2(0.76, 0.65) : vec2(0.62, 0.76);
-  vec2 bodyRadius = portrait ? vec2(0.65, 0.38) : vec2(0.7, 0.4);
-  c = mix(c, u_body, blob(p, bodyCenter, bodyRadius, soft) * (portrait ? 0.83 : 0.92));
-  // Naranja en el cuadrante superior derecho, no sobre el título.
-  vec2 hotCenter = portrait ? vec2(1.05, 0.94) : vec2(0.93, 1.02);
-  c = mix(c, u_hot, blob(p, hotCenter, vec2(0.28, 0.2), soft) * 0.70);
-  // dark folds cut back into the colour
-  c = mix(c, u_bg, blob(p, vec2(0.14, 0.42), vec2(0.24, 0.7), soft) * 0.5);
-  c = mix(c, u_bg, blob(p, vec2(0.42, 0.18), vec2(0.36, 0.22), soft) * 0.35);
-  c = mix(c, u_bg * 0.6, blob(p, vec2(0.9, 0.36), vec2(0.16, 0.5), soft) * 0.4);
-  // Reflejo blanco-cian más a la derecha y abajo, con menor intensidad.
-  vec2 accentCenter = portrait ? vec2(1.10, 0.43) : vec2(0.97, 0.55);
-  c += u_accent * blob(p, accentCenter, vec2(0.18, 0.33), soft)
-     * (portrait ? 0.52 : 0.64);
-  return c;
+
+  // Blue dominates the field; black defines depth, not giant empty areas.
+  float blueField = 0.77 + 0.18 * blob(
+    uv, vec2(0.57, 0.61), vec2(0.80, 0.79), 0.60
+  );
+  vec3 c = mix(u_bg, u_deep, blueField);
+
+  // Deep left-bottom and subtle upper-left folds protect headline contrast.
+  c = mix(c, u_bg,
+    blob(uv, vec2(-0.07, 0.06), vec2(0.65, 0.40), 0.57) * 0.85
+  );
+  c = mix(c, u_bg,
+    blob(uv, vec2(-0.10, 0.91), vec2(0.52, 0.35), 0.58) * 0.30
+  );
+
+  // Dark seams wrap around ONE continuous blue-cyan ribbon.
+  // Their curved edges supply sculptural volume instead of round glows.
+  c = mix(c, u_bg, ribbon(uv, -0.22, 0.10, 0.075) * 0.58);
+  c = mix(c, u_deep, ribbon(uv, -0.13, 0.19, 0.105) * 0.49);
+  c = mix(c, u_bg, ribbon(uv, 0.24, 0.095, 0.072) * 0.39);
+
+  // A narrow flowing cyan current, concentrated on the right.
+  float cyanFlow = ribbon(uv, 0.012, portrait ? 0.120 : 0.135, 0.083);
+  cyanFlow *= mix(0.42, 0.93, smoothstep(0.14, 0.85, uv.y));
+  c = mix(c, u_body, cyanFlow * 0.82);
+
+  // Pale white-cyan is a thin highlight tracing that SAME current;
+  // it does not form another independent round white blob.
+  float luminousRim = ribbon(uv, 0.068, 0.050, 0.060)
+    * smoothstep(0.30, 0.80, uv.y);
+  c = mix(c, u_accent, luminousRim * (portrait ? 0.77 : 0.84));
+
+  // A small, controlled warm corner accent; never a broad orange field.
+  float warmCorner = blob(
+    uv, vec2(1.04, 1.03),
+    portrait ? vec2(0.29, 0.23) : vec2(0.34, 0.24),
+    0.58
+  );
+  c = mix(c, u_hot, warmCorner * 0.62);
+
+  return clamp(c, 0.0, 1.0);
 }
 
 float rand(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }

@@ -96,7 +96,7 @@ function validateRoot(code,errors){
    errors.push(TYPE_FILE+":"+where(s,m.index)+": tamaño extra declarado: "+token);
   }
   if(TYPE_COLORS.has(token)){
-   const required=token==="--type-ink"?"var(--brand-white)":"var(--brand-gray-6)";
+   const required=token==="--type-ink"?"var(--brand-white)":"var(--brand-gray-5)";
    if(val!==required)errors.push(TYPE_FILE+":"+where(s,m.index)+": fuente de color tipográfico alterada: "+token);
   }
   if(SIZE_TOKENS.has(token)&&/var\(\s*--type-(?:h[1-5]|body|meta)-size/.test(val)){

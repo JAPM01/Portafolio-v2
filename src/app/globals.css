@@ -190,8 +190,8 @@
      2 px en móvil por legibilidad. H3-H5 conservan sus valores aprobados.
      La geometría vertical del H1 sigue dependiendo de las filas del hero. */
   --type-ink: var(--brand-white);
-  /* Dos pasos desde el blanco: blanco -> gris 7 -> gris 6. */
-  --type-meta-ink: var(--brand-gray-6);
+  /* Meta: gris un paso más oscuro que el anterior, siempre derivado. */
+  --type-meta-ink: var(--brand-gray-5);
 
   --type-h1-size: min(
     round(calc(88px + 5vw), 8px),
