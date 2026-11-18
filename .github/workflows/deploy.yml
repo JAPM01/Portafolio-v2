@@ -57,6 +57,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout source for live diagnostics
+        uses: actions/checkout@v4
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
