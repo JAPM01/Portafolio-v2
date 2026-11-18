@@ -90,7 +90,9 @@ test("Cada uno de los cinco colores se propaga al adaptador real del shader", ()
   assert.match(fluid, /readBrandPalette\(\)/);
   assert.match(shader, /paletteAttempt < 24/);
   assert.match(fluid, /paletteAttempt < 24/);
-  assert.match(venn, /var\(--brand-cyan\)/);
+  assert.match(venn, /import HeroBackground from "\.\/HeroBackground"/);
+  assert.match(venn, /<HeroBackground \/>/);
+  assert.match(venn, /clipPath: circleClip\(G\.usability\)/);
   assert.match(media, /var\(--surface-raised\)|BrandMedia|styles\.placeholder/);
   console.log("PROPAGACIÓN: cinco bases -> adaptador WebGL y consumidores comprobados");
 });
