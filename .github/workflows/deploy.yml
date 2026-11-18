@@ -107,3 +107,10 @@ jobs:
           if(problems.length){console.error('DIAGNOSIS_FAILED',JSON.stringify(problems));process.exitCode=1;}
           else console.log('DIAGNOSIS_PASSED: HTML, recursos y cliente correctos');
           NODE
+
+      - name: Capture browser runtime exception and console errors
+        continue-on-error: true
+        if: always() && steps.deployment.outcome == 'success'
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+        run: node --experimental-websocket scripts/diagnose-runtime.mjs
