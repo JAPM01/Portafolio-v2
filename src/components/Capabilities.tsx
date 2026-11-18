@@ -14,7 +14,7 @@ export default function Capabilities() {
 
   return (
     <section id="capabilities" className={styles.section} aria-labelledby="capabilities-heading">
-      <div className={`container ${styles.grid}`}>
+      <div className={`container site-grid ${styles.grid}`}>
         <h2 id="capabilities-heading" className={styles.heading}>
           Lorem ipsum dolor sit
         </h2>

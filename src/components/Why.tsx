@@ -12,7 +12,7 @@ export default function Why() {
 
   return (
     <section id="why" className={styles.section} aria-labelledby="why-heading">
-      <div className={`container ${styles.grid}`}>
+      <div className={`container site-grid ${styles.grid}`}>
         <h2 id="why-heading" className={styles.heading}>
           Lorem ipsum dolor sit
         </h2>

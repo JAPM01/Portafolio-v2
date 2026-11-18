@@ -14,12 +14,12 @@
 }
 
 .grid {
-  gap: max(var(--space-12), calc(var(--type-h2-size) * 0.375));
+  row-gap: max(var(--space-12), calc(var(--type-h2-size) * 0.375));
   --proc-travel: 0px;
-  grid-template-columns: 1fr;
   align-items: start;
-  display: grid;
 }
+.head,
+.body { grid-column: 1 / -1; }
 
 .head,
 .body {
@@ -39,9 +39,7 @@
   margin: 0;
 }
 
-.head {
-  padding-inline: calc(var(--page-indent) - var(--page-margin));
-}
+.head { min-inline-size: 0; }
 
 .body {
   margin: max(var(--space-10), calc(var(--type-h2-size) * 0.3125)) 0 0;
@@ -60,8 +58,6 @@
   padding-block: max(var(--space-10), calc(var(--type-h3-size) * 0.8889));
   align-items: end;
   row-gap: var(--space-6);
-  grid-template-columns: minmax(0, 1fr);
-  display: grid;
   transition: border-color var(--theme-ms) linear;
 }
 
@@ -69,11 +65,13 @@
   border-block-end: var(--border-width) solid var(--neutral-12);
 }
 
+/* Cada paso comparte las mismas pistas que el resto de la página. */
+.label,
+.content { grid-column: 1 / -1; }
 @media (min-width: 1024px) {
-  .item {
-    grid-template-columns: minmax(0, 39fr) minmax(0, 61fr);
-    align-items: start;
-  }
+  .item { align-items: start; }
+  .label { grid-column: 1 / 6; }
+  .content { grid-column: 6 / 13; }
 }
 
 .content {

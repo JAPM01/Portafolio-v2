@@ -90,7 +90,7 @@ export default function ProcessSummary() {
 
   return (
     <section id="process-summary" className={styles.section} aria-labelledby="process-summary-heading" ref={sectionRef}>
-      <div className={`container ${styles.grid}`}>
+      <div className={`container site-grid ${styles.grid}`}>
         <div className={styles.head}>
           <h2 id="process-summary-heading" className={styles.heading}>
             Lorem ipsum dolor sit
@@ -99,7 +99,7 @@ export default function ProcessSummary() {
         <div className={styles.body}>
           <ol className={styles.steps}>
             {STEPS.map((s) => (
-              <li key={s.label} className={styles.item}>
+              <li key={s.label} className={`site-grid ${styles.item}`}>
                 <h3 className={styles.label}>{s.label}</h3>
                 <div className={styles.content}>
                   <div className={styles.media} data-reveal="tl">

@@ -14,17 +14,14 @@
 }
 
 .grid {
-  gap: var(--space-12);
-  grid-template-columns: 1fr;
+  row-gap: var(--space-12);
   align-items: start;
-  display: grid;
 }
-
+.heading,
+.copy { grid-column: 1 / -1; }
 @media (min-width: 1024px) {
-  .grid {
-    gap: max(var(--space-16), calc(var(--type-h5-size) * 2));
-    grid-template-columns: minmax(0, 39fr) minmax(0, 61fr);
-  }
+  .heading { grid-column: 1 / 6; }
+  .copy { grid-column: 6 / 13; }
 }
 
 .heading {

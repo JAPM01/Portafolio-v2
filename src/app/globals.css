@@ -317,16 +317,15 @@
   --loader-ground: var(--neutral-1);
   --loader-ground-2: var(--neutral-2);
   --work-aspect: 1.6;
-  --page-margin: clamp(
-    var(--container-padding-mobile),
-    calc(var(--container-padding-ramp-vw) * 1vw),
-    var(--container-padding-desktop)
+  /* Retícula canónica 4/12: los márgenes pertenecen a un único sistema. */
+  --grid-columns: 4;
+  --grid-gutter: var(--space-4);
+  --page-margin: var(--grid-gutter);
+  --grid-track-size: calc(
+    (min(100vw, var(--content-cap)) - 2 * var(--page-margin) -
+      (var(--grid-columns) - 1) * var(--grid-gutter)) / var(--grid-columns)
   );
-  --page-indent: clamp(
-    var(--container-indent-mobile),
-    calc(var(--container-indent-ramp-vw) * 1vw),
-    var(--container-indent-desktop)
-  );
+  --page-indent: var(--page-margin);
 }
 
 /* Escala editorial fluida desde tablet, siempre desde los mismos tokens.
@@ -352,6 +351,10 @@
    H3-H5 mantienen sus valores desktop aprobados. */
 @media (min-width: 1024px) {
   :root {
+    --grid-columns: 12;
+    --grid-gutter: var(--space-6);
+    /* Una columna + gutter de sangría, respetando la retícula global. */
+    --page-indent: calc(var(--page-margin) + var(--grid-track-size) + var(--grid-gutter));
     --type-body-size: round(clamp(28px, calc(16px + 0.833333vw), 32px), 4px);
     --type-h2-leading: 1.05;
     --type-h3-size: 48px;
@@ -586,31 +589,20 @@ svg {
   padding-inline: var(--page-indent);
   margin-inline: auto;
 }
-/* ---- Retícula del sitio (sistema compartido) ----
-   La grid real: 12 columnas en desktop, 4 en móvil (12 se divide en 2,
-   3, 4 y 6); gutters 24px / 16px; márgenes = gutter en los 4 lados.
-   Antes vivía en hero.module.css y solo el hero la usaba; ahora es el
-   sistema que rige todo el sitio y cada sección la USA (sus placements
-   de filas/columnas quedan en su propio módulo). Las FILAS no son parte
-   del sistema compartido: cada sección define las suyas (el hero usa
-   12 filas 1fr). El margen horizontal llega por .container
-   (padding-inline: var(--page-margin)) con --page-margin fijado al
-   gutter aquí; el vertical es el padding-block de cada sección. */
+/* ---- Retícula única del sitio: 4 pistas en móvil, 12 en desktop. ----
+   Las filas y las subretículas de contenido pueden variar por sección;
+   márgenes, columnas y gutters estructurales no. */
 .site-grid {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--space-6);
-  row-gap: var(--space-6);
-  /* Margen horizontal = gutter. */
-  --page-margin: var(--space-6);
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  column-gap: var(--grid-gutter);
+  row-gap: var(--grid-gutter);
 }
-@media (max-width: 1023px) {
-  .site-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: var(--space-4);
-    row-gap: var(--space-4);
-    --page-margin: var(--space-4);
-  }
+.site-grid > * { min-inline-size: 0; }
+/* Variante indentada: las diez pistas centrales conservan el mismo
+   ancho que las pistas 2-11 de la retícula exterior de 12. */
+@media (min-width: 1024px) {
+  .container-indent { --grid-columns: 10; }
 }
 .sr-only {
   clip-path: inset(50%);

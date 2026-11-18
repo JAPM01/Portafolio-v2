@@ -14,7 +14,7 @@ export default function Terms() {
 
   return (
     <section id="terms" className={styles.section} aria-labelledby="terms-heading" ref={sectionRef}>
-      <div className={`container ${styles.grid}`}>
+      <div className={`container site-grid ${styles.grid}`}>
         <h2 id="terms-heading" className={styles.heading}>
           Lorem ipsum dolor
         </h2>
