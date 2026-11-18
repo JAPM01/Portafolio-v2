@@ -354,11 +354,11 @@ a.metaValue.ctaLink:hover {
   align-self: end;
 }
 .role {
-  font-size: var(--type-body-size);
-  line-height: var(--type-body-leading);
-  letter-spacing: var(--type-body-tracking);
-  /* Color fijo claro (el hero siempre es oscuro). */
-  color: var(--type-ink);
+  /* Especialidades = Meta: el párrafo conserva Body y el blanco principal. */
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-leading);
+  letter-spacing: var(--type-meta-tracking);
+  color: var(--type-meta-ink);
   align-items: center;
   gap: var(--space-2);
   /* Un solo gutter de separación con el párrafo (24px desktop / 16px
@@ -367,8 +367,8 @@ a.metaValue.ctaLink:hover {
   display: inline-flex;
 }
 .roleIcon {
-  /* La flecha ↘ de 40px en desktop (32px en móvil, múltiplos de 8). */
-  --role-icon-size: 40px;
+  /* Flecha proporcionada al texto sin crear otra escala tipográfica. */
+  --role-icon-size: var(--type-body-size);
   inline-size: var(--role-icon-size);
   block-size: var(--role-icon-size);
   translate: 0 calc(var(--role-icon-size) / 24);
@@ -437,7 +437,7 @@ a.metaValue.ctaLink:hover {
     margin-block-end: var(--space-4);
   }
   .roleIcon {
-    --role-icon-size: 32px;
+    --role-icon-size: var(--type-body-size);
   }
   .meta {
     grid-column: 1 / 5;

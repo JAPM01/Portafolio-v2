@@ -83,6 +83,8 @@ vec3 paint(vec2 uv) {
   vec2 p = (uv - 0.5) * vec2(u_res.x / u_res.y / 1.54, 1.0) * zoom + 0.5;
   float soft = clamp(0.06 + 0.5 * (1.32 - 1.64 * distance(uv, vec2(0.5))), 0.06, 0.5);
   vec3 c = u_bg;
+  // Desplazar la luz en portrait conserva contraste sobre el H1 blanco.
+  bool portrait = u_res.x < u_res.y;
   // La pantalla debe ser MÁS azul brand que negro (Jafet 17 Nov 2026):
   // el blob deep (azul) mucho más grande para que domine, y los
   // pliegues oscuros mucho más débiles (solo dan profundidad, no
@@ -92,20 +94,22 @@ vec3 paint(vec2 uv) {
   // (zoom 2.0x) el deep grande lavaba el texto con el óvalo blanco.
   vec2 deepR = u_res.x < u_res.y ? vec2(1.05, 1.3) : vec2(0.9, 1.1);
   c = mix(c, u_deep, blob(p, vec2(0.52, 0.62), deepR, soft));
-  // Onda cian ancha y suave como en Sentos (comparación 2 pestañas):
-  // en Sentos las ondas son anchas, suaves y en capas, con un gran
-  // óvalo blanco-cian en el centro-derecha; el naranja es una banda
-  // diagonal ancha arriba a la derecha. Más blanco protagónico.
-  c = mix(c, u_body, blob(p, vec2(0.58, 0.8), vec2(0.7, 0.4), soft) * 0.95);
-  // hot spot: a corner accent (top-right), not a band across the top —
-  // like the orange corner in the Sentos reference.
-  c = mix(c, u_hot, blob(p, vec2(0.88, 1.05), vec2(0.28, 0.2), soft) * 0.75);
+  // Cian con volumen, más a la derecha y ligeramente más abajo.
+  // Mezcla moderada: no lavar el contraste del título editorial.
+  vec2 bodyCenter = portrait ? vec2(0.76, 0.65) : vec2(0.62, 0.76);
+  vec2 bodyRadius = portrait ? vec2(0.65, 0.38) : vec2(0.7, 0.4);
+  c = mix(c, u_body, blob(p, bodyCenter, bodyRadius, soft) * (portrait ? 0.83 : 0.92));
+  // Naranja en el cuadrante superior derecho, no sobre el título.
+  vec2 hotCenter = portrait ? vec2(1.05, 0.94) : vec2(0.93, 1.02);
+  c = mix(c, u_hot, blob(p, hotCenter, vec2(0.28, 0.2), soft) * 0.70);
   // dark folds cut back into the colour
   c = mix(c, u_bg, blob(p, vec2(0.14, 0.42), vec2(0.24, 0.7), soft) * 0.5);
   c = mix(c, u_bg, blob(p, vec2(0.42, 0.18), vec2(0.36, 0.22), soft) * 0.35);
   c = mix(c, u_bg * 0.6, blob(p, vec2(0.9, 0.36), vec2(0.16, 0.5), soft) * 0.4);
-  // bright wave on the right side (more visible than a thin edge glint).
-  c += u_accent * blob(p, vec2(0.88, 0.62), vec2(0.18, 0.35), soft) * 0.75;
+  // Reflejo blanco-cian más a la derecha y abajo, con menor intensidad.
+  vec2 accentCenter = portrait ? vec2(1.10, 0.43) : vec2(0.97, 0.55);
+  c += u_accent * blob(p, accentCenter, vec2(0.18, 0.33), soft)
+     * (portrait ? 0.52 : 0.64);
   return c;
 }
 
