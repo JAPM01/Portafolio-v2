@@ -9,8 +9,8 @@ import styles from "./brand-media.module.css";
  * tokens semánticos que la interfaz, incluidos ambos temas.
  * Las imágenes reales permanecen intactas.
  */
-export function isBrandPlaceholder(src?: string) {
-  return Boolean(src?.split(/[?#]/, 1)[0].endsWith("/placeholder.svg"));
+export function isBrandPlaceholder(src?: string | Blob) {
+  return typeof src === "string" && src.split(/[?#]/, 1)[0].endsWith("/placeholder.svg");
 }
 
 type Props = ImgHTMLAttributes<HTMLImageElement>;
