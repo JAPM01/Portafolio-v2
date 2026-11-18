@@ -39,6 +39,8 @@ jobs:
         run: npm run test:typography:red
       - name: Verify typography propagation in Chromium
         run: npm run test:typography:propagation
+      - name: Verify philosophy Venn placement in Chromium
+        run: npm run test:intro-layout
       - name: Build static site
         run: npm run build
         env:

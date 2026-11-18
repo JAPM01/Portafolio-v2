@@ -13,7 +13,8 @@
     "test:colors:propagation": "node --test scripts/test-brand-propagation.mjs",
     "test:typography": "node scripts/check-typography.mjs",
     "test:typography:red": "node --test scripts/check-typography.test.mjs",
-    "test:typography:propagation": "node --test scripts/test-typography-propagation.mjs"
+    "test:typography:propagation": "node --test scripts/test-typography-propagation.mjs",
+    "test:intro-layout": "node --test scripts/test-intro-layout.mjs"
   },
   "dependencies": {
     "@paper-design/shaders-react": "0.0.78",
