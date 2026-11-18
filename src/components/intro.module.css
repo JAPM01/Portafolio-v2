@@ -95,21 +95,21 @@
   --reveal-to: var(--text-secondary);
 }
 
-/* Tonos del manifiesto con los colores de marca exactos:
-   diseño #FF9636, tecnología #000AFF, usabilidad #6FD3FF. */
+/* Tonos del manifiesto obtenidos de tokens de marca:
+   diseño naranja, tecnología azul y usabilidad cian. */
 .toneBlue {
   --reveal-from: var(--brand-blue-3);
   --reveal-to: var(--brand-blue-1);
 }
 
 .toneOrange {
-  --reveal-from: #9a3412;
-  --reveal-to: #ff9636;
+  --reveal-from: var(--brand-orange-dark);
+  --reveal-to: var(--brand-orange);
 }
 
 .toneCyan {
-  --reveal-from: #155e75;
-  --reveal-to: #6fd3ff;
+  --reveal-from: var(--brand-cyan-dark);
+  --reveal-to: var(--brand-cyan);
 }
 
 .toneWhite {

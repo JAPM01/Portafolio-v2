@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useId, useRef } from "react";
-import { HERO_MESH } from "../lib/hero-mesh";
 import styles from "./venn-flow.module.css";
 
 type Lang = "es" | "en";
@@ -21,7 +20,7 @@ const CENTERS = [G.design, G.technology, G.usability] as const;
 
 /** Color con el que prende cada círculo: el mismo de su palabra
     en el manifiesto — diseño naranja, tecnología azul, usabilidad cian. */
-const LIT_COLORS = [HERO_MESH.orange, HERO_MESH.blue, HERO_MESH.cyan] as const;
+const LIT_COLORS = ["var(--brand-orange)", "var(--brand-blue)", "var(--brand-cyan)"] as const;
 
 /**
  * Ventanas de la animación, en fracción del ciclo (12 s, en loop):
@@ -178,19 +177,19 @@ export default function VennFlow({ lang }: { lang: Lang }) {
               es un brillo suave, no un manchón blanco: es más chico y
               menos opaco que el cian, que es quien manda en el brillo. */}
           <radialGradient id={cyanId}>
-            <stop offset="0" stopColor={HERO_MESH.cyan} stopOpacity="0.95" />
-            <stop offset="0.7" stopColor={HERO_MESH.cyan} stopOpacity="0.5" />
-            <stop offset="1" stopColor={HERO_MESH.cyan} stopOpacity="0" />
+            <stop offset="0" stopColor={"var(--brand-cyan)"} stopOpacity="0.95" />
+            <stop offset="0.7" stopColor={"var(--brand-cyan)"} stopOpacity="0.5" />
+            <stop offset="1" stopColor={"var(--brand-cyan)"} stopOpacity="0" />
           </radialGradient>
           <radialGradient id={iceId}>
-            <stop offset="0" stopColor={HERO_MESH.ice} stopOpacity="0.75" />
-            <stop offset="0.6" stopColor={HERO_MESH.ice} stopOpacity="0.5" />
-            <stop offset="1" stopColor={HERO_MESH.ice} stopOpacity="0" />
+            <stop offset="0" stopColor={"var(--brand-cyan-3)"} stopOpacity="0.75" />
+            <stop offset="0.6" stopColor={"var(--brand-cyan-3)"} stopOpacity="0.5" />
+            <stop offset="1" stopColor={"var(--brand-cyan-3)"} stopOpacity="0" />
           </radialGradient>
           <radialGradient id={orangeId}>
-            <stop offset="0" stopColor={HERO_MESH.orange} stopOpacity="0.9" />
-            <stop offset="0.7" stopColor={HERO_MESH.orange} stopOpacity="0.45" />
-            <stop offset="1" stopColor={HERO_MESH.orange} stopOpacity="0" />
+            <stop offset="0" stopColor={"var(--brand-orange)"} stopOpacity="0.9" />
+            <stop offset="0.7" stopColor={"var(--brand-orange)"} stopOpacity="0.45" />
+            <stop offset="1" stopColor={"var(--brand-orange)"} stopOpacity="0" />
           </radialGradient>
           <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="4" result="blur" />
@@ -230,7 +229,7 @@ export default function VennFlow({ lang }: { lang: Lang }) {
             <g clipPath={`url(#${clipU})`}>
               <g ref={fillRef} opacity="0">
                 {/* Campo azul del mesh. */}
-                <rect x="200" y="120" width="240" height="240" fill={HERO_MESH.blue} />
+                <rect x="200" y="120" width="240" height="240" fill={"var(--brand-blue)"} />
                 {/* Onda cian, mancha grande y suave: es quien manda. */}
                 <ellipse ref={cyanRef} cx="335" cy="240" rx="90" ry="80" fill={`url(#${cyanId})`} />
                 {/* Brillo hielo, chico y suave: un acento, no un manchón. */}

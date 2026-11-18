@@ -1,15 +1,50 @@
-/** Source of truth for JS/WebGL palette colors. Mirror values in
- * src/app/globals.css --brand-* CSS custom properties.
- * Base shades are derived in OKLCH from #000AFF and #FF9636.
- * Neutral shades have zero chroma.
+/**
+ * Adaptador de CSS -> Canvas/WebGL.
+ * src/app/globals.css es la ÚNICA fuente de valores de marca:
+ * este archivo nunca declara un hexadecimal propio.
+ *
+ * Leer las bases en el navegador hace que los shaders consuman la
+ * misma identidad que el resto del CSS, sin duplicar constantes.
  */
-export const BRAND_PALETTE = {
-  blue: ["#000AFF", "#353FF3", "#5C65F3", "#878AF8", "#ACB0F6", "#D3D6FA", "#ECEEFF"],
-  orange: ["#FF9636", "#FDAE71", "#FFC69B"],
-  gray: ["#070707", "#303030", "#585858", "#808080", "#A4A4A4", "#CECECE", "#EBEBEB"],
-} as const;
+export type BrandBase = "blue" | "orange" | "cyan" | "black" | "white";
+
+export function brandHex(name: BrandBase): string {
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue(`--brand-${name}`).trim();
+  if (!/^#[\da-f]{6}$/i.test(value)) {
+    throw new Error(`Token de marca no definido o inválido: --brand-${name}`);
+  }
+  return value;
+}
+
+export function readBrandPalette() {
+  return {
+    blue: brandHex("blue"),
+    orange: brandHex("orange"),
+    cyan: brandHex("cyan"),
+    black: brandHex("black"),
+    white: brandHex("white"),
+  };
+}
 
 export function brandRgb01(hex: string): [number, number, number] {
-  const value = Number.parseInt(hex.replace("#", ""), 16);
+  const value = Number.parseInt(hex.slice(1), 16);
   return [((value >> 16) & 255) / 255, ((value >> 8) & 255) / 255, (value & 255) / 255];
+}
+
+/** Tono derivado de las mismas bases CSS, con mezcla sRGB explícita.
+ *  Se emplea para el reflejo blanco-cian del shader, sin introducir
+ *  una sexta fuente de color.
+ */
+export function mixHex(base: string, accent: string, accentFraction: number) {
+  const b = brandRgb01(base), a = brandRgb01(accent);
+  return "#" + b.map((channel, i) =>
+    Math.round((channel * (1 - accentFraction) + a[i] * accentFraction) * 255)
+      .toString(16).padStart(2, "0")
+  ).join("");
+}
+
+export function readMeshPalette(): [string, string, string, string, string] {
+  const c = readBrandPalette();
+  return [c.black, c.blue, c.cyan, c.orange, mixHex(c.white, c.cyan, 0.16)];
 }

@@ -8,26 +8,43 @@
 @import url("https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap");
 
 :root {
-  /* Paleta Sentos, 17 tonos calculados en OKLCH a partir de
-     #000AFF, #FF9636 y neutros acromáticos. Estos son los únicos
-     colores base de la interfaz. Imágenes de proyectos quedan intactas. */
-  --brand-blue-1: #000AFF;
-  --brand-blue-2: #353FF3;
-  --brand-blue-3: #5C65F3;
-  --brand-blue-4: #878AF8;
-  --brand-blue-5: #ACB0F6;
-  --brand-blue-6: #D3D6FA;
-  --brand-blue-7: #ECEEFF;
-  --brand-orange-1: #FF9636;
-  --brand-orange-2: #FDAE71;
-  --brand-orange-3: #FFC69B;
-  --brand-gray-1: #070707;
-  --brand-gray-2: #303030;
-  --brand-gray-3: #585858;
-  --brand-gray-4: #808080;
-  --brand-gray-5: #A4A4A4;
-  --brand-gray-6: #CECECE;
-  --brand-gray-7: #EBEBEB;
+  /* ÚNICA FUENTE DE VERDAD: cinco bases editables de marca.
+     Los demás tonos son funciones cromáticas de estas cinco bases.
+     Cambiar aquí cualquier base actualiza UI, SVG, Canvas y WebGL
+     (estos últimos leen los tokens CSS en el navegador). */
+  --brand-blue: #000AFF;
+  --brand-orange: #FF9636;
+  --brand-cyan: #6FD3FF;
+  --brand-black: #010101;
+  --brand-white: #FEFEFE;
+
+  /* Tonalidades calculadas, sin nuevos colores literales. */
+  --brand-blue-1: var(--brand-blue);
+  --brand-blue-2: color-mix(in oklch, var(--brand-blue) 86%, var(--brand-white));
+  --brand-blue-3: color-mix(in oklch, var(--brand-blue) 72%, var(--brand-white));
+  --brand-blue-4: color-mix(in oklch, var(--brand-blue) 56%, var(--brand-white));
+  --brand-blue-5: color-mix(in oklch, var(--brand-blue) 36%, var(--brand-white));
+  --brand-blue-6: color-mix(in oklch, var(--brand-blue) 18%, var(--brand-white));
+  --brand-blue-7: color-mix(in oklch, var(--brand-blue) 7%, var(--brand-white));
+
+  --brand-orange-1: var(--brand-orange);
+  --brand-orange-2: color-mix(in oklch, var(--brand-orange) 70%, var(--brand-white));
+  --brand-orange-3: color-mix(in oklch, var(--brand-orange) 48%, var(--brand-white));
+  --brand-orange-dark: color-mix(in oklch, var(--brand-orange) 45%, var(--brand-black));
+
+  --brand-cyan-1: var(--brand-cyan);
+  --brand-cyan-2: color-mix(in srgb, var(--brand-cyan) 67%, var(--brand-white));
+  --brand-cyan-3: color-mix(in srgb, var(--brand-cyan) 16%, var(--brand-white));
+  --brand-cyan-dark: color-mix(in oklch, var(--brand-cyan) 42%, var(--brand-black));
+
+  --brand-gray-1: var(--brand-black);
+  --brand-gray-2: color-mix(in oklch, var(--brand-black) 80%, var(--brand-white));
+  --brand-gray-3: color-mix(in oklch, var(--brand-black) 63%, var(--brand-white));
+  --brand-gray-4: color-mix(in oklch, var(--brand-black) 44%, var(--brand-white));
+  --brand-gray-5: color-mix(in oklch, var(--brand-black) 29%, var(--brand-white));
+  --brand-gray-6: color-mix(in oklch, var(--brand-black) 15%, var(--brand-white));
+  --brand-gray-7: color-mix(in oklch, var(--brand-black) 6%, var(--brand-white));
+
   /* Adaptadores semánticos: conservan los nombres usados por componentes. */
   --primary-1: var(--brand-blue-7);
   --primary-2: var(--brand-blue-7);

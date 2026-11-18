@@ -3,6 +3,7 @@
 'use client'
 
 import {useEffect, useRef} from 'react'
+import {readMeshPalette, brandRgb01} from '../lib/brand-palette'
 
 export type FlowGradientBackgroundProps = {
   /** background, deep body, bright body, hot spot, cool accent */
@@ -121,11 +122,6 @@ void main() {
   gl_FragColor = vec4(c, 1.0);
 }`
 
-const rgb = (hex: string) => {
-  const n = parseInt(hex.replace('#', ''), 16)
-  return [(n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255] as [number, number, number]
-}
-
 // the gradient is all soft shapes, so it renders below screen resolution
 const SCALE = 0.75
 
@@ -137,7 +133,7 @@ const SCALE = 0.75
 // middle of the frame like a depth blur. One WebGL pass, no dependencies;
 // it pauses off screen and holds still for reduced motion.
 export default function FlowGradientBackground({
-  colors = ["#030403", "#000AFF", "#6FD3FF", "#FF9636", "#E8F7FF"],
+  colors,
   flow = 1,
   speed = 1,
   follow = 0.05,
@@ -152,6 +148,7 @@ export default function FlowGradientBackground({
 
   useEffect(() => {
     const canvas = canvasRef.current!
+    const brandColors = readMeshPalette()
     const gl = canvas.getContext('webgl')
     if (!gl) return
     const prog = gl.createProgram()!
@@ -210,7 +207,7 @@ export default function FlowGradientBackground({
       gl.uniform2f(uMouse, mouse.x, mouse.y)
       gl.uniform1f(uTime, drift)
       gl.uniform1f(uFlow, s.flow * (1 + boost))
-      uColors.forEach((loc, i) => gl.uniform3f(loc, ...rgb(s.colors[i])))
+      uColors.forEach((loc, i) => gl.uniform3f(loc, ...brandRgb01((s.colors ?? brandColors)[i])))
       gl.drawArrays(gl.TRIANGLES, 0, 3)
       if (visible && !still) frame = requestAnimationFrame(draw)
     }

@@ -1,14 +1,14 @@
 /* Hero — valores medidos de la referencia (desktop ≥1024px primero). */
 .hero {
   isolation: isolate;
-  /* The hero is always dark (Sentos #030403) in both themes. The section
+  /* The hero is always dark (brand-black token) in both themes. The section
      itself is in-flow (unlike .rippleWrap/.bgSource, which are fixed and
      therefore ignored by the liquid-gl static snapshot), so a literal dark
      background here makes the snapshot capture the hero as dark in light
      mode too. The fixed mesh canvas paints over it, so nothing visible
      changes; the lens just stops refracting a light hero and rendering
      a solid white pill. */
-  background: #030403;
+  background: var(--brand-black);
   flex-direction: column;
   /* height (no min-height): las filas 1fr del grid necesitan una altura
      definida. Con min-height, la altura del grid era indefinida y las 12
@@ -74,14 +74,14 @@
   pointer-events: none;
   position: absolute;
   inset: 0;
-  /* The hero is always dark (Sentos #030403) in both themes; the darkness
+  /* The hero is always dark (brand-black token) in both themes; the darkness
      comes only from the WebGL mesh canvas, which the liquid-gl static
      snapshot cannot rasterize. Without a CSS background the snapshot
      captures the body background here, so in light mode the pill refracts
      a light hero and renders solid white over the dark mesh. A literal
      dark background makes the snapshot dark in both themes; the mesh
      canvas paints over it, so nothing visible changes. */
-  background: #030403;
+  background: var(--brand-black);
 }
 .bgSource canvas {
   width: 100%;

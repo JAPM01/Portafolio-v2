@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { BRAND_PALETTE, brandRgb01 } from "../lib/brand-palette";
+import { readBrandPalette, brandRgb01 } from "../lib/brand-palette";
 
 /** Tinta líquida viva: simulación de fluido WebGL (stable fluids, Jos Stam)
     a pantalla completa, sin zoom ni recorte. El puntero perturba el líquido
@@ -25,13 +25,6 @@ const CONFIG = {
   SPLAT_FORCE: 6000,
 };
 
-// Paleta de identidad (RGB 0-1). El azul pesa doble en el ciclo.
-const PALETTE: Array<[number, number, number]> = [
-  brandRgb01(BRAND_PALETTE.blue[0]),
-  brandRgb01(BRAND_PALETTE.blue[0]),
-  brandRgb01(BRAND_PALETTE.orange[0]),
-  brandRgb01(BRAND_PALETTE.blue[3]),
-];
 
 const BASE_VERTEX = `precision highp float;
 attribute vec2 aPosition;
@@ -304,6 +297,14 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    const brand = readBrandPalette();
+    // La tinta recibe exactamente las bases calculadas por el CSS.
+    const PALETTE: Array<[number, number, number]> = [
+      brandRgb01(brand.blue),
+      brandRgb01(brand.blue),
+      brandRgb01(brand.orange),
+      brandRgb01(brand.cyan),
+    ];
     const canvasOrNull = canvasRef.current;
     if (!canvasOrNull) return;
     const canvas = canvasOrNull;
@@ -600,7 +601,7 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
       g.height = gh;
       const ctx = g.getContext("2d");
       if (!ctx) return;
-      ctx.fillStyle = BRAND_PALETTE.gray[0];
+      ctx.fillStyle = brand.black;
       ctx.fillRect(0, 0, gw, gh);
       ctx.globalCompositeOperation = "lighter";
       const radial = (x: number, y: number, r: number, color: string) => {
@@ -610,11 +611,11 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, gw, gh);
       };
-      radial(gw * 0.55, gh * 0.45, gw * 0.55, BRAND_PALETTE.blue[0]); // azul, masa principal
-      radial(gw * 0.3, gh * 0.8, gw * 0.3, BRAND_PALETTE.blue[0]); // azul abajo
-      radial(gw * 0.1, gh * 0.4, gw * 0.3, BRAND_PALETTE.orange[0]); // rojo a la izquierda
-      radial(gw * 0.75, gh * 0.2, gw * 0.2, BRAND_PALETTE.orange[0]); // rojo arriba a la derecha
-      radial(gw * 0.9, gh * 0.6, gw * 0.25, BRAND_PALETTE.blue[3]); // cian a la derecha
+      radial(gw * 0.55, gh * 0.45, gw * 0.55, brand.blue); // azul, masa principal
+      radial(gw * 0.3, gh * 0.8, gw * 0.3, brand.blue); // azul abajo
+      radial(gw * 0.1, gh * 0.4, gw * 0.3, brand.orange); // rojo a la izquierda
+      radial(gw * 0.75, gh * 0.2, gw * 0.2, brand.orange); // rojo arriba a la derecha
+      radial(gw * 0.9, gh * 0.6, gw * 0.25, brand.cyan); // cian a la derecha
       const tex = gl.createTexture();
       if (!tex) return;
       gl.activeTexture(gl.TEXTURE0);
