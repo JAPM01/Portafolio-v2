@@ -115,6 +115,22 @@ const LIT_COLORS = [
   "var(--brand-cyan)",
 ] as const;
 
+/* El mockup usa arcos luminosos de orientación precisa: izquierda
+   superior, derecha superior y centro inferior. No son círculos nuevos.
+   La longitud procede de la circunferencia real; todos comparten el
+   mismo arco y la misma lógica de activación del sistema original. */
+const ARC_ORIENTATIONS = [225, 315, 90] as const;
+const ARC_DIVISIONS = 16;
+const ARC_CIRCUMFERENCE = 2 * Math.PI * G.radius;
+const ARC_LENGTH = ARC_CIRCUMFERENCE / ARC_DIVISIONS;
+function accentArc(angle: number) {
+  const start = angle - 180 / ARC_DIVISIONS;
+  return {
+    strokeDasharray: `${ARC_LENGTH} ${ARC_CIRCUMFERENCE - ARC_LENGTH}`,
+    strokeDashoffset: -ARC_CIRCUMFERENCE * start / 360,
+  };
+}
+
 /**
  * Ventanas de la animación, en fracción del ciclo (18 s, en loop):
  * cada círculo se enciende con su color y se apaga, uno por uno;
@@ -152,6 +168,7 @@ export default function VennFlow({ lang }: { lang: Lang }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const litRefs = useRef<(SVGCircleElement | null)[]>([]);
   const innerLitRefs = useRef<(SVGCircleElement | null)[]>([]);
+  const accentLitRefs = useRef<(SVGCircleElement | null)[]>([]);
   const fillRef = useRef<HTMLDivElement>(null);
 
   const id = useId().replace(/:/g, "");
@@ -161,9 +178,11 @@ export default function VennFlow({ lang }: { lang: Lang }) {
     const root = rootRef.current;
     const lit = litRefs.current.slice(0, 3);
     const innerLit = innerLitRefs.current.slice(0, 3);
+    const accentLit = accentLitRefs.current.slice(0, 3);
     const fill = fillRef.current;
     if (!root || !fill || lit.length !== 3 || innerLit.length !== 3 ||
-        lit.some(c => !c) || innerLit.some(c => !c)) return;
+        accentLit.length !== 3 || lit.some(c => !c) ||
+        innerLit.some(c => !c) || accentLit.some(c => !c)) return;
 
     const duration = durationMs(root);
     // La traslación de los segmentos usa exclusivamente la escala existente.
@@ -180,6 +199,7 @@ export default function VennFlow({ lang }: { lang: Lang }) {
         c!.setAttribute("opacity", "0");
         c!.setAttribute("stroke-dashoffset", "0");
       });
+      accentLit.forEach(c => c!.setAttribute("opacity", "0"));
       fill.style.opacity = "1";
       fill.style.transform = "none";
     };
@@ -204,6 +224,8 @@ export default function VennFlow({ lang }: { lang: Lang }) {
         // El anillo interior comparte EXACTAMENTE la activación del
         // contorno exterior: sin fases, delays ni duraciones adicionales.
         innerLit[i]!.setAttribute("opacity", String(v));
+        // El arco focal se intensifica EN LA MISMA fase original.
+        accentLit[i]!.setAttribute("opacity", String(v));
         const progress = clamp((phase - w[0]) / (w[3] - w[0]));
         innerLit[i]!.setAttribute("stroke-dashoffset", String(-progress * dashTravel));
       });
@@ -290,6 +312,20 @@ export default function VennFlow({ lang }: { lang: Lang }) {
             cx={c.x} cy={c.y} r={G.radius} />
         ))}
 
+        {/* Arcos cortos, visibles en reposo y anclados al propio contorno.
+            Su luz tenue revela el código cromático aun fuera del pulso. */}
+        <g className={styles.accents} aria-hidden="true">
+          {CENTERS.map((center, i) => (
+            <circle
+              key={`accent-${i}`}
+              className={styles.accentArc}
+              cx={center.x} cy={center.y} r={G.radius}
+              style={{ stroke: LIT_COLORS[i], color: LIT_COLORS[i] }}
+              {...accentArc(ARC_ORIENTATIONS[i])}
+            />
+          ))}
+        </g>
+
         {/* El pulso realza temporalmente el contorno con SU color de marca. */}
         <g filter={`url(#${glowId})`} aria-hidden="true">
           {CENTERS.map((c, i) => (
@@ -306,6 +342,17 @@ export default function VennFlow({ lang }: { lang: Lang }) {
               cx={c.x} cy={c.y} r={G.radius}
               style={{ stroke: LIT_COLORS[i] }}
               opacity="0" />
+          ))}
+          {CENTERS.map((center, i) => (
+            <circle
+              key={`accent-lit-${i}`}
+              ref={el => { accentLitRefs.current[i] = el; }}
+              className={styles.accentLitArc}
+              cx={center.x} cy={center.y} r={G.radius}
+              style={{ stroke: LIT_COLORS[i] }}
+              {...accentArc(ARC_ORIENTATIONS[i])}
+              opacity="0"
+            />
           ))}
         </g>
 
