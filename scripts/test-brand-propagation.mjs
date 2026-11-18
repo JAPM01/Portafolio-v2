@@ -93,7 +93,7 @@ test("Cada shade está conectado a su base; no hay rutas huérfanas", () => {
   for (const [key] of tokens) {
     if (!/^--brand-(?:blue|orange|cyan|gray)-(?:[1-7])$|^--brand-(?:cyan|orange)-dark$/.test(key)) continue;
     const source = origins(key);
-    const family = key.split("-")[2];
+    const family = key.slice("--brand-".length).split("-")[0];
     for (const mustHave of family === "gray"
       ? key === "--brand-gray-1" ? ["black"] : ["black", "white"]
       : [family]) {
