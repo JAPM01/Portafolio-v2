@@ -23,6 +23,23 @@
   stroke-width: calc(var(--border-width) * 2);
   vector-effect: non-scaling-stroke;
 }
+/* Doble contorno técnico: mismo radio de cada círculo, con sangría tomada
+   directamente del token global --space-2. En reposo es Meta; el color
+   de encendido se aplica solo mientras el círculo correspondiente prende. */
+.innerRing,
+.innerLitRing {
+  r: calc(var(--venn-ring-radius) - var(--space-2));
+  fill: none;
+  stroke-width: var(--border-width);
+  stroke-dasharray: var(--space-2) var(--space-2);
+  vector-effect: non-scaling-stroke;
+}
+.innerRing {
+  stroke: var(--type-meta-ink);
+}
+.innerLitRing {
+  stroke-linecap: round;
+}
 /* Glow radial azul muy sutil detrás del Venn: luz ambiental que se
    desvanece a negro, como en las referencias (Deeply/Gemini). El
    fondo sigue siendo #010101; esto es solo un resplandor. */

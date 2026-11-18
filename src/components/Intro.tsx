@@ -44,7 +44,6 @@ const MANIFESTO: Record<Lang, Word[]> = {
 
 const CONTENT = {
   es: {
-    eyebrow: "SOBRE MI MÉTODO",
     heading: "01. Mi filosofía",
     thoughts: [
       "Entender a las personas.",
@@ -53,7 +52,6 @@ const CONTENT = {
     ],
   },
   en: {
-    eyebrow: "ABOUT MY METHOD",
     heading: "01. My philosophy",
     thoughts: [
       "Understanding people.",
@@ -125,7 +123,6 @@ export default function Intro() {
     >
       <div className={`container site-grid ${styles.layout}`}>
         <div className={styles.headingBlock}>
-          <span className={styles.eyebrow}>{t.eyebrow}</span>
           <h2 className="type-h2" id="intro-heading">{t.heading}</h2>
         </div>
 

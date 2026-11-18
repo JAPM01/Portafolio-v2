@@ -151,6 +151,7 @@ function durationMs(el: HTMLElement) {
 export default function VennFlow({ lang }: { lang: Lang }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const litRefs = useRef<(SVGCircleElement | null)[]>([]);
+  const innerLitRefs = useRef<(SVGCircleElement | null)[]>([]);
   const fillRef = useRef<HTMLDivElement>(null);
 
   const id = useId().replace(/:/g, "");
@@ -159,10 +160,15 @@ export default function VennFlow({ lang }: { lang: Lang }) {
   useEffect(() => {
     const root = rootRef.current;
     const lit = litRefs.current.slice(0, 3);
+    const innerLit = innerLitRefs.current.slice(0, 3);
     const fill = fillRef.current;
-    if (!root || !fill || lit.length !== 3 || lit.some(c => !c)) return;
+    if (!root || !fill || lit.length !== 3 || innerLit.length !== 3 ||
+        lit.some(c => !c) || innerLit.some(c => !c)) return;
 
     const duration = durationMs(root);
+    // La traslación de los segmentos usa exclusivamente la escala existente.
+    const travel = Number.parseFloat(getComputedStyle(root).getPropertyValue("--space-6"));
+    const dashTravel = Number.isFinite(travel) ? travel : 0;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     let visible = false, elapsed = 0, last = 0, raf = 0;
 
@@ -170,6 +176,10 @@ export default function VennFlow({ lang }: { lang: Lang }) {
     // intersección llena, círculos apagados.
     const settle = () => {
       lit.forEach(c => c!.setAttribute("opacity", "0"));
+      innerLit.forEach(c => {
+        c!.setAttribute("opacity", "0");
+        c!.setAttribute("stroke-dashoffset", "0");
+      });
       fill.style.opacity = "1";
       fill.style.transform = "none";
     };
@@ -191,6 +201,11 @@ export default function VennFlow({ lang }: { lang: Lang }) {
       P.on.forEach((w, i) => {
         const v = smooth(w[0], w[1], phase) * (1 - smooth(w[2], w[3], phase));
         lit[i]!.setAttribute("opacity", String(v));
+        // El anillo interior comparte EXACTAMENTE la activación del
+        // contorno exterior: sin fases, delays ni duraciones adicionales.
+        innerLit[i]!.setAttribute("opacity", String(v));
+        const progress = clamp((phase - w[0]) / (w[3] - w[0]));
+        innerLit[i]!.setAttribute("stroke-dashoffset", String(-progress * dashTravel));
       });
 
       // La intersección se rellena del líquido del mesh, late (el pulse
@@ -250,6 +265,7 @@ export default function VennFlow({ lang }: { lang: Lang }) {
         </div>
       </div>
       <svg className={styles.svg} viewBox={`${VIEW.x} ${VIEW.y} ${VIEW.width} ${VIEW.height}`}
+        style={{ "--venn-ring-radius": `${G.radius}px` } as React.CSSProperties}
         role="img" aria-label={lang === "es"
           ? "Diseño, Tecnología y Usabilidad: cada círculo se enciende con su color en secuencia, la intersección se rellena del líquido del mesh, late y se repite."
           : "Design, Technology and Usability: each circle lights up in its color in sequence, the intersection fills with the mesh liquid, pulses and repeats."}>
@@ -268,6 +284,11 @@ export default function VennFlow({ lang }: { lang: Lang }) {
           <circle key={`base-${c.x}-${c.y}`} className={styles.circle}
             cx={c.x} cy={c.y} r={G.radius} />
         ))}
+        {/* Contornos internos segmentados: exactamente --space-2 hacia dentro. */}
+        {CENTERS.map(c => (
+          <circle key={`inner-${c.x}-${c.y}`} className={styles.innerRing}
+            cx={c.x} cy={c.y} r={G.radius} />
+        ))}
 
         {/* El pulso realza temporalmente el contorno con SU color de marca. */}
         <g filter={`url(#${glowId})`} aria-hidden="true">
@@ -275,6 +296,14 @@ export default function VennFlow({ lang }: { lang: Lang }) {
             <circle key={`lit-${c.x}-${c.y}`}
               ref={el => { litRefs.current[i] = el; }}
               className={styles.litCircle} cx={c.x} cy={c.y} r={G.radius}
+              style={{ stroke: LIT_COLORS[i] }}
+              opacity="0" />
+          ))}
+          {CENTERS.map((c, i) => (
+            <circle key={`inner-lit-${c.x}-${c.y}`}
+              ref={el => { innerLitRefs.current[i] = el; }}
+              className={styles.innerLitRing}
+              cx={c.x} cy={c.y} r={G.radius}
               style={{ stroke: LIT_COLORS[i] }}
               opacity="0" />
           ))}

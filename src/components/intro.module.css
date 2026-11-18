@@ -25,16 +25,7 @@
 .headingBlock {
   grid-column: 1 / -1;
   min-inline-size: 0;
-}
-
-.eyebrow {
-  display: block;
-  font-family: var(--font-body);
-  font-size: var(--type-meta-size);
-  line-height: var(--type-meta-leading);
-  letter-spacing: var(--type-meta-tracking);
-  color: var(--type-meta-ink);
-  margin-block-end: var(--space-6);
+  text-align: center;
 }
 
 .editorial,
