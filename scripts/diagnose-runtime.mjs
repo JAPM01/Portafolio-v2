@@ -96,8 +96,8 @@ try{
   })()`;
   cmd('Runtime.evaluate',{expression:meshProbe,returnByValue:true});
   const shaderText = readFileSync(new URL('../src/components/FlowGradientBackground.tsx',import.meta.url),'utf8');
-  const vert=shaderText.match(/const VERT = \`([\\s\\S]*?)\`/)?.[1];
-  const frag=shaderText.match(/const FRAG = \`([\\s\\S]*?)\`/)?.[1];
+  const vert=shaderText.split('const VERT = `')[1]?.split('`')[0];
+  const frag=shaderText.split('const FRAG = `')[1]?.split('`')[0];
   if (!vert || !frag) throw new Error('WebGL shader source could not be extracted');
   const compilationProbe = `(() => {
     const canvas = document.createElement('canvas'), gl = canvas.getContext('webgl');
