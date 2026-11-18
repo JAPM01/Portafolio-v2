@@ -43,7 +43,7 @@
   line-height: var(--leading-heading-lg);
   letter-spacing: var(--tracking-heading-lg);
   font-weight: var(--weight-heading-lg);
-  color: var(--type-meta-ink);
+  color: var(--type-body-ink);
   transition: color var(--theme-ms) linear;
   text-wrap: pretty;
   max-width: 42ch;
@@ -68,7 +68,7 @@
 }
 
 .accent {
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   transition: color var(--theme-ms) linear;
   font-style: normal;
 }

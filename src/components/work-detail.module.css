@@ -65,7 +65,7 @@
 }
 
 .metaValue {
-  color: var(--type-ink);
+  color: var(--type-body-ink);
 }
 
 .liveLink {
@@ -265,7 +265,7 @@
   line-height: var(--leading-heading-lg);
   letter-spacing: var(--tracking-heading-lg);
   font-weight: var(--weight-heading-lg);
-  color: var(--type-meta-ink);
+  color: var(--type-body-ink);
   text-wrap: pretty;
   max-width: 42ch;
   margin: 0;
@@ -323,7 +323,7 @@
   line-height: var(--leading-heading-lg);
   letter-spacing: var(--tracking-heading-lg);
   font-weight: var(--weight-heading-lg);
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   text-wrap: pretty;
   max-width: 42ch;
   transition: color var(--theme-ms) linear;
@@ -356,7 +356,7 @@
 }
 
 .attributionName {
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   font-weight: 500;
 }
 

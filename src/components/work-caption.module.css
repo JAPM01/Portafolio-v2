@@ -47,7 +47,7 @@
   font-size: var(--type-body-size);
   line-height: var(--leading-body-xl);
   letter-spacing: var(--tracking-body-xl);
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   transition: color var(--theme-ms) linear;
   display: inline-flex;
 }
@@ -109,7 +109,7 @@ a:focus-visible .viewLabel::after {
   font-size: var(--type-body-size);
   line-height: var(--leading-body-xl);
   letter-spacing: var(--tracking-body-xl);
-  color: var(--type-meta-ink);
+  color: var(--type-body-ink);
   text-wrap: pretty;
   transition: color var(--theme-ms) linear;
   margin: 0;

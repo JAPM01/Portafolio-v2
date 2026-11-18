@@ -42,7 +42,7 @@ align-items: start;
   font-size: var(--type-body-size);
   line-height: var(--leading-body-xl);
   letter-spacing: var(--tracking-body-xl, -0.008em);
-  color: var(--type-meta-ink);
+  color: var(--type-body-ink);
   transition: color var(--theme-ms) linear;
   text-wrap: pretty;
   max-width: 42ch;
@@ -74,7 +74,7 @@ align-items: start;
 }
 
 .accent {
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   transition: color var(--theme-ms) linear;
   font-style: normal;
 }

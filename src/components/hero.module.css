@@ -307,7 +307,7 @@
   font-size: var(--type-body-size);
   line-height: var(--type-body-leading);
   letter-spacing: var(--type-body-tracking);
-  color: var(--type-ink);
+  color: var(--type-body-ink);
 }
 a.metaValue {
   transition: opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1);
@@ -379,7 +379,7 @@ a.metaValue.ctaLink:hover {
   line-height: var(--type-body-leading);
   letter-spacing: var(--type-body-tracking);
   /* Color fijo claro (el hero siempre es oscuro). */
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   /* Sin max-width ni balance: el texto llena las columnas del pitch y la
      línea larga llega al margen derecho, como en la referencia. Antes el
      límite de 34ch lo partía en líneas cortas y dejaba ~210px vacíos a la

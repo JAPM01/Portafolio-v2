@@ -35,7 +35,7 @@
   font-family: var(--font-body);
   font-size: var(--type-body-size);
   line-height: var(--leading-body-lg);
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   flex-direction: column;
   margin-block-start: var(--space-12);
   display: flex;
@@ -46,7 +46,7 @@
 }
 
 .link {
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   text-underline-offset: 0.2em;
   text-decoration: underline;
 }
@@ -55,7 +55,7 @@
   font-family: var(--font-body);
   font-size: var(--type-body-size);
   line-height: var(--leading-body-base);
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   margin-block-start: var(--space-12);
   display: inline-block;
 }
