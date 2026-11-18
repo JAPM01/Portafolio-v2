@@ -15,12 +15,26 @@
   stroke-width: calc(var(--border-width) * 2);
   vector-effect: non-scaling-stroke;
 }
-/* La animación conserva la misma línea blanca de marca. */
+/* Cada círculo que se enciende usa SU color de marca (el color se
+   fija por índice en VennFlow): diseño naranja, tecnología azul,
+   usabilidad cian. */
 .litCircle {
   fill: none;
-  stroke: var(--brand-white);
   stroke-width: calc(var(--border-width) * 3);
   vector-effect: non-scaling-stroke;
+}
+/* Glow radial azul muy sutil detrás del Venn: luz ambiental que se
+   desvanece a negro, como en las referencias (Deeply/Gemini). El
+   fondo sigue siendo #010101; esto es solo un resplandor. */
+.root::before {
+  content: "";
+  position: absolute;
+  inset: -25% -15%;
+  background: radial-gradient(ellipse at center,
+    color-mix(in srgb, var(--brand-blue) 14%, transparent) 0%,
+    transparent 70%);
+  pointer-events: none;
+  z-index: 0;
 }
 /* El mismo shader WebGL del Hero, recortado por tres elipses calculadas
    a partir de la geometría de los círculos del SVG. */

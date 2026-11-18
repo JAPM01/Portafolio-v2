@@ -59,7 +59,14 @@ const LABELS = [
 ] as const;
 
 
-/* Los contornos permanecen blancos; el color se concentra en el mesh. */
+/* Cada círculo prende con SU color de marca: diseño naranja,
+   tecnología azul, usabilidad cian. El contorno base permanece
+   blanco; el color vive en el círculo que se enciende y en el mesh. */
+const LIT_COLORS = [
+  "var(--brand-orange)",
+  "var(--brand-blue)",
+  "var(--brand-cyan)",
+] as const;
 
 /**
  * Ventanas de la animación, en fracción del ciclo (12 s, en loop):
@@ -186,7 +193,10 @@ export default function VennFlow({ lang }: { lang: Lang }) {
         <div className={styles.meshClip} style={{ clipPath: circleClip(G.design) }}>
           <div className={styles.meshClip} style={{ clipPath: circleClip(G.technology) }}>
             <div className={styles.meshClip} style={{ clipPath: circleClip(G.usability) }}>
-              <HeroBackground />
+              {/* Mesh estático: sin reacción al mouse, zoom bajo y
+                  encuadre desplazado para que se vean naranja y cian,
+                  no solo el azul del centro. */}
+              <HeroBackground follow={0} zoom={0.55} center={[0.7, 0.65]} />
             </div>
           </div>
         </div>
@@ -211,12 +221,13 @@ export default function VennFlow({ lang }: { lang: Lang }) {
             cx={c.x} cy={c.y} r={G.radius} />
         ))}
 
-        {/* El pulso realza temporalmente el mismo contorno blanco. */}
+        {/* El pulso realza temporalmente el contorno con SU color de marca. */}
         <g filter={`url(#${glowId})`} aria-hidden="true">
           {CENTERS.map((c, i) => (
             <circle key={`lit-${c.x}-${c.y}`}
               ref={el => { litRefs.current[i] = el; }}
               className={styles.litCircle} cx={c.x} cy={c.y} r={G.radius}
+              style={{ stroke: LIT_COLORS[i] }}
               opacity="0" />
           ))}
         </g>

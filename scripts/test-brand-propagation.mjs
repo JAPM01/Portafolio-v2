@@ -91,7 +91,9 @@ test("Cada uno de los cinco colores se propaga al adaptador real del shader", ()
   assert.match(shader, /paletteAttempt < 24/);
   assert.match(fluid, /paletteAttempt < 24/);
   assert.match(venn, /import HeroBackground from "\.\/HeroBackground"/);
-  assert.match(venn, /<HeroBackground \/>/);
+  // El Venn usa el shader compartido del Hero (con o sin props de
+  // configuración: follow/zoom/center no crean un segundo shader).
+  assert.match(venn, /<HeroBackground[\s\/>]/);
   assert.match(venn, /clipPath: circleClip\(G\.usability\)/);
   assert.match(media, /var\(--surface-raised\)|BrandMedia|styles\.placeholder/);
   console.log("PROPAGACIÓN: cinco bases -> adaptador WebGL y consumidores comprobados");

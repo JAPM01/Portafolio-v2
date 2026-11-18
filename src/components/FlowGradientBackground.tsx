@@ -11,8 +11,15 @@ export type FlowGradientBackgroundProps = {
   flow?: number
   /** drift speed */
   speed?: number
-  /** how closely the field follows the cursor, 0–1 per frame */
+  /** how closely the field follows the cursor, 0–1 per frame.
+      0 = estático: el mesh no reacciona al mouse ni al tacto. */
   follow?: number
+  /** zoom del encuadre: 1 = original; < 1 = alejado (se ve más
+      del patrón, entran otros colores). */
+  zoom?: number
+  /** centro del encuadre en UV (0–1): desplaza la región visible
+      del mesh sin cambiar el canvas. */
+  center?: [number, number]
   className?: string
 }
 
@@ -23,7 +30,8 @@ const FRAG = `
 precision highp float;
 varying vec2 v_uv;
 uniform vec2 u_res, u_mouse;
-uniform float u_time, u_flow;
+uniform float u_time, u_flow, u_zoom;
+uniform vec2 u_center;
 uniform vec3 u_bg, u_deep, u_body, u_hot, u_accent;
 
 vec3 hash3(vec3 p) {
@@ -133,7 +141,10 @@ vec3 paint(vec2 uv) {
 float rand(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
 
 void main() {
-  vec3 c = paint(flowUV(v_uv));
+  // Encuadre: aleja (zoom < 1) y desplaza el centro para que el
+  // recorte muestre más colores del patrón, no solo el azul central.
+  vec2 viewUv = (v_uv - vec2(0.5)) / u_zoom + u_center;
+  vec3 c = paint(flowUV(viewUv));
   // Brillo suave que sigue al cursor/tacto: hace visible que el mesh
   // reacciona (el cursor "remueve" el líquido). Cian del mesh, pequeño
   // y sutil para no romper la composición Sentos ni lavar el texto.
@@ -156,15 +167,17 @@ export default function FlowGradientBackground({
   flow = 1,
   speed = 1,
   follow = 0.05,
+  zoom = 1,
+  center = [0.5, 0.5],
   className = '',
 }: FlowGradientBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const live = useRef({flow, speed, follow})
+  const live = useRef({flow, speed, follow, zoom, center})
   const [paletteAttempt, setPaletteAttempt] = useState(0)
 
   useEffect(() => {
-    live.current = {flow, speed, follow}
-  }, [flow, speed, follow])
+    live.current = {flow, speed, follow, zoom, center}
+  }, [flow, speed, follow, zoom, center])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -208,6 +221,8 @@ export default function FlowGradientBackground({
     const uMouse = u('u_mouse')
     const uTime = u('u_time')
     const uFlow = u('u_flow')
+    const uZoom = u('u_zoom')
+    const uCenter = u('u_center')
     const uColors = ['u_bg', 'u_deep', 'u_body', 'u_hot', 'u_accent'].map(u)
 
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -240,6 +255,8 @@ export default function FlowGradientBackground({
       gl.uniform2f(uMouse, mouse.x, mouse.y)
       gl.uniform1f(uTime, drift)
       gl.uniform1f(uFlow, s.flow * (1 + boost))
+      gl.uniform1f(uZoom, s.zoom)
+      gl.uniform2f(uCenter, s.center[0], s.center[1])
       uColors.forEach((loc, i) => gl.uniform3f(loc, ...brandRgb01(brandColors[i])))
       gl.drawArrays(gl.TRIANGLES, 0, 3)
       if (visible && !still) frame = requestAnimationFrame(draw)
@@ -271,6 +288,8 @@ export default function FlowGradientBackground({
     // (mouse o dedo) impulsa el flujo: al deslizar, el líquido se
     // remueve y te sigue; al parar, vuelve a lo normal.
     const updatePointer = (px: number, py: number, instant: boolean) => {
+      // follow 0 = mesh estático: ignora por completo mouse y tacto.
+      if (live.current.follow <= 0) return
       const now = performance.now()
       if (lastPT !== 0) {
         const dt = Math.max(now - lastPT, 1)

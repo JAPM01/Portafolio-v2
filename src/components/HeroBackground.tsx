@@ -4,10 +4,21 @@ import FlowGradientBackground from "./FlowGradientBackground";
 import styles from "./hero.module.css";
 
 // FlowGradientBackground resuelve la paleta directamente desde CSS.
-export default function HeroBackground() {
+// follow/zoom/center son opcionales: por defecto el Hero reacciona
+// al mouse con el encuadre original; el Venn los sobrescribe
+// (follow 0 = estático, zoom bajo y centro desplazado).
+export default function HeroBackground({
+  follow = 0.08,
+  zoom = 1,
+  center = [0.5, 0.5],
+}: {
+  follow?: number;
+  zoom?: number;
+  center?: [number, number];
+} = {}) {
   return (
     <div style={{ position: "absolute", inset: 0 }} aria-hidden="true">
-      <FlowGradientBackground follow={0.08} className={styles.flowCanvas} />
+      <FlowGradientBackground follow={follow} zoom={zoom} center={center} className={styles.flowCanvas} />
     </div>
   );
 }

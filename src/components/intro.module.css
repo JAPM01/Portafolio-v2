@@ -131,8 +131,9 @@
    asignación, CSS Grid puede desplazar el Venn a la fila siguiente. */
 @media (min-width: 1024px) {
   .layout {
-    /* 32px menos que el espaciado anterior (space-16), sin offsets. */
-    row-gap: var(--space-8);
+    /* Más aire entre el título y la fila de contenido (manifiesto,
+       Venn, pensamientos): 64px en vez de 32px. */
+    row-gap: var(--space-16);
   }
   .headingBlock { grid-row: 1; }
   /* Alineación óptica por primera línea, no por altura del bloque;
