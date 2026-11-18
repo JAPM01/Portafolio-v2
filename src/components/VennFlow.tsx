@@ -60,6 +60,9 @@ export default function VennFlow({ lang }: { lang: Lang }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const litRefs = useRef<(SVGCircleElement | null)[]>([]);
   const fillRef = useRef<SVGGElement>(null);
+  const cyanRef = useRef<SVGEllipseElement>(null);
+  const iceRef = useRef<SVGEllipseElement>(null);
+  const orangeRef = useRef<SVGEllipseElement>(null);
 
   const id = useId().replace(/:/g, "");
   const cyanId = `venn-cyan-${id}`;
@@ -74,11 +77,13 @@ export default function VennFlow({ lang }: { lang: Lang }) {
     const root = rootRef.current;
     const lit = litRefs.current.slice(0, 3);
     const fill = fillRef.current;
-    if (!root || !fill || lit.length !== 3 || lit.some(c => !c)) return;
+    const cyan = cyanRef.current, ice = iceRef.current, orange = orangeRef.current;
+    if (!root || !fill || !cyan || !ice || !orange ||
+        lit.length !== 3 || lit.some(c => !c)) return;
 
     const duration = durationMs(root);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let visible = false, elapsed = 0, last = 0, raf = 0;
+    let visible = false, elapsed = 0, flowTime = 0, last = 0, raf = 0;
 
     // Estado final estático (solo para prefers-reduced-motion):
     // intersección llena, círculos apagados.
@@ -91,7 +96,11 @@ export default function VennFlow({ lang }: { lang: Lang }) {
     const tick = (now: number) => {
       raf = 0;
       if (!visible || reduced.matches) return;
-      if (last) elapsed += Math.min(now - last, 64);
+      const dt = last ? Math.min(now - last, 64) : 0;
+      elapsed += dt;
+      // Reloj del flujo: avanza siempre, no se reinicia con el loop,
+      // así el líquido deriva de forma continua como el mesh del hero.
+      flowTime += dt / 1000;
       last = now;
       // En loop: al terminar el ciclo se vuelve a empezar.
       if (elapsed >= duration) elapsed -= duration;
@@ -119,6 +128,16 @@ export default function VennFlow({ lang }: { lang: Lang }) {
       const s = 0.5 + 0.5 * fillIn;
       fill.setAttribute("transform",
         `translate(${G.convergence.x} ${G.convergence.y}) scale(${s}) translate(${-G.convergence.x} ${-G.convergence.y})`);
+
+      // El líquido fluye como el mesh del hero: las manchas derivan
+      // despacio, cada una con su propio ritmo, sin salirse de la lente.
+      const ft = flowTime;
+      cyan.setAttribute("cx", String(335 + 7 * Math.sin(ft * 0.35 + 1.2)));
+      cyan.setAttribute("cy", String(240 + 6 * Math.cos(ft * 0.28)));
+      ice.setAttribute("cx", String(348 + 6 * Math.sin(ft * 0.45 + 2.1)));
+      ice.setAttribute("cy", String(228 + 5 * Math.cos(ft * 0.38 + 0.7)));
+      orange.setAttribute("cx", String(380 + 4 * Math.sin(ft * 0.5 + 0.3)));
+      orange.setAttribute("cy", String(182 + 4 * Math.cos(ft * 0.42 + 1.5)));
 
       raf = requestAnimationFrame(tick);
     };
@@ -151,20 +170,21 @@ export default function VennFlow({ lang }: { lang: Lang }) {
           ? "Diseño, Tecnología y Usabilidad: cada círculo se enciende con su color en secuencia, la intersección se rellena del líquido del mesh, late y se repite."
           : "Design, Technology and Usability: each circle lights up in its color in sequence, the intersection fills with the mesh liquid, pulses and repeats."}>
         <defs>
-          {/* El líquido del mesh, en miniatura: NO un degradado lineal
-              (eso dejaba franjas: azul, blanco, naranja) sino las
-              mismas manchas suaves y difusas del hero — campo azul,
-              onda cian, brillo hielo y naranja en la esquina superior
-              derecha. Cada mancha es un radial que se desvanece a
-              transparente, así se funden como líquido, sin bordes. */}
+          {/* El líquido del mesh, en miniatura y ANIMADO: las mismas
+              manchas suaves y difusas del hero — campo azul, onda cian,
+              brillo hielo y naranja en la esquina superior derecha.
+              Cada mancha es un radial que se desvanece a transparente,
+              así se funden como líquido, sin bordes ni franjas. El hielo
+              es un brillo suave, no un manchón blanco: es más chico y
+              menos opaco que el cian, que es quien manda en el brillo. */}
           <radialGradient id={cyanId}>
             <stop offset="0" stopColor={HERO_MESH.cyan} stopOpacity="0.95" />
             <stop offset="0.7" stopColor={HERO_MESH.cyan} stopOpacity="0.5" />
             <stop offset="1" stopColor={HERO_MESH.cyan} stopOpacity="0" />
           </radialGradient>
           <radialGradient id={iceId}>
-            <stop offset="0" stopColor={HERO_MESH.ice} stopOpacity="1" />
-            <stop offset="0.6" stopColor={HERO_MESH.ice} stopOpacity="0.85" />
+            <stop offset="0" stopColor={HERO_MESH.ice} stopOpacity="0.75" />
+            <stop offset="0.6" stopColor={HERO_MESH.ice} stopOpacity="0.5" />
             <stop offset="1" stopColor={HERO_MESH.ice} stopOpacity="0" />
           </radialGradient>
           <radialGradient id={orangeId}>
@@ -203,19 +223,20 @@ export default function VennFlow({ lang }: { lang: Lang }) {
 
         {/* La intersección se rellena del líquido del mesh: las manchas
             solo se ven en el volumen compartido por los tres círculos.
-            Es ella la que late; no hay ningún círculo de pulse detrás. */}
+            Es ella la que late; no hay ningún círculo de pulse detrás.
+            Las manchas derivan despacio (ver el tick), como el mesh. */}
         <g clipPath={`url(#${clipD})`}>
           <g clipPath={`url(#${clipT})`}>
             <g clipPath={`url(#${clipU})`}>
               <g ref={fillRef} opacity="0">
                 {/* Campo azul del mesh. */}
                 <rect x="200" y="120" width="240" height="240" fill={HERO_MESH.blue} />
-                {/* Onda cian, mancha grande y suave. */}
-                <ellipse cx="335" cy="240" rx="85" ry="75" fill={`url(#${cyanId})`} />
-                {/* Brillo hielo: el núcleo luminoso del mesh. */}
-                <ellipse cx="348" cy="228" rx="52" ry="46" fill={`url(#${iceId})`} />
+                {/* Onda cian, mancha grande y suave: es quien manda. */}
+                <ellipse ref={cyanRef} cx="335" cy="240" rx="90" ry="80" fill={`url(#${cyanId})`} />
+                {/* Brillo hielo, chico y suave: un acento, no un manchón. */}
+                <ellipse ref={iceRef} cx="348" cy="228" rx="38" ry="34" fill={`url(#${iceId})`} />
                 {/* Naranja en la esquina superior derecha, como el hero. */}
-                <ellipse cx="380" cy="182" rx="42" ry="36" fill={`url(#${orangeId})`} />
+                <ellipse ref={orangeRef} cx="380" cy="182" rx="42" ry="36" fill={`url(#${orangeId})`} />
               </g>
             </g>
           </g>
