@@ -117,20 +117,23 @@ const LIT_COLORS = [
 
 /* El mockup usa arcos luminosos de orientación precisa: izquierda
    superior, derecha superior y centro inferior. No son círculos nuevos.
-   La longitud procede de la circunferencia real; todos comparten el
-   mismo arco y la misma lógica de activación del sistema original.
-   El arco cubre 1/8 de la circunferencia (45°), como las pestañas
-   de color del mockup. */
+   Cada chip es un PATH de arco explícito de 45° (1/8 de la
+   circunferencia), centrado en su orientación. Se dibuja como path
+   y NO con stroke-dasharray: con dasharray + vector-effect:
+   non-scaling-stroke el patrón no escala con el viewport y en móvil
+   los arcos salen de distinto tamaño y en distinta posición. El path
+   escala con el dibujo y mide exactamente 45° a cualquier escala. */
 const ARC_ORIENTATIONS = [225, 315, 90] as const;
 const ARC_DIVISIONS = 8;
-const ARC_CIRCUMFERENCE = 2 * Math.PI * G.radius;
-const ARC_LENGTH = ARC_CIRCUMFERENCE / ARC_DIVISIONS;
-function accentArc(angle: number) {
-  const start = angle - 180 / ARC_DIVISIONS;
-  return {
-    strokeDasharray: `${ARC_LENGTH} ${ARC_CIRCUMFERENCE - ARC_LENGTH}`,
-    strokeDashoffset: -ARC_CIRCUMFERENCE * start / 360,
-  };
+const ARC_SPAN = 360 / ARC_DIVISIONS;
+function arcPath(cx: number, cy: number, r: number, centerDeg: number, spanDeg: number) {
+  const a1 = (centerDeg - spanDeg / 2) * Math.PI / 180;
+  const a2 = (centerDeg + spanDeg / 2) * Math.PI / 180;
+  const x1 = cx + r * Math.cos(a1);
+  const y1 = cy + r * Math.sin(a1);
+  const x2 = cx + r * Math.cos(a2);
+  const y2 = cy + r * Math.sin(a2);
+  return `M ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)}`;
 }
 
 /**
@@ -304,15 +307,15 @@ export default function VennFlow({ lang }: { lang: Lang }) {
 
         {/* Chips de color FIJOS de 45° sobre el contorno exterior: uno
             por círculo, en su color de marca. Siempre visibles; no son
-            parte de la animación. */}
+            parte de la animación. Son paths de arco explícitos para
+            que midan exactamente 45° a cualquier escala. */}
         <g className={styles.accents} aria-hidden="true">
           {CENTERS.map((center, i) => (
-            <circle
+            <path
               key={`accent-${i}`}
               className={styles.accentArc}
-              cx={center.x} cy={center.y} r={G.radius}
+              d={arcPath(center.x, center.y, G.radius, ARC_ORIENTATIONS[i], ARC_SPAN)}
               style={{ stroke: LIT_COLORS[i], color: LIT_COLORS[i] }}
-              {...accentArc(ARC_ORIENTATIONS[i])}
             />
           ))}
         </g>

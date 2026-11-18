@@ -51,7 +51,11 @@ test("El Venn mantiene tres columnas y conserva las etiquetas Meta a tamaño CSS
   assert.match(jsx, /className=\{styles\.svgDashed\}/);
   assert.match(jsx, /const ARC_ORIENTATIONS = \[225, 315, 90\] as const/);
   assert.match(jsx, /const ARC_DIVISIONS = 8/);
-  assert.match(jsx, /\.\.\.accentArc\(ARC_ORIENTATIONS\[i\]\)/);
+  // Los chips son paths de arco explícitos de 45° (no dasharray),
+  // para que midan lo mismo y estén centrados a cualquier escala.
+  assert.match(jsx, /function arcPath\(cx: number, cy: number, r: number, centerDeg: number, spanDeg: number\)/);
+  assert.match(jsx, /d=\{arcPath\(center\.x, center\.y, G\.radius, ARC_ORIENTATIONS\[i\], ARC_SPAN\)\}/);
+  assert.doesNotMatch(jsx, /accentArc\(/);
   // El chip de 45° es FIJO (siempre visible) y la animación enciende
   // TODO el círculo sólido exterior, no el punteado.
   assert.match(css, /\.accentArc\s*\{[^}]*filter:\s*drop-shadow/);
