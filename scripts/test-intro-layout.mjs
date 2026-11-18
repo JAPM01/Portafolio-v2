@@ -19,15 +19,15 @@ test("Filosofía: tres elementos en la misma fila desktop, Venn entre ambos",()=
     const markup=[
       '<section class="section"><div class="container site-grid layout">',
       '<div class="headingBlock"><h2>01. Mi filosofía</h2></div>',
-      '<div class="copyColumn"><p class="copy">',
+      '<div class="copyColumn"><p class="copy"><span class="testCopyStart">',
       'Me muevo entre el diseño, la tecnología y la usabilidad para abordar',
       'cada reto desde la raíz, tomando decisiones claras que se miden por resultados reales.',
-      '</p></div>',
-      '<div class="diagram"><div class="root"><svg class="svg" viewBox="0 0 640 530">',
+      '</span></p></div>',
+      '<div class="diagram"><div class="root"><svg class="svg" viewBox="0 28 544 450">',
       '<circle cx="240" cy="188" r="142"/><circle cx="400" cy="188" r="142"/>',
       '<circle cx="320" cy="315" r="142"/></svg></div></div>',
       '<div class="editorial"><div class="thoughts">',
-      '<p class="thought">Entender a las personas.</p>',
+      '<p class="thought"><span class="testThoughtStart">Entender a las personas.</span></p>',
       '<p class="thought">Observar antes de actuar.</p>',
       '<p class="thought">Definir los resultados.</p>',
       '</div></div></div></section>'
@@ -46,7 +46,9 @@ test("Filosofía: tres elementos en la misma fila desktop, Venn entre ambos",()=
       'const box=selector=>{const r=doc.querySelector(selector).getBoundingClientRect();',
       'return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,middle:(r.top+r.bottom)/2}};',
       'results.push({width,columns:getComputedStyle(doc.querySelector(".layout")).gridTemplateColumns.split(" ").length,',
-      'copy:box(".copyColumn"),venn:box(".diagram"),right:box(".editorial")});',
+      'copy:box(".copyColumn"),venn:box(".diagram"),right:box(".editorial"),',
+      'copyText:box(".testCopyStart"),rightText:box(".testThoughtStart"),',
+      'title:box(".headingBlock")});',
       'frame.remove();}',
       'document.getElementById("result").textContent=JSON.stringify(results);',
       '})().catch(e=>document.getElementById("result").textContent=JSON.stringify({error:String(e),stack:e.stack}));',
@@ -65,15 +67,17 @@ test("Filosofía: tres elementos en la misma fila desktop, Venn entre ambos",()=
     const rows=JSON.parse(match[1].replaceAll("&amp;","&"));
     assert.ok(Array.isArray(rows),JSON.stringify(rows));
     for(const row of rows) {
-      const {width,columns,copy,venn,right}=row;
+      const {width,columns,copy,venn,right,copyText,rightText,title}=row;
       if(width>=1024) {
         assert.equal(columns,12,width+": la retícula debe tener 12 columnas");
         assert.ok(copy.right<venn.left,width+": Venn no está a la derecha del manifiesto");
         assert.ok(venn.right<right.left,width+": Venn no está antes del texto derecho");
-        assert.ok(Math.abs(copy.middle-venn.middle)<3,
-          width+": el Venn se desplazó verticalmente respecto del manifiesto");
-        assert.ok(Math.abs(right.middle-venn.middle)<3,
-          width+": el Venn se desplazó verticalmente respecto del texto derecho");
+        assert.ok(Math.abs(copyText.top-rightText.top)<4,
+          width+": las primeras líneas del manifiesto y del listado no coinciden");
+        assert.ok(copy.top<venn.bottom && right.top<venn.bottom,
+          width+": el Venn debe mantenerse en la misma zona visual que los textos");
+        assert.ok(venn.top<title.bottom+100,
+          width+": el título y el contenido quedaron demasiado separados");
       } else {
         assert.equal(columns,4,width+": la retícula móvil debe tener 4 columnas");
         assert.ok(copy.bottom<venn.top,width+": Venn debe seguir al manifiesto");

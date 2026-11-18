@@ -62,12 +62,12 @@
   line-height: var(--type-body-leading);
   letter-spacing: var(--type-body-tracking);
   color: var(--type-meta-ink);
-  padding-block: var(--space-4);
-  border-block-start: var(--border-width) solid var(--border-subtle);
+  padding-block: var(--space-3);
+  border-block-start: var(--border-width) solid var(--neutral-4);
 }
 
 .thought:last-child {
-  border-block-end: var(--border-width) solid var(--border-subtle);
+  border-block-end: var(--border-width) solid var(--neutral-4);
 }
 
 .diagram {
@@ -131,9 +131,14 @@
    asignación, CSS Grid puede desplazar el Venn a la fila siguiente. */
 @media (min-width: 1024px) {
   .layout {
-    row-gap: var(--section-columns-desktop);
+    /* 32px menos que el espaciado anterior (space-16), sin offsets. */
+    row-gap: var(--space-8);
   }
   .headingBlock { grid-row: 1; }
+  /* Alineación óptica por primera línea, no por altura del bloque;
+     el diagrama conserva su propio centrado dentro de la fila. */
+  .copyColumn,
+  .editorial { align-self: first baseline; }
   .copyColumn {
     grid-column: 1 / 5;
     grid-row: 2;

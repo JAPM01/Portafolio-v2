@@ -18,6 +18,40 @@ const G = {
 
 const CENTERS = [G.design, G.technology, G.usability] as const;
 
+/* El encuadre se deriva exclusivamente de la geometría del diagrama.
+   Deja un tercio de radio como aire lateral: aumenta la presencia
+   visual alrededor del 19 %, SIN crecer fuera de sus tres columnas. */
+const DRAWING = {
+  left: Math.min(...CENTERS.map(({ x }) => x - G.radius)),
+  right: Math.max(...CENTERS.map(({ x }) => x + G.radius)),
+  top: Math.min(...CENTERS.map(({ y }) => y - G.radius)),
+  bottom: Math.max(...CENTERS.map(({ y }) => y + G.radius)),
+};
+const VIEW_WIDTH = DRAWING.right - DRAWING.left + (2 * G.radius) / 3;
+const VIEW_HEIGHT = VIEW_WIDTH * (G.height / G.width);
+const VIEW = {
+  x: DRAWING.left - G.radius / 3,
+  y: (DRAWING.top + DRAWING.bottom - VIEW_HEIGHT) / 2,
+  width: VIEW_WIDTH,
+  height: VIEW_HEIGHT,
+} as const;
+
+/* Las etiquetas son HTML, no texto SVG: así type-meta conserva
+   su tamaño CSS real independientemente de la escala del dibujo. */
+function labelPosition(x: number, y: number) {
+  return {
+    insetInlineStart: `${((x - VIEW.x) / VIEW.width) * 100}%`,
+    insetBlockStart: `${((y - VIEW.y) / VIEW.height) * 100}%`,
+  };
+}
+
+const LABELS = [
+  { key: "design", x: G.design.x - G.radius / 2, y: G.design.y },
+  { key: "technology", x: G.technology.x + G.radius / 2, y: G.technology.y },
+  { key: "usability", x: G.usability.x, y: G.usability.y + G.radius / 2 },
+] as const;
+
+
 /** Color con el que prende cada círculo: el mismo de su palabra
     en el manifiesto — diseño naranja, tecnología azul, usabilidad cian. */
 const LIT_COLORS = ["var(--brand-orange)", "var(--brand-blue)", "var(--brand-cyan)"] as const;
@@ -164,7 +198,7 @@ export default function VennFlow({ lang }: { lang: Lang }) {
 
   return (
     <div className={styles.root} ref={rootRef}>
-      <svg className={styles.svg} viewBox={`0 0 ${G.width} ${G.height}`}
+      <svg className={styles.svg} viewBox={`${VIEW.x} ${VIEW.y} ${VIEW.width} ${VIEW.height}`}
         role="img" aria-label={lang === "es"
           ? "Diseño, Tecnología y Usabilidad: cada círculo se enciende con su color en secuencia, la intersección se rellena del líquido del mesh, late y se repite."
           : "Design, Technology and Usability: each circle lights up in its color in sequence, the intersection fills with the mesh liquid, pulses and repeats."}>
@@ -241,13 +275,22 @@ export default function VennFlow({ lang }: { lang: Lang }) {
           </g>
         </g>
 
-        <text className={styles.circleLabel} x={G.design.x - G.radius * .42}
-          y={G.design.y} textAnchor="middle">{lang === "es" ? "Diseño" : "Design"}</text>
-        <text className={styles.circleLabel} x={G.technology.x + G.radius * .42}
-          y={G.technology.y} textAnchor="middle">{lang === "es" ? "Tecnología" : "Technology"}</text>
-        <text className={styles.circleLabel} x={G.usability.x}
-          y={G.usability.y + G.radius * .55} textAnchor="middle">{lang === "es" ? "Usabilidad" : "Usability"}</text>
       </svg>
+      <div className={styles.labels} aria-hidden="true">
+        {LABELS.map((label) => (
+          <span
+            key={label.key}
+            className={`type-meta ${styles.circleLabel}`}
+            style={labelPosition(label.x, label.y)}
+          >
+            {label.key === "design"
+              ? (lang === "es" ? "Diseño" : "Design")
+              : label.key === "technology"
+                ? (lang === "es" ? "Tecnología" : "Technology")
+                : (lang === "es" ? "Usabilidad" : "Usability")}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

@@ -41,6 +41,8 @@ jobs:
         run: npm run test:typography:propagation
       - name: Verify philosophy Venn placement in Chromium
         run: npm run test:intro-layout
+      - name: Enforce philosophy design-system tokens
+        run: npm run test:intro-design
       - name: Verify one shared responsive grid in Chromium
         run: npm run test:grid
       - name: Build static site

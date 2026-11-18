@@ -15,7 +15,8 @@
     "test:typography:red": "node --test scripts/check-typography.test.mjs",
     "test:typography:propagation": "node --test scripts/test-typography-propagation.mjs",
     "test:intro-layout": "node --test scripts/test-intro-layout.mjs",
-    "test:grid": "node --test scripts/test-site-grid.mjs"
+    "test:grid": "node --test scripts/test-site-grid.mjs",
+    "test:intro-design": "node --test scripts/test-intro-design.mjs"
   },
   "dependencies": {
     "@paper-design/shaders-react": "0.0.78",
