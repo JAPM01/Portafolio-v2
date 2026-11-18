@@ -118,9 +118,11 @@ const LIT_COLORS = [
 /* El mockup usa arcos luminosos de orientación precisa: izquierda
    superior, derecha superior y centro inferior. No son círculos nuevos.
    La longitud procede de la circunferencia real; todos comparten el
-   mismo arco y la misma lógica de activación del sistema original. */
+   mismo arco y la misma lógica de activación del sistema original.
+   El arco cubre 1/8 de la circunferencia (45°), como las pestañas
+   de color del mockup. */
 const ARC_ORIENTATIONS = [225, 315, 90] as const;
-const ARC_DIVISIONS = 16;
+const ARC_DIVISIONS = 8;
 const ARC_CIRCUMFERENCE = 2 * Math.PI * G.radius;
 const ARC_LENGTH = ARC_CIRCUMFERENCE / ARC_DIVISIONS;
 function accentArc(angle: number) {
@@ -133,11 +135,13 @@ function accentArc(angle: number) {
 
 /**
  * Ventanas de la animación, en fracción del ciclo (18 s, en loop):
- * cada círculo se enciende con su color y se apaga, uno por uno;
- * la intersección se rellena del líquido del mesh y ES ELLA la que
- * hace el pulse (late); el mesh queda visible varios segundos antes
- * de apagarse para repetirse. Los círculos NUNCA se rellenan: solo su
- * contorno prende. No hay ningún círculo de pulse detrás.
+ * cada PESTAÑA de color del círculo externo aparece en su ventana
+ * y queda encendida hasta el final del ciclo; la intersección se
+ * rellena del líquido del mesh y ES ELLA la que hace el pulse (late);
+ * el mesh queda visible varios segundos antes de apagarse para
+ * repetirse. Los círculos NUNCA se rellenan y el anillo interno
+ * NUNCA se pinta: solo la pestaña del contorno exterior. No hay
+ * ningún círculo de pulse detrás.
  */
 const P = {
   on: [
@@ -166,8 +170,6 @@ function durationMs(el: HTMLElement) {
 
 export default function VennFlow({ lang }: { lang: Lang }) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const litRefs = useRef<(SVGCircleElement | null)[]>([]);
-  const innerLitRefs = useRef<(SVGCircleElement | null)[]>([]);
   const accentLitRefs = useRef<(SVGCircleElement | null)[]>([]);
   const fillRef = useRef<HTMLDivElement>(null);
 
@@ -176,30 +178,19 @@ export default function VennFlow({ lang }: { lang: Lang }) {
 
   useEffect(() => {
     const root = rootRef.current;
-    const lit = litRefs.current.slice(0, 3);
-    const innerLit = innerLitRefs.current.slice(0, 3);
     const accentLit = accentLitRefs.current.slice(0, 3);
     const fill = fillRef.current;
-    if (!root || !fill || lit.length !== 3 || innerLit.length !== 3 ||
-        accentLit.length !== 3 || lit.some(c => !c) ||
-        innerLit.some(c => !c) || accentLit.some(c => !c)) return;
+    if (!root || !fill || accentLit.length !== 3 ||
+        accentLit.some(c => !c)) return;
 
     const duration = durationMs(root);
-    // La traslación de los segmentos usa exclusivamente la escala existente.
-    const travel = Number.parseFloat(getComputedStyle(root).getPropertyValue("--space-6"));
-    const dashTravel = Number.isFinite(travel) ? travel : 0;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
     let visible = false, elapsed = 0, last = 0, raf = 0;
 
     // Estado final estático (solo para prefers-reduced-motion):
-    // intersección llena, círculos apagados.
+    // intersección llena y las tres pestañas de color visibles.
     const settle = () => {
-      lit.forEach(c => c!.setAttribute("opacity", "0"));
-      innerLit.forEach(c => {
-        c!.setAttribute("opacity", "0");
-        c!.setAttribute("stroke-dashoffset", "0");
-      });
-      accentLit.forEach(c => c!.setAttribute("opacity", "0"));
+      accentLit.forEach(c => c!.setAttribute("opacity", "1"));
       fill.style.opacity = "1";
       fill.style.transform = "none";
     };
@@ -215,19 +206,12 @@ export default function VennFlow({ lang }: { lang: Lang }) {
       if (elapsed >= duration) elapsed -= duration;
       const phase = clamp(elapsed / duration);
 
-      // Cada círculo se enciende con su color y se apaga: el contorno
-      // pasa de gris delgado a más ancho con su color de marca. El
-      // siguiente empieza antes de que el anterior se apague del todo.
+      // Solo el círculo EXTERNO se pinta: cada pestaña de color aparece
+      // en su ventana y QUEDA encendida hasta que todo se apaga junto
+      // al final del ciclo. El anillo interno nunca cambia de color.
       P.on.forEach((w, i) => {
-        const v = smooth(w[0], w[1], phase) * (1 - smooth(w[2], w[3], phase));
-        lit[i]!.setAttribute("opacity", String(v));
-        // El anillo interior comparte EXACTAMENTE la activación del
-        // contorno exterior: sin fases, delays ni duraciones adicionales.
-        innerLit[i]!.setAttribute("opacity", String(v));
-        // El arco focal se intensifica EN LA MISMA fase original.
+        const v = smooth(w[0], w[1], phase) * (1 - smooth(P.fillOut[0], P.fillOut[1], phase));
         accentLit[i]!.setAttribute("opacity", String(v));
-        const progress = clamp((phase - w[0]) / (w[3] - w[0]));
-        innerLit[i]!.setAttribute("stroke-dashoffset", String(-progress * dashTravel));
       });
 
       // La intersección se rellena del líquido del mesh, late (el pulse
@@ -268,6 +252,16 @@ export default function VennFlow({ lang }: { lang: Lang }) {
 
   return (
     <div className={styles.root} ref={rootRef}>
+      {/* Capa inferior: anillos internos con guionado técnico fino.
+          Van DEBAJO del mesh para que el mesh opaco los tape en el
+          centro y la intersección quede limpia, sin guiones. */}
+      <svg className={styles.svgDashed} viewBox={`${VIEW.x} ${VIEW.y} ${VIEW.width} ${VIEW.height}`}
+        aria-hidden="true">
+        {CENTERS.map(c => (
+          <circle key={`inner-${c.x}-${c.y}`} className={styles.innerRing}
+            cx={c.x} cy={c.y} r={G.radius} />
+        ))}
+      </svg>
       <div
         ref={fillRef}
         className={styles.meshFill}
@@ -306,43 +300,11 @@ export default function VennFlow({ lang }: { lang: Lang }) {
           <circle key={`base-${c.x}-${c.y}`} className={styles.circle}
             cx={c.x} cy={c.y} r={G.radius} />
         ))}
-        {/* Contornos internos segmentados: exactamente --space-2 hacia dentro. */}
-        {CENTERS.map(c => (
-          <circle key={`inner-${c.x}-${c.y}`} className={styles.innerRing}
-            cx={c.x} cy={c.y} r={G.radius} />
-        ))}
 
-        {/* Arcos cortos, visibles en reposo y anclados al propio contorno.
-            Su luz tenue revela el código cromático aun fuera del pulso. */}
-        <g className={styles.accents} aria-hidden="true">
-          {CENTERS.map((center, i) => (
-            <circle
-              key={`accent-${i}`}
-              className={styles.accentArc}
-              cx={center.x} cy={center.y} r={G.radius}
-              style={{ stroke: LIT_COLORS[i], color: LIT_COLORS[i] }}
-              {...accentArc(ARC_ORIENTATIONS[i])}
-            />
-          ))}
-        </g>
-
-        {/* El pulso realza temporalmente el contorno con SU color de marca. */}
+        {/* Pestañas de color sobre el contorno EXTERIOR: una por círculo,
+            en su color de marca. Son lo único que se pinta en la
+            animación; el anillo interno nunca cambia de color. */}
         <g filter={`url(#${glowId})`} aria-hidden="true">
-          {CENTERS.map((c, i) => (
-            <circle key={`lit-${c.x}-${c.y}`}
-              ref={el => { litRefs.current[i] = el; }}
-              className={styles.litCircle} cx={c.x} cy={c.y} r={G.radius}
-              style={{ stroke: LIT_COLORS[i] }}
-              opacity="0" />
-          ))}
-          {CENTERS.map((c, i) => (
-            <circle key={`inner-lit-${c.x}-${c.y}`}
-              ref={el => { innerLitRefs.current[i] = el; }}
-              className={styles.innerLitRing}
-              cx={c.x} cy={c.y} r={G.radius}
-              style={{ stroke: LIT_COLORS[i] }}
-              opacity="0" />
-          ))}
           {CENTERS.map((center, i) => (
             <circle
               key={`accent-lit-${i}`}

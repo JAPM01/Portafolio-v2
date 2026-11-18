@@ -9,6 +9,17 @@
   block-size: auto;
   overflow: visible;
 }
+/* Capa inferior del doble anillo: los anillos internos van DEBAJO
+   del mesh para que la intersección quede limpia. Comparte viewBox
+   con el SVG superior para que ambos calcen exactamente. */
+.svgDashed {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+  z-index: 0;
+}
 .circle {
   fill: none;
   stroke: var(--brand-white);
@@ -18,47 +29,25 @@
      conserva el protagonismo del contorno editorial. */
   filter: drop-shadow(0 0 var(--space-1) color-mix(in srgb, var(--brand-white) 14%, transparent));
 }
-/* Cada círculo que se enciende usa SU color de marca (el color se
-   fija por índice en VennFlow): diseño naranja, tecnología azul,
-   usabilidad cian. */
-.litCircle {
-  fill: none;
-  stroke-width: calc(var(--border-width) * 2);
-  vector-effect: non-scaling-stroke;
-}
 /* Doble contorno técnico: mismo radio de cada círculo, con sangría tomada
-   directamente del token global --space-2. En reposo es Meta; el color
-   de encendido se aplica solo mientras el círculo correspondiente prende. */
-.innerRing,
-.innerLitRing {
+   directamente del token global --space-2. Guionado FINO y regular
+   (2 de trazo, 3 de hueco): línea de construcción técnica, no línea
+   de recortar. Nunca cambia de color: el anillo interno no se pinta. */
+.innerRing {
   r: calc(var(--venn-ring-radius) - var(--space-2));
   fill: none;
+  stroke: var(--type-meta-ink);
   stroke-width: var(--border-width);
-  /* Segmentos cortos y regulares, no puntos gruesos. */
-  stroke-dasharray: var(--space-1-5) var(--space-2);
+  stroke-dasharray: 2 3;
   vector-effect: non-scaling-stroke;
 }
-.innerRing {
-  stroke: var(--type-meta-ink);
-}
-.innerLitRing {
-  stroke-linecap: round;
-}
-/* El detalle que faltaba respecto al mockup: tres pequeños segmentos
-   sobre el anillo principal, con su glow cromático local. */
-.accentArc,
+/* Pestaña de color sobre el contorno exterior: un arco de 45° por
+   círculo, en su color de marca. Es lo único que se pinta. */
 .accentLitArc {
   fill: none;
   stroke-linecap: round;
-  vector-effect: non-scaling-stroke;
-}
-.accentArc {
-  stroke-width: calc(var(--border-width) * 2.5);
-  opacity: 0.85;
-  filter: drop-shadow(0 0 var(--space-1) currentColor);
-}
-.accentLitArc {
   stroke-width: calc(var(--border-width) * 3.5);
+  vector-effect: non-scaling-stroke;
 }
 /* Glow radial azul muy sutil detrás del Venn: luz ambiental que se
    desvanece a negro, como en las referencias (Deeply/Gemini). El
@@ -78,7 +67,7 @@
 .meshFill {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: 1;
   opacity: 0;
   pointer-events: none;
   will-change: opacity, transform;
@@ -93,8 +82,8 @@
   position: absolute;
   overflow: hidden;
 }
-.svg { position: relative; z-index: 1; }
-.labels { z-index: 2; }
+.svg { position: relative; z-index: 2; }
+.labels { z-index: 3; }
 /* Etiquetas fuera del SVG para evitar que la escala del viewBox
    disminuya el tamaño Meta real. Su tipografía y color los aplica
    exclusivamente .type-meta desde globals.css. */
