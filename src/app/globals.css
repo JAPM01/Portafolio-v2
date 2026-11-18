@@ -12,9 +12,9 @@
      Los demás tonos son funciones cromáticas de estas cinco bases.
      Cambiar aquí cualquier base actualiza UI, SVG, Canvas y WebGL
      (estos últimos leen los tokens CSS en el navegador). */
-  --brand-blue: #000AFF;
-  --brand-orange: #FF9636;
-  --brand-cyan: #6FD3FF;
+  --brand-blue: #076DFA;
+  --brand-orange: #C45300;
+  --brand-cyan: #EB0031;
   --brand-black: #010101;
   --brand-white: #FEFEFE;
 
