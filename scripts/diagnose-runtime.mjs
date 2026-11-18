@@ -31,10 +31,19 @@ try{
     ws.addEventListener('error',fail,{once:true});
   });
   const errors=[];
+  let meshState=null;
   ws.addEventListener('message',event=>{
     let x;try{x=JSON.parse(event.data);}catch{return;}
     const p=x.params||{};
-    if(x.id&&x.result?.result?.value) console.log('BROWSER_STATE',JSON.stringify(x.result.result.value));
+    if(x.id&&x.result?.result?.value) {
+      const value=x.result.result.value;
+      if (value.canvasFound !== undefined) {
+        meshState=value;
+        console.log('BROWSER_MESH',JSON.stringify(value));
+      } else {
+        console.log('BROWSER_STATE',JSON.stringify(value));
+      }
+    }
     if(x.method==='Runtime.exceptionThrown'){
       errors.push({type:'exception',text:p.exceptionDetails?.text,
       message:p.exceptionDetails?.exception?.description,url:p.exceptionDetails?.url,
@@ -117,6 +126,13 @@ try{
   cmd('Runtime.evaluate',{expression:compilationProbe,returnByValue:true});
   await new Promise(ok=>setTimeout(ok,500));
   console.log('BROWSER_ERRORS',JSON.stringify(errors).slice(0,24000));
+  if (!meshState?.canvasFound || !meshState.webglSupported || !meshState.programBound ||
+      !meshState.linkStatus || !meshState.bitmap?.width || !meshState.bitmap?.height) {
+    console.error('MESH_DIAGNOSIS_FAILED',JSON.stringify(meshState));
+    process.exitCode=1;
+  } else {
+    console.log('MESH_DIAGNOSIS_PASSED: canvas visible, shaders linked and WebGL program active');
+  }
 }catch(e){console.log('BROWSER_DIAG_BLOCKER',String(e));process.exitCode=1;}
 finally{
   try{ws?.close();}catch{}

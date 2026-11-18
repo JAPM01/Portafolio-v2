@@ -110,8 +110,8 @@ jobs:
           else console.log('DIAGNOSIS_PASSED: HTML, recursos y cliente correctos');
           NODE
 
-      - name: Capture browser runtime exception and console errors
-        continue-on-error: true
+      - name: Capture browser runtime exception and mesh WebGL health
+        continue-on-error: false
         if: always() && steps.deployment.outcome == 'success'
         env:
           PAGES_URL: ${{ steps.deployment.outputs.page_url }}

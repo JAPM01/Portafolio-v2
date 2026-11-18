@@ -13,6 +13,12 @@ export function brandHex(name: BrandBase): string {
     .getPropertyValue(`--brand-${name}`).trim();
   if (/^#[\da-f]{6}$/i.test(value)) return value;
 
+  // El optimizador CSS puede comprimir #FF5500 a #f50.
+  // Ambos representan el MISMO color de globals.css, sin paleta alternativa.
+  if (/^#[\da-f]{3}$/i.test(value)) {
+    return "#" + [...value.slice(1)].map((digit) => digit + digit).join("");
+  }
+
   // Los custom properties registrados pueden serializarse como rgb()
   // aunque su definición original en globals.css sea hexadecimal.
   // Se convierten los canales computados; NO existe otra paleta.

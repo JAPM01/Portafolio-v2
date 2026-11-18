@@ -72,6 +72,15 @@ test("Cada uno de los cinco colores se propaga al adaptador real del shader", ()
   assert.equal(exports.brandHex("orange").toUpperCase(), original.orange.toUpperCase());
   assert.equal(exports.readMeshPalette()[3].toUpperCase(), original.orange.toUpperCase());
 
+  // Regresión confirmada: Turbopack publica #FF5500 como #f50.
+  values = {...original, orange: "#f50"};
+  assert.equal(exports.brandHex("orange"), "#ff5500");
+  assert.equal(exports.readMeshPalette()[3], "#ff5500");
+
+  // Otros tres canales abreviados también deben resolverse sin inventar tinta.
+  values = {...original, cyan: "#abc"};
+  assert.equal(exports.brandHex("cyan"), "#aabbcc");
+
   values = {...original, orange: ""};
   assert.throws(() => exports.readMeshPalette(), /brand-orange/);
 
