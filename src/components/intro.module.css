@@ -123,28 +123,29 @@
   display: inline-block;
 }
 
-/* 12 columnas existentes. Una columna completa de separación en
-   cada lado: 3 + 1 + 4 + 1 + 3 = 12; sin gap/width ad hoc.
-   Orden visual: manifiesto → diagrama → bullets. */
-@media (min-width: 1440px) {
+/* Retícula compartida de DOCE columnas: manifiesto 4 + separación 1
+   + Venn 3 + separación 1 + pensamientos 3 = 12.
+   La proporción solicitada 4/2/3/2/3 suma 14: con 12 columnas se
+   conservan los anchos 4/3/3 y se compactan solamente los espacios.
+   IMPORTANTE: los tres elementos comparten grid-row: 2. Sin esta
+   asignación, CSS Grid puede desplazar el Venn a la fila siguiente. */
+@media (min-width: 1024px) {
   .layout {
     row-gap: var(--section-columns-desktop);
   }
-  .copyColumn { grid-column: 1 / 4; }
-  .diagram { grid-column: 5 / 9; }
-  .editorial { grid-column: 10 / 13; }
-}
-
-/* Pantalla de laptop: el manifiesto va a la izquierda (5 cols para
-   no comprimir el párrafo de 28px), el diagrama a la derecha y los
-   bullets abajo centrados. */
-@media (min-width: 1024px) and (max-width: 1439px) {
-  .layout {
-    row-gap: var(--section-columns-desktop);
+  .headingBlock { grid-row: 1; }
+  .copyColumn {
+    grid-column: 1 / 5;
+    grid-row: 2;
   }
-  .copyColumn { grid-column: 1 / 6; }
-  .diagram { grid-column: 7 / 13; }
-  .editorial { grid-column: 3 / 11; }
+  .diagram {
+    grid-column: 6 / 9;
+    grid-row: 2;
+  }
+  .editorial {
+    grid-column: 10 / 13;
+    grid-row: 2;
+  }
 }
 
 /* La retícula global es de cuatro columnas en tablet: los bloques

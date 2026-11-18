@@ -129,9 +129,8 @@ export default function Intro() {
           <h2 className="type-h2" id="intro-heading">{t.heading}</h2>
         </div>
 
-        {/* Orden en el DOM: manifiesto → bullets → diagrama (así apila
-            en móvil). En desktop la retícula coloca el diagrama en el
-            centro y los bullets a la derecha con grid-column. */}
+        {/* Orden de lectura y visual: manifiesto → Venn → pensamientos.
+            En desktop todos ocupan explícitamente la misma fila. */}
         <div className={styles.copyColumn} data-scroll-highlight="">
           <p
             className={styles.copy}
@@ -142,16 +141,16 @@ export default function Intro() {
           </p>
         </div>
 
+        <div className={styles.diagram}>
+          <VennFlow lang={lang} />
+        </div>
+
         <div className={styles.editorial}>
           <div className={styles.thoughts}>
             {t.thoughts.map((thought) => (
               <p className={styles.thought} key={thought}>{thought}</p>
             ))}
           </div>
-        </div>
-
-        <div className={styles.diagram}>
-          <VennFlow lang={lang} />
         </div>
       </div>
     </section>

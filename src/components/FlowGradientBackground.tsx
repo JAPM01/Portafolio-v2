@@ -63,65 +63,69 @@ vec2 flowUV(vec2 uv) {
   return mix(uv, clamp(st, 0.0, 1.0), 0.51);
 }
 
-// Soft area falloff used for the blue atmosphere and peripheral shadows.
+// Soft falloff for wide atmospheric volumes. These shapes use only
+// the five brand colours supplied through the CSS-backed uniforms.
 float blob(vec2 p, vec2 c, vec2 r, float feather) {
   float d = length((p - c) / r);
   return 1.0 - smoothstep(1.0 - feather, 1.0 + feather, d);
 }
 
-// A single serpentine spine, rather than independent circular blobs.
-// Its bend moves left through the upper middle and returns right below,
-// producing the broad continuous illuminated folds of a silk-like flow.
+// One connected serpentine spine from the top-right to the lower-right.
+// Parallel contours follow the same curve, creating the smooth folded
+// ribbons of flowing silk rather than separate round glows.
 float ribbon(vec2 uv, float shift, float halfWidth, float feather) {
   bool portrait = u_res.x < u_res.y;
-  float x = (portrait ? 0.84 : 0.82)
-    - (portrait ? 0.20 : 0.17) * sin((uv.y - 0.24) * 4.6)
-    + 0.023 * sin(uv.y * 10.0 + u_time * 0.10);
-  float width = halfWidth * mix(0.78, 1.0, smoothstep(0.14, 0.85, uv.y));
-  return 1.0 - smoothstep(width - feather, width + feather, abs(uv.x - x - shift));
+  float centerX = (portrait ? 0.79 : 0.73)
+    - (portrait ? 0.15 : 0.19) * sin((uv.y - 0.12) * 5.2)
+    + 0.017 * sin(uv.y * 10.0 + u_time * 0.12);
+  float distanceFromSpine = abs(uv.x - centerX - shift);
+  return 1.0 - smoothstep(
+    halfWidth - feather, halfWidth + feather, distanceFromSpine
+  );
 }
 
 vec3 paint(vec2 uv) {
   bool portrait = u_res.x < u_res.y;
 
-  // Blue dominates the field; black defines depth, not giant empty areas.
-  float blueField = 0.77 + 0.18 * blob(
-    uv, vec2(0.57, 0.61), vec2(0.80, 0.79), 0.60
+  // Dominant brand blue with deep black on the left/lower edges.
+  // Reducing the unbroken blue field makes space for actual cyan
+  // and orange, while preserving contrast behind the heading.
+  float blueField = 0.66 + 0.27 * blob(
+    uv, vec2(0.54, 0.58), vec2(0.76, 0.78), 0.64
   );
   vec3 c = mix(u_bg, u_deep, blueField);
 
-  // Deep left-bottom and subtle upper-left folds protect headline contrast.
+  // Black folds wrap around the illuminated current; they remain
+  // broad and continuous instead of becoming isolated circles.
   c = mix(c, u_bg,
-    blob(uv, vec2(-0.07, 0.06), vec2(0.65, 0.40), 0.57) * 0.85
+    blob(uv, vec2(0.02, 0.02), vec2(0.57, 0.43), 0.62) * 0.92
   );
   c = mix(c, u_bg,
-    blob(uv, vec2(-0.10, 0.91), vec2(0.52, 0.35), 0.58) * 0.30
+    blob(uv, vec2(-0.06, 0.98), vec2(0.48, 0.29), 0.58) * 0.47
   );
+  c = mix(c, u_bg, ribbon(uv, -0.24, 0.105, 0.10) * 0.75);
+  c = mix(c, u_deep, ribbon(uv, -0.14, 0.17, 0.11) * 0.71);
+  c = mix(c, u_bg, ribbon(uv, 0.23, 0.085, 0.08) * 0.49);
 
-  // Dark seams wrap around ONE continuous blue-cyan ribbon.
-  // Their curved edges supply sculptural volume instead of round glows.
-  c = mix(c, u_bg, ribbon(uv, -0.22, 0.10, 0.075) * 0.58);
-  c = mix(c, u_deep, ribbon(uv, -0.13, 0.19, 0.105) * 0.49);
-  c = mix(c, u_bg, ribbon(uv, 0.24, 0.095, 0.072) * 0.39);
-
-  // A narrow flowing cyan current, concentrated on the right.
-  float cyanFlow = ribbon(uv, 0.012, portrait ? 0.120 : 0.135, 0.083);
-  cyanFlow *= mix(0.42, 0.93, smoothstep(0.14, 0.85, uv.y));
-  c = mix(c, u_body, cyanFlow * 0.82);
-
-  // Pale white-cyan is a thin highlight tracing that SAME current;
-  // it does not form another independent round white blob.
-  float luminousRim = ribbon(uv, 0.068, 0.050, 0.060)
-    * smoothstep(0.30, 0.80, uv.y);
-  c = mix(c, u_accent, luminousRim * (portrait ? 0.77 : 0.84));
-
-  // A small, controlled warm corner accent; never a broad orange field.
-  float warmCorner = blob(
-    uv, vec2(1.04, 1.03),
-    portrait ? vec2(0.29, 0.23) : vec2(0.34, 0.24),
-    0.58
+  // A visible, saturated cyan river follows the SAME spine.
+  // Full-strength pigment near its centre prevents blue dominance.
+  float cyanRiver = ribbon(
+    uv, -0.012, portrait ? 0.133 : 0.145, 0.088
   );
-  c = mix(c, u_hot, warmCorner * 0.62);
+  c = mix(c, u_body, cyanRiver * 0.96);
+
+  // Light glancing off the cyan ribbon: a slim white-cyan core,
+  // not a large independent elliptical white patch.
+  float glint = ribbon(uv, 0.045, 0.040, 0.049);
+  glint *= smoothstep(0.19, 0.44, uv.y);
+  c = mix(c, u_accent, glint * (portrait ? 0.78 : 0.88));
+
+  // The warm corner occupies a recognisable area (not just a faint
+  // beige tint). Its centre remains outside the title zone.
+  vec2 warmCentre = portrait ? vec2(1.02, 1.02) : vec2(1.00, 1.01);
+  vec2 warmRadius = portrait ? vec2(0.34, 0.32) : vec2(0.37, 0.35);
+  float orangeCorner = blob(uv, warmCentre, warmRadius, 0.54);
+  c = mix(c, u_hot, orangeCorner * 0.93);
 
   return clamp(c, 0.0, 1.0);
 }
