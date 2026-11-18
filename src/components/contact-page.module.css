@@ -41,7 +41,7 @@
   line-height: var(--leading-heading-lg);
   letter-spacing: var(--tracking-heading-lg);
   font-weight: var(--weight-heading-lg);
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   white-space: nowrap;
   margin: 0;
 }
@@ -60,7 +60,7 @@
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   background: transparent;
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   border: 1.5px solid color-mix(in oklab, var(--text-primary) 50%, transparent);
   border-radius: var(--radius-md2);
   block-size: calc(56px * var(--ui-scale-desktop, 1));

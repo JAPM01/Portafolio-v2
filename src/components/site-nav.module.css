@@ -14,7 +14,7 @@
   inset-inline-start: 50%;
   width: min(560px, calc(100% - 32px));
   transform: translateX(-50%);
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   transition: inset-block-start 240ms ease, width 280ms cubic-bezier(.22, 1, .36, 1);
   -webkit-tap-highlight-color: transparent;
 }
@@ -50,14 +50,14 @@
   width: 100%;
   height: 100%;
   padding-inline: 24px;
-  color: var(--type-ink);
+  color: var(--type-body-ink);
 }
 .logo {
   display: inline-flex;
   flex: none;
   align-items: center;
   justify-content: center;
-  color: inherit;
+  color: var(--type-ink);
   text-decoration: none;
   transition: color 180ms ease;
 }
@@ -127,7 +127,7 @@
   min-height: 52px;
   padding-inline: 12px;
   border-radius: 14px;
-  color: var(--type-ink);
+  color: var(--type-meta-ink);
   font-family: var(--font-body), "Manrope", system-ui, sans-serif;
   font-size: var(--type-meta-size);
   font-weight: 550;
@@ -230,14 +230,14 @@
   pointer-events: auto;
 }
 .previewNavContent .nav {
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   mix-blend-mode: normal;
 }
 .previewNavContent .logo {
   color: var(--type-ink);
 }
 .previewNavContent .actions {
-  color: var(--type-ink);
+  color: var(--type-body-ink);
 }
 .previewNavContent .divider {
   background: color-mix(in srgb, currentColor 24%, transparent);

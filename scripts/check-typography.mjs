@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Single source of typography: --type-h1..h5/body/meta-size in globals.css.
- * Text colors: white heading, body gray and meta gray only.
+ * Text colors: white and two-step neutral only.
  * No alternate scales, inline pixel sizes, local typography overrides.
  * Read only: never modifies application files.
  */
@@ -12,7 +12,7 @@ const ROOT=resolve(import.meta.dirname,"..");
 const TYPE_FILE="src/app/globals.css";
 const LEVELS=["h1","h2","h3","h4","h5","body","meta"];
 const SIZE_TOKENS=new Set(LEVELS.map(x=>"--type-"+x+"-size"));
-const TYPE_COLORS=new Set(["--type-ink","--type-body-ink","--type-meta-ink"]);
+const TYPE_COLORS=new Set(["--type-ink","--type-meta-ink"]);
 const CSS_EXT=/\.(?:css|scss)$/i;
 const CODE_EXT=/\.(?:tsx?|jsx?|svg|mjs|js|glsl|wgsl)$/i;
 const OMIT=new Set(["scripts/check-typography.mjs","scripts/check-typography.test.mjs","scripts/test-typography-propagation.mjs"]);
@@ -21,7 +21,7 @@ const FONT_SHORTHAND=/(?:^|[;{}\n])\s*font\s*:\s*([^;{}]+)/gi;
 const COLOR_PROP=/(?:^|[;{}\n])\s*color\s*:\s*([^;{}]+)/gi;
 const TYPE_DEF=/--type-([\w-]+)\s*:\s*([^;{}]+);/gi;
 const USE_SIZE=/^\s*var\(\s*(--type-(?:h[1-5]|body|meta)-size)\s*\)\s*$/i;
-const USE_COLOR=/^\s*var\(\s*(--type-ink|--type-body-ink|--type-meta-ink)\s*\)\s*$/i;
+const USE_COLOR=/^\s*var\(\s*(--type-ink|--type-meta-ink)\s*\)\s*$/i;
 const INHERITED=new Set(["inherit","currentcolor","transparent","unset","initial"]);
 function files(dir,result=[]){
  for(const entry of readdirSync(dir,{withFileTypes:true})){
@@ -59,7 +59,7 @@ function checkFile(name,code,errors){
   for(const m of s.matchAll(COLOR_PROP)){
    const value=m[1].trim();
    if(!USE_COLOR.test(value)&&!INHERITED.has(value.toLowerCase())){
-    errors.push(name+":"+where(s,m.index)+": color de texto fuera de títulos/Body/Meta: "+value);
+    errors.push(name+":"+where(s,m.index)+": color de texto fuera de blanco/meta: "+value);
    }
   }
  }else{
@@ -96,8 +96,7 @@ function validateRoot(code,errors){
    errors.push(TYPE_FILE+":"+where(s,m.index)+": tamaño extra declarado: "+token);
   }
   if(TYPE_COLORS.has(token)){
-   const required=token==="--type-ink"?"var(--brand-white)"
-     :token==="--type-body-ink"?"var(--brand-gray-6)":"var(--brand-gray-5)";
+   const required=token==="--type-ink"?"var(--brand-white)":"var(--brand-gray-5)";
    if(val!==required)errors.push(TYPE_FILE+":"+where(s,m.index)+": fuente de color tipográfico alterada: "+token);
   }
   if(SIZE_TOKENS.has(token)&&/var\(\s*--type-(?:h[1-5]|body|meta)-size/.test(val)){
@@ -143,4 +142,4 @@ if(errors.length){
  console.error("TYPOGRAPHY GUARD: ROJO ("+errors.length+" infracciones)");
  for(const msg of errors)console.error(" - "+msg);
  process.exitCode=1;
-}else console.log("TYPOGRAPHY GUARD: VERDE. Siete tamaños responsivos, tres colores tipográficos y una fuente de verdad.");
+}else console.log("TYPOGRAPHY GUARD: VERDE. Siete tamaños responsivos, dos colores tipográficos y una fuente de verdad.");

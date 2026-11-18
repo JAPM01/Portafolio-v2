@@ -17,7 +17,6 @@ test("Escala única: siete tamaños responsivos sin alias secundarios",()=>{
  assert.doesNotMatch(css,/--text-heading-[\w-]+\s*:/);
  assert.doesNotMatch(css,/--text-body-[\w-]+\s*:/);
  assert.match(css,/--type-ink:\s*var\(--brand-white\)/);
- assert.match(css,/--type-body-ink:\s*var\(--brand-gray-6\)/);
  assert.match(css,/--type-meta-ink:\s*var\(--brand-gray-5\)/);
 });
 
@@ -90,11 +89,9 @@ test("Chromium: siete categorías, ocho escenarios responsivos y propagación in
       for(const other of levels.filter(x=>x!==level)){
         assert.equal(changed[level][other].size,before[other].size,"Cambio de "+level+" afectó "+other);
       }
-      assert.equal(before[level].color,level==="meta"?before.meta.color:level==="body"?before.body.color:before.h1.color);
+      assert.equal(before[level].color,level==="meta"?before.meta.color:before.body.color);
     }
     assert.notEqual(before.meta.color,before.body.color,width+"/"+theme+" meta sin distinción");
-    assert.notEqual(before.h1.color,before.body.color,width+"/"+theme+" título y cuerpo sin distinción");
-    assert.notEqual(before.h1.color,before.meta.color,width+"/"+theme+" título y meta sin distinción");
     assert.notEqual(modifiedWhite.body.color,before.body.color,width+"/"+theme+" blanco sin propagación");
     assert.notEqual(modifiedWhite.meta.color,before.meta.color,width+"/"+theme+" gris sin propagación");
   }
