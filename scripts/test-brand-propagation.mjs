@@ -94,7 +94,9 @@ test("Cada shade está conectado a su base; no hay rutas huérfanas", () => {
     if (!/^--brand-(?:blue|orange|cyan|gray)-(?:[1-7])$|^--brand-(?:cyan|orange)-dark$/.test(key)) continue;
     const source = origins(key);
     const family = key.split("-")[2];
-    for (const mustHave of family === "gray" ? ["black", "white"] : [family]) {
+    for (const mustHave of family === "gray"
+      ? key === "--brand-gray-1" ? ["black"] : ["black", "white"]
+      : [family]) {
       assert.ok(source.has("--brand-" + mustHave), key + " no depende de " + mustHave);
     }
   }

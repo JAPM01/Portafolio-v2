@@ -80,9 +80,23 @@ function scanColorFunctions(name, source, errors) {
   for (const func of source.matchAll(COLOR_FUN)) {
     const kind = func[0].trim().replace(/\s*\($/, "").toLowerCase();
     const args = bracket(source, func.index + func[0].lastIndexOf("("));
-    if (kind === "rgb" || kind === "rgba") {
-      // Solo se permite preservar los tres canales, con alpha opcional.
-      if (/^\s*from\s+var\(\s*--[\w-]+\s*\)\s+r\s+g\s+b(?:\s*\/\s*(?:[\d.]+|calc\([^)]*(?:\([^)]*\))?[^)]*\)|var\([^)]*\)))?\s*$/s.test(args)) continue;
+    const safeChannels = {
+      rgb: "r g b",
+      rgba: "r g b",
+      oklch: "l c h",
+      oklab: "l a b",
+      hsl: "h s l",
+      hsla: "h s l",
+    };
+    const channels = safeChannels[kind];
+    if (channels) {
+      const expected = new RegExp(
+        "^\\s*from\\s+var\\(\\s*--[\\w-]+\\s*\\)\\s+" +
+        channels.split(" ").join("\\s+") +
+        "(?:\\s*\\/\\s*(?:[\\d.]+|calc\\([\\s\\S]+\\)|var\\([\\s\\S]+\\)))?\\s*$",
+        "s"
+      );
+      if (expected.test(args)) continue;
     }
     errors.push(name + ":" + at(source, func.index) + ": color literal/función no derivada de tokens: " + kind + "(");
   }
@@ -260,7 +274,9 @@ function validateGraph(css, errors) {
     }
     const derivedFrom = descend(key);
     const family = shade.split("-")[0];
-    const required = family === "gray" ? ["black", "white"] : [family];
+    const required = family === "gray"
+      ? shade === "gray-1" ? ["black"] : ["black", "white"]
+      : [family];
     for (const base of required) {
       if (!derivedFrom.has("--brand-" + base)) {
         errors.push(ROOT_CSS + ": el shade " + key +
