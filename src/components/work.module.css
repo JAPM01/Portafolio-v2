@@ -15,14 +15,11 @@
 
 .heading {
   font-family: var(--font-display);
-  font-size: min(
-    var(--text-heading-5-5xl),
-    calc((min(100vw, var(--content-cap)) - var(--page-margin) * 2) / 3.9131)
-  );
+  font-size: var(--type-h2-size);
   line-height: var(--leading-heading-5-5xl);
   letter-spacing: var(--tracking-heading-5-5xl);
   font-weight: var(--weight-heading-5-5xl);
-  color: var(--text-primary);
+  color: var(--type-ink);
   text-wrap: balance;
   transition: color var(--theme-ms) linear;
   margin: 0;
@@ -191,11 +188,11 @@
   border-radius: var(--radius-sm2);
   white-space: nowrap;
   font-family: var(--font-body);
-  font-size: calc(var(--text-body-xl) * var(--ui-scale-desktop, 1));
+  font-size: var(--type-body-size);
   line-height: var(--leading-body-xl);
   letter-spacing: var(--tracking-body-xl, -0.008em);
   background: var(--text-primary);
-  color: var(--text-inverse);
+  color: var(--type-ink);
   transition:
     opacity 0.2s cubic-bezier(0.2, 0, 0, 1),
     scale 0.2s cubic-bezier(0.2, 0, 0, 1),

@@ -8,8 +8,8 @@
   border-radius: 999px;
   border: 1px solid color-mix(in srgb, var(--brand-gray-7) 18.00%, transparent);
   background: color-mix(in srgb, var(--brand-gray-1) 94.00%, transparent);
-  color: var(--brand-gray-7);
-  font: 700 16px/1 "Manrope", ui-sans-serif, system-ui, sans-serif;
+  color: var(--type-ink);
+  font-weight: 700; font-size: var(--type-meta-size); line-height: 1; font-family: var(--font-body);
   cursor: pointer;
   backdrop-filter: blur(8px);
   box-shadow: 0 8px 28px color-mix(in srgb, var(--brand-gray-1) 45.00%, transparent);
@@ -27,7 +27,7 @@
   border-radius: 16px;
   border: 1px solid color-mix(in srgb, var(--brand-gray-7) 14.00%, transparent);
   background: color-mix(in srgb, var(--brand-gray-1) 97.00%, transparent);
-  color: var(--brand-gray-7);
+  color: var(--type-ink);
   padding: 14px;
   box-shadow: 0 16px 48px color-mix(in srgb, var(--brand-gray-1) 55.00%, transparent);
   backdrop-filter: blur(12px);
@@ -42,7 +42,7 @@
   margin-bottom: 10px;
 }
 .title {
-  font-size: 13px;
+  font-size: var(--type-meta-size);
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -50,43 +50,43 @@
   appearance: none;
   border: 0;
   background: transparent;
-  color: color-mix(in srgb, var(--brand-gray-7) 65.00%, transparent);
-  font-size: 18px;
+  color: var(--type-meta-ink);
+  font-size: var(--type-meta-size);
   line-height: 1;
   cursor: pointer;
   padding: 4px 6px;
 }
 .close:hover {
-  color: var(--brand-gray-7);
+  color: var(--type-ink);
 }
 
 .current {
-  font-size: 12.5px;
-  color: color-mix(in srgb, var(--brand-gray-7) 75.00%, transparent);
+  font-size: var(--type-meta-size);
+  color: var(--type-meta-ink);
   margin-bottom: 10px;
   overflow-wrap: anywhere;
 }
 .current b {
-  color: var(--brand-gray-7);
+  color: var(--type-ink);
   font-weight: 700;
 }
 .status {
   display: block;
   margin-top: 2px;
-  font-size: 11.5px;
-  color: var(--brand-blue-5);
+  font-size: var(--type-meta-size);
+  color: var(--type-meta-ink);
 }
 .statusError {
-  color: var(--brand-orange-2);
+  color: var(--type-meta-ink);
 }
 
 .label {
   display: block;
-  font-size: 11px;
+  font-size: var(--type-meta-size);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--brand-gray-7) 50.00%, transparent);
+  color: var(--type-meta-ink);
   margin: 10px 0 5px;
 }
 .select,
@@ -96,8 +96,8 @@
   border-radius: 9px;
   border: 1px solid color-mix(in srgb, var(--brand-gray-7) 18.00%, transparent);
   background: color-mix(in srgb, var(--brand-gray-7) 6.00%, transparent);
-  color: var(--brand-gray-7);
-  font: 500 13px/1.3 "Manrope", ui-sans-serif, system-ui, sans-serif;
+  color: var(--type-ink);
+  font-weight: 500; font-size: var(--type-meta-size); line-height: 1.3; font-family: var(--font-body);
   padding: 8px 10px;
   outline: none;
 }
@@ -106,7 +106,7 @@
   border-color: color-mix(in srgb, var(--brand-blue-4) 80.00%, transparent);
 }
 .select option {
-  color: var(--brand-gray-1);
+  color: var(--type-ink);
 }
 .row {
   display: flex;
@@ -122,8 +122,8 @@
   border-radius: 9px;
   border: 1px solid color-mix(in srgb, var(--brand-gray-7) 18.00%, transparent);
   background: color-mix(in srgb, var(--brand-gray-7) 8.00%, transparent);
-  color: var(--brand-gray-7);
-  font: 600 12.5px/1 "Manrope", ui-sans-serif, system-ui, sans-serif;
+  color: var(--type-ink);
+  font-weight: 600; font-size: var(--type-meta-size); line-height: 1; font-family: var(--font-body);
   padding: 9px 12px;
   cursor: pointer;
   white-space: nowrap;
@@ -134,7 +134,7 @@
 .buttonPrimary {
   background: var(--brand-blue-4);
   border-color: var(--brand-blue-4);
-  color: var(--brand-gray-1);
+  color: var(--type-ink);
 }
 .buttonPrimary:hover {
   background: var(--brand-blue-5);
@@ -146,7 +146,7 @@
 
 .note {
   margin-top: 10px;
-  font-size: 11px;
+  font-size: var(--type-meta-size);
   line-height: 1.45;
-  color: color-mix(in srgb, var(--brand-gray-7) 45.00%, transparent);
+  color: var(--type-meta-ink);
 }

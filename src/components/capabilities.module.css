@@ -22,7 +22,7 @@
 
 @media (min-width: 1024px) {
   .grid {
-    gap: max(var(--space-16), calc(var(--text-heading-lg) * 2));
+    gap: max(var(--space-16), calc(var(--type-h5-size) * 2));
     grid-template-columns: minmax(0, 39fr) minmax(0, 61fr);
   }
 }
@@ -30,11 +30,11 @@
 .heading {
   transition: color var(--theme-ms) linear;
   font-family: var(--font-display);
-  font-size: var(--text-heading-2xl);
+  font-size: var(--type-h2-size);
   line-height: var(--leading-heading-2xl);
   letter-spacing: var(--tracking-heading-2xl);
   font-weight: var(--weight-heading-2xl);
-  color: var(--text-primary);
+  color: var(--type-ink);
   text-wrap: balance;
   margin: 0;
 }
@@ -42,11 +42,11 @@
 .copy {
   margin: var(--space-6) 0 0;
   font-family: var(--font-body);
-  font-size: var(--text-heading-lg);
+  font-size: var(--type-h5-size);
   line-height: var(--leading-heading-lg);
   letter-spacing: var(--tracking-heading-lg);
   font-weight: var(--weight-heading-lg);
-  color: var(--neutral-9);
+  color: var(--type-meta-ink);
   transition: color var(--theme-ms) linear;
   text-wrap: pretty;
   max-width: 42ch;
@@ -57,11 +57,11 @@
    color primario los acentos). */
 .copy[data-tone="armed"] {
   --tone-mid: color-mix(in oklch, var(--neutral-9) 50%, var(--text-primary));
-  color: var(--tone-mid);
+  color: var(--type-meta-ink);
 }
 
 .copy[data-tone="armed"] .accent {
-  color: var(--tone-mid);
+  color: var(--type-meta-ink);
 }
 
 .copy[data-tone="in"],
@@ -71,7 +71,7 @@
 }
 
 .accent {
-  color: var(--text-primary);
+  color: var(--type-ink);
   transition: color var(--theme-ms) linear;
   font-style: normal;
 }
@@ -86,7 +86,7 @@
    body-xl (21px), no heading-lg. */
 @media (max-width: 639px) {
   .copy {
-    font-size: var(--text-body-xl);
+    font-size: var(--type-body-size);
     line-height: var(--leading-body-xl);
     letter-spacing: var(--tracking-body-xl, -0.008em);
   }

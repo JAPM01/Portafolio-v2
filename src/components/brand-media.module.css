@@ -1,7 +1,7 @@
 .placeholder {
   display: block;
   background: var(--surface-raised);
-  color: var(--text-secondary);
+  color: var(--type-meta-ink);
   transition: background-color var(--theme-ms) linear, color var(--theme-ms) linear;
 }
 

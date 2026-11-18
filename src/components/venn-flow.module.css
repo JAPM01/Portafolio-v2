@@ -27,8 +27,8 @@
    16/20), no H5. La etiqueta "Resultado" se eliminó (no va). */
 .circleLabel {
   font-family: var(--font-body);
-  font-size: var(--type-caption-size);
-  letter-spacing: var(--type-caption-tracking);
+  font-size: var(--type-meta-size);
+  letter-spacing: var(--type-meta-tracking);
   fill: var(--text-primary);
   dominant-baseline: middle;
 }

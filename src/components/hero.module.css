@@ -222,7 +222,7 @@
   font-kerning: normal;
   font-feature-settings: "kern" 1, "liga" 1;
   text-rendering: optimizeLegibility;
-  color: var(--brand-gray-6);
+  color: var(--type-ink);
   text-wrap: wrap;
   flex-direction: column;
   max-width: 22ch;
@@ -249,24 +249,9 @@
      (400): solo regular en ambas tipografías, nada de bold. El
      line-height y el tracking son relativos (0.95 / -0.036em), así
      que escalan solos. */
-  font-size: calc(24px + 12.2vw);
-  font-size: min(
-    round(calc(24px + 12.2vw), 8px),
-    round(
-      calc(
-        (
-          (
-            (100svh - var(--space-6) - var(--space-6) - 11 * var(--space-6)) /
-            12
-          ) * 4 + 3 * var(--space-6)
-        ) / 2.85 * 1.875
-      ),
-      8px
-    ),
-    200px
-  );
-  line-height: 0.93;
-  letter-spacing: -0.046em;
+  font-size: var(--type-h1-size);
+  line-height: var(--type-h1-leading);
+  letter-spacing: var(--type-h1-tracking);
   font-weight: 400;
 }
 .titleLine {
@@ -311,10 +296,10 @@
 .metaLabel {
   /* Etiqueta = caption de la escala única (16px móvil / 20px desktop),
      más chica que el valor y en un gris más apagado (brand-gray-5). */
-  font-size: var(--type-caption-size);
-  line-height: var(--type-caption-leading);
-  letter-spacing: var(--type-caption-tracking);
-  color: var(--brand-gray-5);
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-leading);
+  letter-spacing: var(--type-meta-tracking);
+  color: var(--type-meta-ink);
 }
 .metaValue {
   /* Valor = cuerpo de la escala única (20px móvil / 28px desktop),
@@ -322,7 +307,7 @@
   font-size: var(--type-body-size);
   line-height: var(--type-body-leading);
   letter-spacing: var(--type-body-tracking);
-  color: var(--brand-gray-6);
+  color: var(--type-ink);
 }
 a.metaValue {
   transition: opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1);
@@ -373,7 +358,7 @@ a.metaValue.ctaLink:hover {
   line-height: var(--type-body-leading);
   letter-spacing: var(--type-body-tracking);
   /* Color fijo claro (el hero siempre es oscuro). */
-  color: var(--brand-gray-6);
+  color: var(--type-ink);
   align-items: center;
   gap: var(--space-2);
   /* Un solo gutter de separación con el párrafo (24px desktop / 16px
@@ -394,7 +379,7 @@ a.metaValue.ctaLink:hover {
   line-height: var(--type-body-leading);
   letter-spacing: var(--type-body-tracking);
   /* Color fijo claro (el hero siempre es oscuro). */
-  color: var(--brand-gray-6);
+  color: var(--type-ink);
   /* Sin max-width ni balance: el texto llena las columnas del pitch y la
      línea larga llega al margen derecho, como en la referencia. Antes el
      límite de 34ch lo partía en líneas cortas y dejaba ~210px vacíos a la
@@ -426,19 +411,8 @@ a.metaValue.ctaLink:hover {
      3 líneas a 0.95 de interlineado. A 390x716 da ~70px; en pantallas
      más altas el tope por ancho (72px) manda. */
   .title55 {
-    font-size: calc(24px + 12.2vw);
-    --mobile-title-size: min(
-      round(calc(24px + 12.2vw), 8px),
-      calc(
-        (
-          (
-            (100svh - var(--hero-grid-top) - var(--space-4) - 11 * var(--space-4)) /
-            12
-          ) * 4 + 3 * var(--space-4)
-        ) / 2.85
-      )
-    );
-    font-size: var(--mobile-title-size);
+    font-size: var(--type-h1-size);
+
   }
   /* Spanish and English use one identical title scale, tracking,
      kerning and leading. Longer phrases wrap at natural word breaks. */

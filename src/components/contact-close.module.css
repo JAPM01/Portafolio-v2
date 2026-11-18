@@ -2,7 +2,7 @@
   padding-block: var(--space-24) var(--page-indent);
   z-index: 1;
   min-block-size: 100svh;
-  color: var(--text-primary);
+  color: var(--type-ink);
   --closer-rule: var(--border-strong);
   background: transparent;
   grid-template-rows: 1fr;
@@ -89,7 +89,7 @@
 
 .inner {
   justify-content: space-between;
-  gap: max(var(--space-16), var(--text-heading-2xl));
+  gap: max(var(--space-16), var(--type-h2-size));
   flex-direction: column;
   display: flex;
   position: relative;
@@ -120,7 +120,7 @@
 }
 
 .mark {
-  --mark-w: max(150px, calc(var(--text-heading-lg) * 4.6875));
+  --mark-w: max(150px, calc(var(--type-h5-size) * 4.6875));
   inline-size: var(--mark-w);
   aspect-ratio: 2175.7 / 1470;
   background: var(--text-primary);
@@ -135,7 +135,7 @@
 }
 
 .socials {
-  gap: max(var(--space-3), calc(var(--text-heading-lg) * 0.375));
+  gap: max(var(--space-3), calc(var(--type-h5-size) * 0.375));
   margin: 0;
   flex: none;
   justify-items: start;
@@ -144,18 +144,18 @@
   list-style: none;
   display: grid;
   position: relative;
-  inset-block-start: calc(max(var(--space-16), var(--text-heading-2xl)) / 2);
+  inset-block-start: calc(max(var(--space-16), var(--type-h2-size)) / 2);
 }
 
 .social {
   align-items: start;
-  gap: max(var(--space-3), calc(var(--text-heading-lg) * 0.375));
+  gap: max(var(--space-3), calc(var(--type-h5-size) * 0.375));
   font-family: var(--font-body);
-  font-size: var(--text-heading-lg);
+  font-size: var(--type-h5-size);
   line-height: var(--leading-heading-lg);
   letter-spacing: var(--tracking-heading-lg);
   font-weight: var(--weight-heading-lg);
-  color: var(--text-primary);
+  color: var(--type-ink);
   text-decoration: none;
   display: inline-flex;
 }
@@ -185,42 +185,42 @@
 }
 
 .social svg {
-  --social-icon-size: max(24px, calc(var(--text-heading-lg) * 0.75));
+  --social-icon-size: max(24px, calc(var(--type-h5-size) * 0.75));
   inline-size: var(--social-icon-size);
   block-size: var(--social-icon-size);
-  --social-icon-nudge: calc(-1 * max(1px, calc(var(--text-heading-lg) * 0.03125)));
+  --social-icon-nudge: calc(-1 * max(1px, calc(var(--type-h5-size) * 0.03125)));
   flex: none;
   margin-block-start: calc(
-    (var(--text-heading-lg) * var(--leading-heading-lg) - var(--social-icon-size)) / 2 +
+    (var(--type-h5-size) * var(--leading-heading-lg) - var(--social-icon-size)) / 2 +
       var(--social-icon-nudge)
   );
 }
 
 .pitch {
-  max-width: max(46ch, calc(var(--text-heading-2xl) * 7.015));
+  max-width: max(46ch, calc(var(--type-h2-size) * 7.015));
   justify-self: end;
 }
 
 .heading {
   font-family: var(--font-display);
-  font-size: var(--text-heading-2xl);
+  font-size: var(--type-h2-size);
   line-height: var(--leading-heading-2xl);
   letter-spacing: var(--tracking-heading-2xl);
   font-weight: var(--weight-heading-2xl);
-  color: var(--text-primary);
+  color: var(--type-ink);
   text-wrap: balance;
   margin: 0;
   transition: color var(--theme-ms) linear;
 }
 
 .copy {
-  margin: max(var(--space-6), calc(var(--text-heading-2xl) * 0.375)) 0 0;
+  margin: max(var(--space-6), calc(var(--type-h2-size) * 0.375)) 0 0;
   font-family: var(--font-body);
-  font-size: max(var(--text-body-xl), calc(var(--text-heading-2xl) * 0.328125));
+  font-size: var(--type-body-size);
   max-inline-size: 35ch;
   line-height: var(--leading-body-xl);
   letter-spacing: var(--tracking-body-xl);
-  color: var(--text-secondary);
+  color: var(--type-meta-ink);
   text-wrap: pretty;
   transition: color var(--theme-ms) linear;
 }
@@ -233,16 +233,16 @@
   gap: calc(var(--space-3) * var(--ui-scale-desktop, 1));
   border-radius: var(--radius-sm2);
   font-family: var(--font-body);
-  font-size: calc(var(--text-body-xl) * var(--ui-scale-desktop, 1));
+  font-size: var(--type-body-size);
   line-height: var(--leading-body-xl);
   letter-spacing: var(--tracking-body-xl);
   font-weight: var(--weight-body-xl);
   white-space: nowrap;
-  background-color: var(--text-primary);
-  color: var(--text-inverse);
+  background-color: var(--type-ink);
+  color: var(--type-ink);
   text-decoration: none;
   border: 0;
-  margin-block-start: max(var(--space-8), calc(var(--text-heading-2xl) * 0.5));
+  margin-block-start: max(var(--space-8), calc(var(--type-h2-size) * 0.5));
   transition:
     background-color 0.15s cubic-bezier(0.2, 0, 0, 1),
     color 0.15s cubic-bezier(0.2, 0, 0, 1);
@@ -250,7 +250,7 @@
 }
 
 .cta:hover {
-  background-color: var(--text-secondary);
+  background-color: var(--type-meta-ink);
 }
 
 .cta:active {
@@ -272,15 +272,12 @@
   );
   --closer-name-height-share: 0.53;
   --closer-name-blur: 2.5px;
-  font-size: min(
-    var(--closer-name-fill),
-    calc(100svh * var(--closer-name-height-share) / var(--leading-heading-6xl))
-  );
+  font-size: var(--type-h1-size);
   line-height: var(--leading-heading-6xl);
   letter-spacing: var(--tracking-heading-6xl);
   font-weight: var(--weight-heading-6xl);
   font-family: var(--font-body);
-  color: var(--text-primary);
+  color: var(--type-ink);
   white-space: nowrap;
   --closer-rise: 0.6em;
   margin: 0;
@@ -362,7 +359,7 @@
 }
 
 .name .letter::before {
-  color: var(--closer-ink);
+  color: var(--type-ink);
   filter: url(#closer-name-outline);
   -webkit-mask-image: radial-gradient(
     ellipse var(--closer-hover-reach-x) var(--closer-hover-reach-y) at
@@ -383,7 +380,7 @@
 }
 
 .name .letter::after {
-  color: var(--closer-ink);
+  color: var(--type-ink);
   -webkit-mask-image: radial-gradient(
     ellipse var(--closer-hover-reach-x) var(--closer-hover-reach-y) at
       calc(var(--mx, 50%) + var(--closer-glyph-pad))
@@ -422,11 +419,11 @@
   margin: 0 0 calc(var(--space-6) * var(--ui-scale-desktop, 1));
   border-block-start: var(--border-width) solid var(--closer-rule);
   font-family: var(--font-body);
-  font-size: calc(var(--text-body-2xs) * var(--ui-scale-desktop, 1));
+  font-size: var(--type-meta-size);
   line-height: var(--leading-body-2xs);
   letter-spacing: var(--tracking-body-2xs);
   font-weight: var(--weight-body-2xs);
-  color: var(--text-secondary);
+  color: var(--type-meta-ink);
   flex-wrap: wrap;
   justify-content: space-between;
   padding-block-start: calc(var(--space-4) * var(--ui-scale-desktop, 1));
@@ -466,7 +463,7 @@
   }
 
   .brand {
-    gap: calc(max(var(--space-16), var(--text-heading-2xl)) / 2);
+    gap: calc(max(var(--space-16), var(--type-h2-size)) / 2);
   }
 }
 

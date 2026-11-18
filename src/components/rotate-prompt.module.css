@@ -13,7 +13,7 @@
   gap: var(--space-6);
   padding-inline: var(--page-margin);
   background: var(--surface-canvas);
-  color: var(--text-primary);
+  color: var(--type-ink);
   text-align: center;
   touch-action: none;
   position: fixed;
@@ -21,14 +21,14 @@
 }
 
 .icon {
-  color: var(--text-secondary);
+  color: var(--type-meta-ink);
   animation: 3.2s cubic-bezier(0.65, 0, 0.35, 1) infinite paused turnUpright;
   display: grid;
 }
 
 .title {
   font-family: var(--font-body);
-  font-size: var(--text-heading-lg);
+  font-size: var(--type-h5-size);
   line-height: var(--leading-heading-lg);
   letter-spacing: var(--tracking-heading-lg);
   font-weight: var(--weight-heading-lg);

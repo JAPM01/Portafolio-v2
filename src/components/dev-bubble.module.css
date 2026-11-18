@@ -18,7 +18,7 @@
   border: 1px solid color-mix(in oklch, var(--white-primary) 40%, transparent);
   border-radius: 999px;
   background: rgb(from var(--brand-black) r g b / 0.85);
-  color: var(--white-primary);
+  color: var(--type-ink);
   padding: 8px 12px 8px 10px;
   box-shadow: 0 4px 16px rgb(from var(--brand-black) r g b / 0.35);
   backdrop-filter: blur(8px);
@@ -38,7 +38,7 @@
 .devToolsGrip {
   display: inline-flex;
   align-items: center;
-  color: color-mix(in oklch, var(--white-primary) 55%, transparent);
+  color: var(--type-meta-ink);
 }
 /* Toggle de la retícula dentro de la burbuja. El clic lo gestiona el
    contenedor (ver DevBubble.tsx, el pointer capture hace que el click
@@ -52,7 +52,7 @@
   padding: 0;
   margin: 0;
   color: inherit;
-  font-size: 12px;
+  font-size: var(--type-meta-size);
   line-height: 1;
   cursor: pointer;
 }

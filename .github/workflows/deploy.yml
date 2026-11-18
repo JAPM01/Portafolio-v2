@@ -33,6 +33,12 @@ jobs:
         run: npm run test:colors:red
       - name: Verify CSS and WebGL palette propagation in Chromium
         run: npm run test:colors:propagation
+      - name: Enforce seven responsive typography tokens and two text colors
+        run: npm run test:typography
+      - name: Prove typography test rejects forbidden sizes and colors
+        run: npm run test:typography:red
+      - name: Verify typography propagation in Chromium
+        run: npm run test:typography:propagation
       - name: Build static site
         run: npm run build
         env:

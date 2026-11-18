@@ -23,20 +23,17 @@
   --rise-y-ramp: 0.065em;
   --rise-o: 1;
   font-family: var(--font-display);
-  font-size: min(
-    var(--text-heading-5-5xl),
-    calc((min(100vw, var(--content-cap)) - var(--page-margin) * 2) / var(--title-em, 0.01))
-  );
+  font-size: var(--type-h1-size);
   line-height: var(--leading-heading-5-5xl);
   letter-spacing: var(--tracking-heading-5-5xl);
   font-weight: var(--weight-heading-5-5xl);
-  color: var(--text-primary);
+  color: var(--type-ink);
   text-wrap: balance;
   margin: 0;
 }
 
 .meta {
-  gap: max(var(--space-8), var(--text-heading-lg));
+  gap: max(var(--space-8), var(--type-h5-size));
   flex-direction: column;
   align-content: start;
   margin: 0;
@@ -44,7 +41,7 @@
 }
 
 .metaItem {
-  gap: max(var(--space-2), calc(var(--text-heading-lg) * 0.25));
+  gap: max(var(--space-2), calc(var(--type-h5-size) * 0.25));
   flex-direction: column;
   min-inline-size: 0;
   display: flex;
@@ -52,23 +49,23 @@
 
 .metaLabel,
 .metaValue {
-  font-size: max(var(--text-body-xl), calc(var(--text-heading-lg) * 0.65625));
+  font-size: var(--type-body-size);
   line-height: var(--leading-body-xl);
   letter-spacing: var(--tracking-body-xl, 0);
   margin: 0;
 }
 
 .metaLabel {
-  color: var(--neutral-9);
+  color: var(--type-meta-ink);
 }
 
 .metaValue {
-  color: var(--text-primary);
+  color: var(--type-ink);
 }
 
 .liveLink {
   align-items: center;
-  gap: max(var(--space-2), calc(var(--text-heading-lg) * 0.25));
+  gap: max(var(--space-2), calc(var(--type-h5-size) * 0.25));
   color: inherit;
   text-decoration: none;
   display: inline-flex;
@@ -81,8 +78,8 @@
 }
 
 .liveLink svg {
-  inline-size: max(20px, calc(var(--text-heading-lg) * 0.625));
-  block-size: max(20px, calc(var(--text-heading-lg) * 0.625));
+  inline-size: max(20px, calc(var(--type-h5-size) * 0.625));
+  block-size: max(20px, calc(var(--type-h5-size) * 0.625));
   flex: none;
 }
 
@@ -109,7 +106,7 @@
 }
 
 .services {
-  gap: max(var(--space-1), calc(var(--text-heading-lg) * 0.125));
+  gap: max(var(--space-1), calc(var(--type-h5-size) * 0.125));
   flex-direction: column;
   margin: 0;
   padding: 0;
@@ -122,8 +119,8 @@
   border: var(--border-width) solid var(--neutral-12);
   border-radius: var(--radius-sm2);
   background: var(--surface-raised);
-  color: var(--neutral-9);
-  font-size: var(--text-body-2xs);
+  color: var(--type-meta-ink);
+  font-size: var(--type-meta-size);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   place-items: center;
@@ -140,7 +137,7 @@
 
 @media (min-width: 1024px) {
   .siteRig {
-    margin-block-start: max(var(--space-24), calc(var(--text-heading-5-5xl) * 96 / 214));
+    margin-block-start: max(var(--space-24), calc(var(--type-h1-size) * 96 / 214));
   }
 }
 
@@ -179,7 +176,7 @@
   background: color-mix(in oklch, var(--surface-canvas) 55%, transparent);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  color: var(--text-primary);
+  color: var(--type-ink);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition:
@@ -231,7 +228,7 @@
 @media (min-width: 1024px) {
   .body {
     justify-content: space-between;
-    gap: max(var(--space-16), calc(var(--text-heading-lg) * 2));
+    gap: max(var(--space-16), calc(var(--type-h5-size) * 2));
     grid-template-rows: auto 1fr;
     grid-template-columns: minmax(0, max-content) max-content;
     margin-block: var(--section-pad-desktop);
@@ -254,29 +251,29 @@
 
 .sectionHeading {
   font-family: var(--font-display);
-  font-size: var(--text-heading-2xl);
+  font-size: var(--type-h2-size);
   line-height: var(--leading-heading-2xl);
   letter-spacing: var(--tracking-heading-2xl);
   font-weight: var(--weight-heading-2xl);
-  color: var(--text-primary);
+  color: var(--type-ink);
   text-wrap: balance;
   transition: color var(--theme-ms) linear;
   margin: 0;
 }
 
 .explanation {
-  gap: max(var(--space-6), calc(var(--text-heading-lg) * 0.75));
+  gap: max(var(--space-6), calc(var(--type-h5-size) * 0.75));
   align-content: start;
   display: grid;
 }
 
 .para {
   font-family: var(--font-body);
-  font-size: var(--text-heading-lg);
+  font-size: var(--type-h5-size);
   line-height: var(--leading-heading-lg);
   letter-spacing: var(--tracking-heading-lg);
   font-weight: var(--weight-heading-lg);
-  color: var(--text-secondary);
+  color: var(--type-meta-ink);
   text-wrap: pretty;
   max-width: 42ch;
   margin: 0;
@@ -284,11 +281,11 @@
 
 .galleryHeading {
   font-family: var(--font-display);
-  font-size: var(--text-heading-5xl);
+  font-size: var(--type-h2-size);
   line-height: var(--leading-heading-5xl);
   letter-spacing: var(--tracking-heading-5xl);
   font-weight: var(--weight-heading-5xl);
-  color: var(--text-primary);
+  color: var(--type-ink);
   text-wrap: balance;
   transition: color var(--theme-ms) linear;
   margin: 0;
@@ -308,25 +305,25 @@
 
 @media (min-width: 1024px) {
   .testimonialGrid {
-    gap: max(var(--space-16), calc(var(--text-heading-lg) * 2));
+    gap: max(var(--space-16), calc(var(--type-h5-size) * 2));
     grid-template-columns: minmax(0, 39fr) minmax(0, 61fr);
   }
 }
 
 .testimonialHeading {
   font-family: var(--font-display);
-  font-size: var(--text-heading-2xl);
+  font-size: var(--type-h2-size);
   line-height: var(--leading-heading-2xl);
   letter-spacing: var(--tracking-heading-2xl);
   font-weight: var(--weight-heading-2xl);
-  color: var(--text-primary);
+  color: var(--type-ink);
   text-wrap: balance;
   transition: color var(--theme-ms) linear;
   margin: 0;
 }
 
 .quote {
-  gap: max(var(--space-6), calc(var(--text-heading-lg) * 0.75));
+  gap: max(var(--space-6), calc(var(--type-h5-size) * 0.75));
   justify-items: start;
   margin: 0;
   display: grid;
@@ -334,11 +331,11 @@
 
 .quoteText {
   font-family: var(--font-body);
-  font-size: var(--text-heading-lg);
+  font-size: var(--type-h5-size);
   line-height: var(--leading-heading-lg);
   letter-spacing: var(--tracking-heading-lg);
   font-weight: var(--weight-heading-lg);
-  color: var(--text-primary);
+  color: var(--type-ink);
   text-wrap: pretty;
   max-width: 42ch;
   transition: color var(--theme-ms) linear;
@@ -347,19 +344,19 @@
 
 .attribution {
   align-items: center;
-  gap: max(var(--space-4), calc(var(--text-heading-lg) * 0.5));
+  gap: max(var(--space-4), calc(var(--type-h5-size) * 0.5));
   font-family: var(--font-body);
-  font-size: max(var(--text-body-base), calc(var(--text-heading-lg) * 0.5));
+  font-size: var(--type-meta-size);
   line-height: var(--leading-body-base);
   letter-spacing: var(--tracking-body-base);
-  color: var(--text-secondary);
+  color: var(--type-meta-ink);
   transition: color var(--theme-ms) linear;
   display: flex;
 }
 
 .avatar {
-  inline-size: max(48px, calc(var(--text-heading-lg) * 1.5));
-  block-size: max(48px, calc(var(--text-heading-lg) * 1.5));
+  inline-size: max(48px, calc(var(--type-h5-size) * 1.5));
+  block-size: max(48px, calc(var(--type-h5-size) * 1.5));
   border-radius: var(--radius-full);
   object-fit: cover;
   flex: none;
@@ -371,17 +368,17 @@
 }
 
 .attributionName {
-  color: var(--text-primary);
+  color: var(--type-ink);
   font-weight: 500;
 }
 
 .attributionRole {
-  color: var(--text-secondary);
+  color: var(--type-meta-ink);
 }
 
 .gallery {
   margin-block: var(--section-pad-mobile);
-  gap: max(var(--space-16), calc(var(--text-heading-5xl) * 16 / 45));
+  gap: max(var(--space-16), calc(var(--type-h2-size) * 16 / 45));
   display: grid;
 }
 
@@ -392,7 +389,7 @@
 }
 
 .rest {
-  gap: max(var(--space-16), calc(var(--text-heading-lg) * 2));
+  gap: max(var(--space-16), calc(var(--type-h5-size) * 2));
   display: grid;
   align-items: start;
 }
@@ -400,7 +397,7 @@
 @media (min-width: 1024px) {
   .rest {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: max(var(--space-24), calc(var(--text-heading-lg) * 3));
+    row-gap: max(var(--space-24), calc(var(--type-h5-size) * 3));
   }
 }
 
@@ -411,7 +408,7 @@
 }
 
 .lift {
-  gap: max(var(--space-3), calc(var(--text-heading-lg) * 0.375));
+  gap: max(var(--space-3), calc(var(--type-h5-size) * 0.375));
   display: grid;
 }
 
@@ -484,20 +481,20 @@
 }
 
 .caption {
-  font-size: max(var(--text-body-base), calc(var(--text-heading-lg) * 0.5));
+  font-size: var(--type-meta-size);
   line-height: var(--leading-body-base);
-  color: var(--neutral-9);
+  color: var(--type-meta-ink);
   max-width: 52ch;
 }
 
 .gate {
   justify-content: space-between;
   align-items: baseline;
-  gap: max(var(--space-8), calc(var(--text-heading-4xl) * 0.25));
+  gap: max(var(--space-8), calc(var(--type-h3-size) * 0.25));
   color: inherit;
   flex-wrap: wrap;
   margin-block-start: var(--space-32);
-  margin-block-end: max(0px, calc(var(--text-heading-4xl) * 0.375 - var(--space-12)));
+  margin-block-end: max(0px, calc(var(--type-h3-size) * 0.375 - var(--space-12)));
   text-decoration: none;
   display: flex;
   position: relative;
@@ -511,11 +508,11 @@
 }
 
 .gateLabel {
-  font-size: var(--text-heading-4xl);
+  font-size: var(--type-h3-size);
   line-height: var(--leading-heading-4xl);
   letter-spacing: var(--tracking-heading-4xl);
   font-weight: var(--weight-heading-4xl);
-  color: var(--neutral-9);
+  color: var(--type-meta-ink);
   flex: 0 auto;
   min-inline-size: min-content;
   transition: opacity var(--gate-fade) cubic-bezier(0.2, 0, 0, 1);
@@ -524,14 +521,11 @@
 .gateTitle {
   font-kerning: none;
   text-align: end;
-  font-size: min(
-    var(--text-heading-4xl),
-    calc((min(100vw, var(--content-cap)) - var(--page-margin) * 2) / var(--title-em, 0.01))
-  );
+  font-size: var(--type-h3-size);
   line-height: var(--leading-heading-4xl);
   letter-spacing: var(--tracking-heading-4xl);
   font-weight: var(--weight-heading-4xl);
-  color: var(--text-primary);
+  color: var(--type-ink);
   flex: none;
   transition:
     color 0.2s cubic-bezier(0.2, 0, 0, 1),
@@ -539,7 +533,7 @@
 }
 
 .gate:hover .gateTitle {
-  color: var(--primary-9);
+  color: var(--type-ink);
 }
 
 /* Rail de progreso del gate (ref NextProjectGate): barra fija al pie del

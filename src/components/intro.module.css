@@ -3,7 +3,7 @@
   z-index: 1;
   isolation: isolate;
   background: var(--surface-canvas);
-  color: var(--text-primary);
+  color: var(--type-ink);
   padding-block: var(--section-pad-mobile);
   transition: background-color var(--theme-ms) linear, color var(--theme-ms) linear;
   /* El diagrama es más ancho que el contenedor en móvil: recorta
@@ -30,10 +30,10 @@
 .eyebrow {
   display: block;
   font-family: var(--font-body);
-  font-size: var(--type-caption-size);
-  line-height: var(--type-caption-leading);
-  letter-spacing: var(--type-caption-tracking);
-  color: var(--text-secondary);
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-leading);
+  letter-spacing: var(--type-meta-tracking);
+  color: var(--type-meta-ink);
   margin-block-end: var(--space-6);
 }
 
@@ -61,7 +61,7 @@
   font-size: var(--type-body-size);
   line-height: var(--type-body-leading);
   letter-spacing: var(--type-body-tracking);
-  color: var(--text-secondary);
+  color: var(--type-meta-ink);
   padding-block: var(--space-4);
   border-block-start: var(--border-width) solid var(--border-subtle);
 }
@@ -81,7 +81,7 @@
   line-height: var(--type-body-leading);
   letter-spacing: var(--type-body-tracking);
   font-weight: var(--weight-body-lg);
-  color: var(--text-secondary);
+  color: var(--type-meta-ink);
   text-wrap: pretty;
 }
 
@@ -91,37 +91,35 @@
 }
 
 .toneGray {
-  --reveal-from: var(--neutral-8);
-  --reveal-to: var(--text-secondary);
+  --reveal-from: var(--type-meta-ink);
+  --reveal-to: var(--type-ink);
 }
 
 /* Tonos del manifiesto obtenidos de tokens de marca:
    diseño naranja, tecnología azul y usabilidad cian. */
 .toneBlue {
-  --reveal-from: var(--brand-blue-3);
-  --reveal-to: var(--brand-blue-1);
+  --reveal-from: var(--type-meta-ink);
+  --reveal-to: var(--type-ink);
 }
 
 .toneOrange {
-  --reveal-from: var(--brand-orange-dark);
-  --reveal-to: var(--brand-orange);
+  --reveal-from: var(--type-meta-ink);
+  --reveal-to: var(--type-ink);
 }
 
 .toneCyan {
-  --reveal-from: var(--brand-cyan-dark);
-  --reveal-to: var(--brand-cyan);
+  --reveal-from: var(--type-meta-ink);
+  --reveal-to: var(--type-ink);
 }
 
 .toneWhite {
-  --reveal-from: var(--neutral-9);
-  --reveal-to: var(--text-primary);
+  --reveal-from: var(--type-meta-ink);
+  --reveal-to: var(--type-ink);
 }
 
 .letter {
   --t: clamp(0, (var(--p, 0) - var(--i) / var(--n)) * var(--n), 1);
-  color: color-mix(in oklch,
-    var(--reveal-from, var(--text-secondary)),
-    var(--reveal-to, var(--text-primary)) calc(var(--t) * 100%));
+  color: var(--type-ink);
   display: inline-block;
 }
 

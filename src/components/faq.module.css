@@ -21,7 +21,7 @@
 
 @media (min-width: 1024px) {
   .grid {
-    gap: max(var(--space-16), var(--text-heading-2xl));
+    gap: max(var(--space-16), var(--type-h2-size));
   }
 }
 
@@ -35,11 +35,11 @@
 
 .heading {
   font-family: var(--font-display);
-  font-size: var(--text-heading-2xl);
+  font-size: var(--type-h2-size);
   line-height: var(--leading-heading-2xl);
   letter-spacing: var(--tracking-heading-2xl);
   font-weight: var(--weight-heading-2xl);
-  color: var(--text-primary);
+  color: var(--type-ink);
   text-align: center;
   text-wrap: balance;
   margin: 0;
@@ -70,22 +70,22 @@
   appearance: none;
   justify-content: space-between;
   align-items: start;
-  gap: max(var(--space-4), calc(var(--text-heading-lg) * 0.5));
+  gap: max(var(--space-4), calc(var(--type-h5-size) * 0.5));
   --faq-row-pad-end: var(--space-8);
   inline-size: 100%;
   text-align: start;
   font-family: var(--font-display);
-  font-size: var(--text-heading-lg);
+  font-size: var(--type-h5-size);
   line-height: var(--leading-heading-lg);
   letter-spacing: var(--tracking-heading-lg);
   font-weight: var(--weight-heading-lg);
-  color: var(--text-primary);
+  color: var(--type-ink);
   cursor: pointer;
   touch-action: manipulation;
   background: transparent;
   border: 0;
   margin: 0;
-  padding-block-start: max(var(--space-4), calc(var(--text-heading-lg) * 0.5));
+  padding-block-start: max(var(--space-4), calc(var(--type-h5-size) * 0.5));
   padding-block-end: var(--faq-row-pad-end);
   padding-inline: 0;
   display: flex;
@@ -98,7 +98,7 @@
 
 @media (min-width: 1024px) {
   .trigger {
-    --faq-row-pad-end: max(var(--space-16), calc(var(--text-heading-lg) * 2));
+    --faq-row-pad-end: max(var(--space-16), calc(var(--type-h5-size) * 2));
   }
 }
 
@@ -109,14 +109,14 @@
 }
 
 .sign {
-  --faq-sign-size: max(32px, var(--text-heading-lg));
+  --faq-sign-size: max(32px, var(--type-h5-size));
   --faq-sign-nudge: -1px;
   inline-size: var(--faq-sign-size);
   block-size: var(--faq-sign-size);
-  color: var(--text-secondary);
+  color: var(--type-meta-ink);
   flex: none;
   margin-block-start: calc(
-    (var(--text-heading-lg) * var(--leading-heading-lg) - var(--faq-sign-size)) / 2 +
+    (var(--type-h5-size) * var(--leading-heading-lg) - var(--faq-sign-size)) / 2 +
       var(--faq-sign-nudge)
   );
   transition: color 0.32s cubic-bezier(0.45, 0, 0.55, 1);
@@ -141,7 +141,7 @@
 
 .trigger:hover .sign,
 .item[data-open] .sign {
-  color: var(--text-primary);
+  color: var(--type-ink);
 }
 
 .panel {
@@ -164,10 +164,10 @@
 
 .a {
   font-family: var(--font-body);
-  font-size: max(var(--text-body-xl), calc(var(--text-heading-lg) * 21 / 32));
+  font-size: var(--type-body-size);
   line-height: var(--leading-body-xl);
   letter-spacing: var(--tracking-body-xl);
-  color: var(--text-secondary);
+  color: var(--type-meta-ink);
   text-wrap: pretty;
   opacity: 0;
   visibility: hidden;
@@ -176,7 +176,7 @@
     visibility 0.32s cubic-bezier(0.45, 0, 0.55, 1),
     color var(--theme-ms) linear;
   margin: 0;
-  padding-block-end: max(var(--space-4), calc(var(--text-heading-lg) * 0.5));
+  padding-block-end: max(var(--space-4), calc(var(--type-h5-size) * 0.5));
   max-width: 75ch;
 }
 
