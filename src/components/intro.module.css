@@ -140,6 +140,9 @@
      el diagrama conserva su propio centrado dentro de la fila. */
   .copyColumn,
   .editorial { align-self: first baseline; }
+  /* El Venn va arriba de la fila (no centrado): así el espacio del
+     título al Venn es exactamente el row-gap y el test de 100px pasa. */
+  .diagram { align-self: start; }
   .copyColumn {
     grid-column: 1 / 5;
     grid-row: 2;
