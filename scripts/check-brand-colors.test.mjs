@@ -15,20 +15,31 @@ test("VERDE: solo se utilizan los cinco colores base y sus derivados", () => {
   console.log(result.stdout.trim());
 });
 
-test("ROJO: un color no autorizado produce salida 1 y bloquea el build", () => {
-  const folder = mkdtempSync(join(tmpdir(), "brand-red-"));
-  try {
-    const fixture = join(folder, "invalid.css");
-    // Fixture fuera del repositorio: nunca se modifica código productivo.
-    writeFileSync(fixture, ".invalid { background: #C0FFEE; }\n");
-    const result = spawnSync(process.execPath, [script, "--fixture", fixture], {
-      encoding: "utf8",
-    });
-    assert.equal(result.status, 1, "El detector debía fallar (salida 1)");
-    assert.match(result.stderr, /COLOR GUARD: ROJO/);
-    assert.match(result.stderr, /hexadecimal no autorizado/);
-    console.log("ROJO DEMOSTRADO (exit code 1):\n" + result.stderr.trim());
-  } finally {
-    rmSync(folder, { recursive: true, force: true });
-  }
-});
+const prohibited = [
+  ["hexadecimal", ".invalid { background: #C0FFEE; }\n"],
+  ["RGB literal", ".invalid { color: rgb(18 90 120); }\n"],
+  ["nombre CSS", ".invalid { color: tomato; }\n"],
+  ["color display-p3", ".invalid { background: color(display-p3 1 0 0); }\n"],
+  ["color base redefinido", ".invalid { --brand-blue: var(--brand-orange); }\n"],
+  ["familia nueva", ".invalid { --brand-purple: color-mix(in oklch, var(--brand-blue), var(--brand-orange)); }\n"],
+];
+
+for (const [name, content] of prohibited) {
+  test("ROJO: prohíbe " + name + " con salida 1", () => {
+    const folder = mkdtempSync(join(tmpdir(), "brand-red-"));
+    try {
+      const fixture = join(folder, "invalid.css");
+      // Aislamiento: jamás se introduce un valor falso en los archivos reales.
+      writeFileSync(fixture, content);
+      const result = spawnSync(process.execPath, [script, "--fixture", fixture], {
+        encoding: "utf8",
+      });
+      assert.equal(result.status, 1, "Debía fallar con salida 1: " + name);
+      assert.match(result.stderr, /COLOR GUARD: ROJO/);
+      console.log("ROJO DEMOSTRADO [" + name + "] (exit code 1): " +
+        result.stderr.split("\n").filter(Boolean).at(-1));
+    } finally {
+      rmSync(folder, { recursive: true, force: true });
+    }
+  });
+}

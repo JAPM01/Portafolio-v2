@@ -15,12 +15,26 @@ const EXCLUDED = new Set([
 ]);
 const PALETTE_FILE = "src/app/globals.css";
 const BASES = ["blue", "orange", "cyan", "black", "white"];
+const SHADE_NAMES = [
+  ...Array.from({ length: 7 }, (_, i) => "blue-" + (i + 1)),
+  ...Array.from({ length: 3 }, (_, i) => "orange-" + (i + 1)),
+  ...Array.from({ length: 3 }, (_, i) => "cyan-" + (i + 1)),
+  ...Array.from({ length: 7 }, (_, i) => "gray-" + (i + 1)),
+  "orange-dark",
+  "cyan-dark",
+];
+const ALLOWED_BRAND_TOKENS = new Set([...BASES, ...SHADE_NAMES]);
 const DECLARATION = /^\s*--brand-(blue|orange|cyan|black|white):\s*(#[0-9a-f]{6});\s*$/i;
 const HEX = /#(?:[0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})(?![a-z0-9_-])/gi;
 const COLOR_FUNCTION = /\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch)\s*\(/gi;
 const NAMED = /\b(?:background|background-color|border-color|outline-color|color|fill|stroke|stop-color|stopColor|fillStyle|strokeStyle|shadowColor)\s*(?::|=)\s*["']?\s*(?:black|white|red|blue|green|orange|cyan|gray|grey|magenta|yellow|purple|pink|navy|teal|lime|silver|maroon|aqua|fuchsia|rebeccapurple)\b/gi;
 const FALLBACK = /\bvar\(\s*--[\w-]+\s*,\s*(?:black|white|red|blue|green|orange|cyan|gray|grey|magenta|yellow|purple|pink|navy|teal|lime|silver|maroon|aqua|fuchsia)\s*\)/gi;
 const FIXED_SHADER = /gl_FragColor\s*=\s*vec4\s*\(\s*(?:[0-9]+\.)?[0-9]+\s*[,)]/gi;
+const ABSOLUTE_COLOR = /\bcolor\s*\(\s*(?:srgb|srgb-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz|xyz-d50|xyz-d65)\b/gi;
+const BRANDED_DEFINITION = /--brand-([a-z0-9-]+)\s*:/gi;
+const COLOR_DECLARATION = /(?:^|[;{])\s*(?:color|background|background-color|border-color|outline-color|fill|stroke|stop-color)\s*:\s*([a-z][a-z-]*)\s*(?=[;!}])/gi;
+const COLOR_LITERAL_PROP = /\b(?:color|backgroundColor|background|fill|stroke|stopColor|fillStyle|strokeStyle)\s*(?::|=)\s*["']([a-z][a-z-]*)["']/gi;
+const NON_COLORS = new Set(["none", "transparent", "currentcolor", "inherit", "initial", "unset", "revert", "revert-layer", "auto"]);
 
 function filesIn(dir, found = []) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -52,6 +66,12 @@ function auditFile(name, content) {
       problems.push(position + ": hexadecimal no autorizado " + hex[0]);
     }
 
+    for (const definition of line.matchAll(BRANDED_DEFINITION)) {
+      const token = definition[1].toLowerCase();
+      if (name !== PALETTE_FILE || !ALLOWED_BRAND_TOKENS.has(token)) {
+        problems.push(position + ": declaración de brand fuera del esquema: --brand-" + token);
+      }
+    }
     if (/--brand-(blue|orange|cyan|black|white)\s*:/i.test(line) && !match) {
       problems.push(position + ": redefinición de color base fuera de la paleta");
     }
@@ -66,10 +86,25 @@ function auditFile(name, content) {
     if (NAMED.test(line) || FALLBACK.test(line)) {
       problems.push(position + ": nombre de color literal no autorizado");
     }
+    if (ABSOLUTE_COLOR.test(line)) {
+      problems.push(position + ": función color() con canales absolutos");
+    }
+    if (/\.(?:css|scss)$/.test(name)) {
+      for (const declaration of line.matchAll(COLOR_DECLARATION)) {
+        if (!NON_COLORS.has(declaration[1].toLowerCase())) {
+          problems.push(position + ": color CSS literal ajeno al brand: " + declaration[1]);
+        }
+      }
+    }
+    for (const assignment of line.matchAll(COLOR_LITERAL_PROP)) {
+      if (!NON_COLORS.has(assignment[1].toLowerCase())) {
+        problems.push(position + ": atributo o propiedad de color no autorizada: " + assignment[1]);
+      }
+    }
     if (FIXED_SHADER.test(line)) {
       problems.push(position + ": componente RGB numérico fijo en un shader");
     }
-    NAMED.lastIndex = FALLBACK.lastIndex = FIXED_SHADER.lastIndex = 0;
+    NAMED.lastIndex = FALLBACK.lastIndex = FIXED_SHADER.lastIndex = ABSOLUTE_COLOR.lastIndex = 0;
   }
   return { problems, definitions };
 }
