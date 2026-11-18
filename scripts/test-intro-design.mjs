@@ -14,5 +14,12 @@ test("El Venn mantiene tres columnas y conserva las etiquetas Meta a tamaño CSS
   assert.match(intro, /align-self:\s*first baseline/);
   assert.match(intro, /row-gap:\s*var\(--space-8\)/);
   assert.match(intro, /padding-block:\s*var\(--space-3\)/);
-  assert.match(intro, /border-block-start:\s*var\(--border-width\) solid var\(--neutral-4\)/);
+  assert.match(intro, /border-block-start:\s*var\(--border-width\) solid var\(--border-default\)/);
+  assert.match(intro, /color:\s*var\(--type-body-ink\)/);
+  assert.match(jsx, /import HeroBackground from "\.\/HeroBackground"/);
+  assert.match(jsx, /<HeroBackground \/>/);
+  assert.match(jsx, /clipPath:\s*circleClip\(G\.usability\)/);
+  assert.match(css, /stroke:\s*var\(--brand-white\)/);
+  assert.match(css, /stroke-width:\s*calc\(var\(--border-width\) \* 2\)/);
+  assert.doesNotMatch(jsx, /<radialGradient/);
 });

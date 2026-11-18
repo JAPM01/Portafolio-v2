@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef } from "react";
 import styles from "./venn-flow.module.css";
+import HeroBackground from "./HeroBackground";
 
 type Lang = "es" | "en";
 
@@ -38,6 +39,12 @@ const VIEW = {
 
 /* Las etiquetas son HTML, no texto SVG: así type-meta conserva
    su tamaño CSS real independientemente de la escala del dibujo. */
+/* Recortes geométricos relativos al viewBox: se escalan sin romper la grid. */
+function circleClip({ x, y }: { x: number; y: number }) {
+  const percent = (value: number) => `${value * 100}%`;
+  return `ellipse(${percent(G.radius / VIEW.width)} ${percent(G.radius / VIEW.height)} at ${percent((x - VIEW.x) / VIEW.width)} ${percent((y - VIEW.y) / VIEW.height)})`;
+}
+
 function labelPosition(x: number, y: number) {
   return {
     insetInlineStart: `${((x - VIEW.x) / VIEW.width) * 100}%`,
@@ -52,9 +59,7 @@ const LABELS = [
 ] as const;
 
 
-/** Color con el que prende cada círculo: el mismo de su palabra
-    en el manifiesto — diseño naranja, tecnología azul, usabilidad cian. */
-const LIT_COLORS = ["var(--brand-orange)", "var(--brand-blue)", "var(--brand-cyan)"] as const;
+/* Los contornos permanecen blancos; el color se concentra en el mesh. */
 
 /**
  * Ventanas de la animación, en fracción del ciclo (12 s, en loop):
@@ -92,38 +97,27 @@ function durationMs(el: HTMLElement) {
 export default function VennFlow({ lang }: { lang: Lang }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const litRefs = useRef<(SVGCircleElement | null)[]>([]);
-  const fillRef = useRef<SVGGElement>(null);
-  const cyanRef = useRef<SVGEllipseElement>(null);
-  const iceRef = useRef<SVGEllipseElement>(null);
-  const orangeRef = useRef<SVGEllipseElement>(null);
+  const fillRef = useRef<HTMLDivElement>(null);
 
   const id = useId().replace(/:/g, "");
-  const cyanId = `venn-cyan-${id}`;
-  const iceId = `venn-ice-${id}`;
-  const orangeId = `venn-orange-${id}`;
   const glowId = `venn-glow-${id}`;
-  const clipD = `venn-d-${id}`;
-  const clipT = `venn-t-${id}`;
-  const clipU = `venn-u-${id}`;
 
   useEffect(() => {
     const root = rootRef.current;
     const lit = litRefs.current.slice(0, 3);
     const fill = fillRef.current;
-    const cyan = cyanRef.current, ice = iceRef.current, orange = orangeRef.current;
-    if (!root || !fill || !cyan || !ice || !orange ||
-        lit.length !== 3 || lit.some(c => !c)) return;
+    if (!root || !fill || lit.length !== 3 || lit.some(c => !c)) return;
 
     const duration = durationMs(root);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let visible = false, elapsed = 0, flowTime = 0, last = 0, raf = 0;
+    let visible = false, elapsed = 0, last = 0, raf = 0;
 
     // Estado final estático (solo para prefers-reduced-motion):
     // intersección llena, círculos apagados.
     const settle = () => {
       lit.forEach(c => c!.setAttribute("opacity", "0"));
-      fill.setAttribute("opacity", "1");
-      fill.setAttribute("transform", "");
+      fill.style.opacity = "1";
+      fill.style.transform = "none";
     };
 
     const tick = (now: number) => {
@@ -131,9 +125,7 @@ export default function VennFlow({ lang }: { lang: Lang }) {
       if (!visible || reduced.matches) return;
       const dt = last ? Math.min(now - last, 64) : 0;
       elapsed += dt;
-      // Reloj del flujo: avanza siempre, no se reinicia con el loop,
-      // así el líquido deriva de forma continua como el mesh del hero.
-      flowTime += dt / 1000;
+      // El mesh fluye de forma continua mediante el shader real del Hero.
       last = now;
       // En loop: al terminar el ciclo se vuelve a empezar.
       if (elapsed >= duration) elapsed -= duration;
@@ -157,20 +149,9 @@ export default function VennFlow({ lang }: { lang: Lang }) {
       // Latido doble y suave: la intersección se ilumina y se atenúa.
       const beat = inPulse * Math.pow(Math.sin(pulseT * Math.PI * 2), 2);
       const fillOut = 1 - smooth(P.fillOut[0], P.fillOut[1], phase);
-      fill.setAttribute("opacity", String(fillIn * (1 - 0.25 * beat) * fillOut));
+      fill.style.opacity = String(fillIn * (1 - 0.25 * beat) * fillOut);
       const s = 0.5 + 0.5 * fillIn;
-      fill.setAttribute("transform",
-        `translate(${G.convergence.x} ${G.convergence.y}) scale(${s}) translate(${-G.convergence.x} ${-G.convergence.y})`);
-
-      // El líquido fluye como el mesh del hero: las manchas derivan
-      // despacio, cada una con su propio ritmo, sin salirse de la lente.
-      const ft = flowTime;
-      cyan.setAttribute("cx", String(335 + 7 * Math.sin(ft * 0.35 + 1.2)));
-      cyan.setAttribute("cy", String(240 + 6 * Math.cos(ft * 0.28)));
-      ice.setAttribute("cx", String(348 + 6 * Math.sin(ft * 0.45 + 2.1)));
-      ice.setAttribute("cy", String(228 + 5 * Math.cos(ft * 0.38 + 0.7)));
-      orange.setAttribute("cx", String(380 + 4 * Math.sin(ft * 0.5 + 0.3)));
-      orange.setAttribute("cy", String(182 + 4 * Math.cos(ft * 0.42 + 1.5)));
+      fill.style.transform = `scale(${s})`;
 
       raf = requestAnimationFrame(tick);
     };
@@ -183,12 +164,10 @@ export default function VennFlow({ lang }: { lang: Lang }) {
       else if (visible) raf = requestAnimationFrame(tick);
     };
     // La animación inicia solo cuando TODO el diagrama está en el viewport.
-    // Umbral 0.9 (no 1.0): en móvil el diagrama es 116% del contenedor,
-    // más ancho que el viewport por diseño, así que el 100% de su área
-    // nunca estaría visible y la animación jamás arrancaría. Con 0.9
-    // arranca cuando el diagrama está esencialmente entero en vista.
+    // Umbral bajo: también funciona en móvil con el diagrama ensanchado,
+    // aunque parte de su superficie quede recortada por el viewport.
     const observer = new IntersectionObserver(
-      ([entry]) => run(entry.isIntersecting), { threshold: 0.9 }
+      ([entry]) => run(entry.isIntersecting), { threshold: 0.1 }
     );
     observer.observe(root);
     const onReduced = () => run(visible);
@@ -198,33 +177,25 @@ export default function VennFlow({ lang }: { lang: Lang }) {
 
   return (
     <div className={styles.root} ref={rootRef}>
+      <div
+        ref={fillRef}
+        className={styles.meshFill}
+        style={{ transformOrigin: `${((G.convergence.x - VIEW.x) / VIEW.width) * 100}% ${((G.convergence.y - VIEW.y) / VIEW.height) * 100}%` }}
+        aria-hidden="true"
+      >
+        <div className={styles.meshClip} style={{ clipPath: circleClip(G.design) }}>
+          <div className={styles.meshClip} style={{ clipPath: circleClip(G.technology) }}>
+            <div className={styles.meshClip} style={{ clipPath: circleClip(G.usability) }}>
+              <HeroBackground />
+            </div>
+          </div>
+        </div>
+      </div>
       <svg className={styles.svg} viewBox={`${VIEW.x} ${VIEW.y} ${VIEW.width} ${VIEW.height}`}
         role="img" aria-label={lang === "es"
           ? "Diseño, Tecnología y Usabilidad: cada círculo se enciende con su color en secuencia, la intersección se rellena del líquido del mesh, late y se repite."
           : "Design, Technology and Usability: each circle lights up in its color in sequence, the intersection fills with the mesh liquid, pulses and repeats."}>
         <defs>
-          {/* El líquido del mesh, en miniatura y ANIMADO: las mismas
-              manchas suaves y difusas del hero — campo azul, onda cian,
-              brillo hielo y naranja en la esquina superior derecha.
-              Cada mancha es un radial que se desvanece a transparente,
-              así se funden como líquido, sin bordes ni franjas. El hielo
-              es un brillo suave, no un manchón blanco: es más chico y
-              menos opaco que el cian, que es quien manda en el brillo. */}
-          <radialGradient id={cyanId}>
-            <stop offset="0" stopColor={"var(--brand-cyan)"} stopOpacity="0.95" />
-            <stop offset="0.7" stopColor={"var(--brand-cyan)"} stopOpacity="0.5" />
-            <stop offset="1" stopColor={"var(--brand-cyan)"} stopOpacity="0" />
-          </radialGradient>
-          <radialGradient id={iceId}>
-            <stop offset="0" stopColor={"var(--brand-cyan-3)"} stopOpacity="0.75" />
-            <stop offset="0.6" stopColor={"var(--brand-cyan-3)"} stopOpacity="0.5" />
-            <stop offset="1" stopColor={"var(--brand-cyan-3)"} stopOpacity="0" />
-          </radialGradient>
-          <radialGradient id={orangeId}>
-            <stop offset="0" stopColor={"var(--brand-orange)"} stopOpacity="0.9" />
-            <stop offset="0.7" stopColor={"var(--brand-orange)"} stopOpacity="0.45" />
-            <stop offset="1" stopColor={"var(--brand-orange)"} stopOpacity="0" />
-          </radialGradient>
           <filter id={glowId} x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="4" result="blur" />
             <feMerge>
@@ -232,47 +203,22 @@ export default function VennFlow({ lang }: { lang: Lang }) {
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
-          <clipPath id={clipD}><circle cx={G.design.x} cy={G.design.y} r={G.radius} /></clipPath>
-          <clipPath id={clipT}><circle cx={G.technology.x} cy={G.technology.y} r={G.radius} /></clipPath>
-          <clipPath id={clipU}><circle cx={G.usability.x} cy={G.usability.y} r={G.radius} /></clipPath>
         </defs>
 
-        {/* Círculos base: línea gris delgada, el estado "apagado". */}
+        {/* Círculos blancos de FEFEFE, a través del token de marca. */}
         {CENTERS.map(c => (
           <circle key={`base-${c.x}-${c.y}`} className={styles.circle}
             cx={c.x} cy={c.y} r={G.radius} />
         ))}
 
-        {/* Contorno encendido: mismo círculo, más ancho y con su color
-            de marca. Solo se ve mientras "prende". */}
+        {/* El pulso realza temporalmente el mismo contorno blanco. */}
         <g filter={`url(#${glowId})`} aria-hidden="true">
           {CENTERS.map((c, i) => (
             <circle key={`lit-${c.x}-${c.y}`}
               ref={el => { litRefs.current[i] = el; }}
               className={styles.litCircle} cx={c.x} cy={c.y} r={G.radius}
-              opacity="0" stroke={LIT_COLORS[i]} />
+              opacity="0" />
           ))}
-        </g>
-
-        {/* La intersección se rellena del líquido del mesh: las manchas
-            solo se ven en el volumen compartido por los tres círculos.
-            Es ella la que late; no hay ningún círculo de pulse detrás.
-            Las manchas derivan despacio (ver el tick), como el mesh. */}
-        <g clipPath={`url(#${clipD})`}>
-          <g clipPath={`url(#${clipT})`}>
-            <g clipPath={`url(#${clipU})`}>
-              <g ref={fillRef} opacity="0">
-                {/* Campo azul del mesh. */}
-                <rect x="200" y="120" width="240" height="240" fill={"var(--brand-blue)"} />
-                {/* Onda cian, mancha grande y suave: es quien manda. */}
-                <ellipse ref={cyanRef} cx="335" cy="240" rx="90" ry="80" fill={`url(#${cyanId})`} />
-                {/* Brillo hielo, chico y suave: un acento, no un manchón. */}
-                <ellipse ref={iceRef} cx="348" cy="228" rx="38" ry="34" fill={`url(#${iceId})`} />
-                {/* Naranja en la esquina superior derecha, como el hero. */}
-                <ellipse ref={orangeRef} cx="380" cy="182" rx="42" ry="36" fill={`url(#${orangeId})`} />
-              </g>
-            </g>
-          </g>
         </g>
 
       </svg>

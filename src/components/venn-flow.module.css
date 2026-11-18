@@ -11,20 +11,33 @@
 }
 .circle {
   fill: none;
-  /* Mezcla derivada de tokens existentes: contorno algo más legible,
-     sin añadir un color literal ni alterar los borders globales. */
-  stroke: color-mix(in oklch, var(--border-default) 75%, var(--type-meta-ink));
-  stroke-width: var(--border-width);
+  stroke: var(--brand-white);
+  stroke-width: calc(var(--border-width) * 2);
   vector-effect: non-scaling-stroke;
 }
-/* Contorno encendido: mismo círculo, ligeramente más ancho (2.5px
-   frente a 1px del base) y con el degradado del mesh. Solo se ve
-   mientras el círculo "prende"; el círculo nunca se rellena. */
+/* La animación conserva la misma línea blanca de marca. */
 .litCircle {
   fill: none;
-  stroke-width: 2.5;
+  stroke: var(--brand-white);
+  stroke-width: calc(var(--border-width) * 3);
   vector-effect: non-scaling-stroke;
 }
+/* El mismo shader WebGL del Hero, recortado por tres elipses calculadas
+   a partir de la geometría de los círculos del SVG. */
+.meshFill {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+.meshClip {
+  position: absolute;
+  inset: 0;
+}
+.svg { position: relative; z-index: 1; }
+.labels { z-index: 2; }
 /* Etiquetas fuera del SVG para evitar que la escala del viewBox
    disminuya el tamaño Meta real. Su tipografía y color los aplica
    exclusivamente .type-meta desde globals.css. */
