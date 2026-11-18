@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { px } from "../lib/paths";
 import styles from "./work.module.css";
 import WorkCaption from "./WorkCaption";
+import BrandMedia from "./BrandMedia";
 import { usePointerParallax, morphTarget, SETTLED } from "../lib/scroll";
 
 /** Lorem Ipsum 1:1 — título gigante, 1 tarjeta destacada (Lorem Ipsum)
@@ -187,7 +188,7 @@ export default function Work() {
           <a className={styles.panel} aria-label={FEATURE.title} href={FEATURE.href}>
             <span className={styles.frame} data-work-link="" data-work-media="" data-ptr-parallax="" ref={frameRef}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <BrandMedia
                 alt=""
                 aria-hidden="true"
                 loading="lazy"
@@ -212,7 +213,7 @@ export default function Work() {
             <a className={styles.still} href={s.href}>
               <span className={styles.stillFrame} data-work-link="" data-work-media="" data-ptr-parallax="">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <BrandMedia
                   alt=""
                   aria-hidden="true"
                   loading="lazy"

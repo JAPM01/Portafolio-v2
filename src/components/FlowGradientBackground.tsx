@@ -7,7 +7,6 @@ import {readMeshPalette, brandRgb01} from '../lib/brand-palette'
 
 export type FlowGradientBackgroundProps = {
   /** background, deep body, bright body, hot spot, cool accent */
-  colors?: [string, string, string, string, string]
   /** how far the flow field drags the colour, 0–2 */
   flow?: number
   /** drift speed */
@@ -133,18 +132,17 @@ const SCALE = 0.75
 // middle of the frame like a depth blur. One WebGL pass, no dependencies;
 // it pauses off screen and holds still for reduced motion.
 export default function FlowGradientBackground({
-  colors,
   flow = 1,
   speed = 1,
   follow = 0.05,
   className = '',
 }: FlowGradientBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const live = useRef({colors, flow, speed, follow})
+  const live = useRef({flow, speed, follow})
 
   useEffect(() => {
-    live.current = {colors, flow, speed, follow}
-  }, [colors, flow, speed, follow])
+    live.current = {flow, speed, follow}
+  }, [flow, speed, follow])
 
   useEffect(() => {
     const canvas = canvasRef.current!
@@ -207,7 +205,7 @@ export default function FlowGradientBackground({
       gl.uniform2f(uMouse, mouse.x, mouse.y)
       gl.uniform1f(uTime, drift)
       gl.uniform1f(uFlow, s.flow * (1 + boost))
-      uColors.forEach((loc, i) => gl.uniform3f(loc, ...brandRgb01((s.colors ?? brandColors)[i])))
+      uColors.forEach((loc, i) => gl.uniform3f(loc, ...brandRgb01(brandColors[i])))
       gl.drawArrays(gl.TRIANGLES, 0, 3)
       if (visible && !still) frame = requestAnimationFrame(draw)
     }

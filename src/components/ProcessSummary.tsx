@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { px } from "../lib/paths";
+import BrandMedia from "./BrandMedia";
 import styles from "./process-summary.module.css";
 import { useSectionProgress, useReveals, useTone } from "../lib/scroll";
 
@@ -103,7 +104,7 @@ export default function ProcessSummary() {
                 <div className={styles.content}>
                   <div className={styles.media} data-reveal="tl">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <BrandMedia
                       alt={s.alt}
                       loading="lazy"
                       width={1254}

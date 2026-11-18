@@ -9,7 +9,8 @@
     "lint": "eslint",
     "postinstall": "node scripts/patch-liquid-glass.mjs",
     "test:colors": "node scripts/check-brand-colors.mjs",
-    "test:colors:red": "node --test scripts/check-brand-colors.test.mjs"
+    "test:colors:red": "node --test scripts/check-brand-colors.test.mjs",
+    "test:colors:propagation": "node --test scripts/test-brand-propagation.mjs"
   },
   "dependencies": {
     "@paper-design/shaders-react": "0.0.78",

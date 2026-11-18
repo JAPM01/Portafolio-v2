@@ -7,6 +7,7 @@ import styles from "./work-detail.module.css";
 import { CharRise } from "../lib/anim";
 import { usePointerParallax, useReveals } from "../lib/scroll";
 import type { Project } from "../lib/projects";
+import BrandMedia, { isBrandPlaceholder } from "./BrandMedia";
 
 /** Plantilla de proyecto 1:1 — título gigante, hero con la grabación
     del scroll del sitio (poster → video con toggle Pause/Play), ficha
@@ -197,7 +198,7 @@ export default function WorkDetail({ project, next }: { project: Project; next: 
               muted
               loop
               playsInline
-              poster={project.poster}
+              poster={isBrandPlaceholder(project.poster) ? undefined : project.poster}
               aria-hidden="true"
             >
               <source src={`${project.videoBase}-1672.webm`} type="video/webm" media="(min-width: 1672px)" />
@@ -207,7 +208,7 @@ export default function WorkDetail({ project, next }: { project: Project; next: 
             </video>
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <BrandMedia
               className={styles.media}
               src={project.poster}
               srcSet={`${project.poster1280} 1280w, ${project.poster} 2400w`}
@@ -289,7 +290,7 @@ export default function WorkDetail({ project, next }: { project: Project; next: 
               </p>
               <footer className={styles.attribution}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <BrandMedia
                   className={styles.avatar}
                   src={project.testimonial.avatar}
                   alt={project.testimonial.name}
@@ -329,7 +330,7 @@ export default function WorkDetail({ project, next }: { project: Project; next: 
                   style={{ aspectRatio: fig.ar } as React.CSSProperties}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <BrandMedia
                     alt={fig.alt}
                     loading="lazy"
                     width={fig.w ?? undefined}

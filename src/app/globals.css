@@ -1,7 +1,7 @@
 /* ==========================================================================
-   Design tokens — clon 1:1 de la referencia (valores medidos de su CSS).
-   Un solo punto de verdad: cambiar un color aquí lo propaga a todo el
-   sitio. La paleta se cambia editando --primary-9 / --neutral-*.
+   Design system del portafolio: cinco colores base, derivados y tokens semánticos.
+   La única paleta editable está en :root, --brand-blue / orange / cyan /
+   black / white. CSS, SVG inline y shaders dependen de esas bases.
    ========================================================================== */
 
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
@@ -345,7 +345,7 @@
   }
 }
 
-/* ---- Tema oscuro: mismos 17 tonos, sin crear colores nuevos. ---- */
+/* ---- Tema oscuro: solo tonalidades derivadas de las cinco bases. ---- */
 [data-theme="dark"] {
   --primary-1: var(--brand-blue-1);
   --primary-2: var(--brand-blue-1);

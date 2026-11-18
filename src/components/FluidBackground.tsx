@@ -361,6 +361,9 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
           gl.bindFramebuffer(gl.FRAMEBUFFER, target.fbo);
         }
         if (clear) {
+          // Excepción técnica: inicializa el framebuffer de simulación,
+          // no determina un color visible ni un tono de la interfaz.
+          // COLOR_GUARD_OPTICAL_CLEAR: matemático, nunca cambiar por brand.
           gl.clearColor(0, 0, 0, 1);
           gl.clear(gl.COLOR_BUFFER_BIT);
         }

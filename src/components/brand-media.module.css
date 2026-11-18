@@ -1,0 +1,24 @@
+.placeholder {
+  display: block;
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  transition: background-color var(--theme-ms) linear, color var(--theme-ms) linear;
+}
+
+.surface {
+  fill: var(--surface-raised);
+}
+
+.outline {
+  fill: none;
+  stroke: var(--border-default);
+  stroke-width: var(--border-width);
+  vector-effect: non-scaling-stroke;
+}
+
+.caption {
+  fill: currentColor;
+  font-family: var(--font-body);
+  font-size: var(--type-h5-size);
+  dominant-baseline: middle;
+}

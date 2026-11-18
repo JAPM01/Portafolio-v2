@@ -31,6 +31,8 @@ jobs:
         run: npm run test:colors
       - name: Demonstrate RED failure and GREEN recovery
         run: npm run test:colors:red
+      - name: Verify CSS and WebGL palette propagation in Chromium
+        run: npm run test:colors:propagation
       - name: Build static site
         run: npm run build
         env:

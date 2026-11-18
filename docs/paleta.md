@@ -1,40 +1,42 @@
-# Paleta de marca — cinco colores base, una fuente de verdad
+# Política de color: cinco bases, una fuente de verdad
 
-**Única fuente editable:** `src/app/globals.css`, dentro de `:root`.
+Solo pueden editarse las cinco bases de `src/app/globals.css`:
+azul (`--brand-blue`), naranja (`--brand-orange`), cian (`--brand-cyan`),
+negro (`--brand-black`, actualmente `#010101`) y blanco
+(`--brand-white`, actualmente `#FEFEFE`).
 
-| Color | Token raíz |
-|---|---|
-| Azul eléctrico | `--brand-blue` |
-| Naranja | `--brand-orange` |
-| Cian | `--brand-cyan` |
-| Negro (`#010101`) | `--brand-black` |
-| Blanco (`#FEFEFE`) | `--brand-white` |
+Los shades azul, naranja, cian y gris se derivan con `color-mix()`;
+no tienen valores independientes. Los tokens de interfaz y temas
+referencian esas escalas.
 
-Los tonos derivados (`--brand-blue-1..7`, `--brand-orange-1..3`,
-`--brand-orange-dark`, `--brand-cyan-1..3`, `--brand-cyan-dark` y
-`--brand-gray-1..7`) se calculan automáticamente con `color-mix()`.
-El negro y el blanco son los extremos de la escala neutra.
+**Prohibido:** nuevos HEX o RGB/HSL fijos; colores nombrados;
+colores `display-p3` escritos directamente; mezclar colores literales
+dentro de gradientes; SVG externos dependientes de `currentColor`;
+bases/shades duplicados, cíclicos o no derivados; overrides de la
+paleta del shader WebGL.
 
-## Consumo de tokens
+**SVG y placeholders:** el componente `BrandMedia` representa
+los placeholders como SVG inline; su CSS usa tokens semánticos.
+Las imágenes originales de proyectos se mantienen intactas.
+El `public/brand/mark.svg` puede emplearse como máscara alfa.
 
-- CSS: solo tokens de marca o semánticos, nunca nuevos hexadecimales.
-- Tema claro/oscuro: `--surface-*`, `--text-*`, `--border-*` y
-  `--neutral-*` se resuelven por cascada desde la misma paleta.
-- SVG: colores `var(--brand-*)`; `currentColor` para herencia.
-- Canvas/WebGL: `src/lib/brand-palette.ts` lee las cinco bases
-  mediante `getComputedStyle()` y deriva el brillo blanco-cian
-  sin declarar una sexta muestra. El hero usa el negro del brand.
+**Canvas / WebGL:** `brand-palette.ts` consulta CSS en el navegador.
+El shader del hero no acepta una prop de colores independiente.
+Excepción estricta: `gl.clearColor(0, 0, 0, 1)` dentro de
+`FluidBackground.tsx` inicializa un framebuffer de simulación,
+no introduce pigmentos nuevos. Los filtros ópticos RGB de
+`JpmGlassOptics.tsx` separan canales de la imagen refractada:
+no son fuentes adicionales de color.
 
-Al cambiar un color base y recargar la aplicación, todos los
-componentes dependientes y los shaders toman el color actualizado.
+**Pruebas obligatorias antes del build en CI:**
 
-## Regla obligatoria de CI
+- `npm run test:colors`: auditoría de fuentes, SVG embebidos,
+  SHADE graph, valores numéricos RGB y conexiones al mesh.
+- `npm run test:colors:red`: fixtures temporales independientes;
+  cada infracción debe fallar en rojo con salida 1 y mensaje.
+- `npm run test:colors:propagation`: test de adaptador WebGL
+  y navegador Chromium headless, variando temporalmente los cinco
+  colores y verificando fondos, texto, shades y SVG inline
+  en temas claro y oscuro.
 
-- `npm run test:colors` inspecciona CSS, TS/JS, shaders y SVG
-  de producción, bloqueando cualquier otro color fijo.
-- `npm run test:colors:red` comprueba tanto una validación verde
-  como el fallo rojo (salida 1) producido por un fixture temporal.
-- El workflow de despliegue ejecuta ambas pruebas antes de `next build`.
-
-Las fotografías y capturas de proyectos no se recolorean:
-son recursos ajenos a la identidad cromática de la interfaz.
+Se rechazan las regresiones antes de generar o publicar el sitio.
