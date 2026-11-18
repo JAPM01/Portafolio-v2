@@ -60,3 +60,49 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Diagnose live URL, static files and hydration
+        if: always() && steps.deployment.outcome == 'success'
+        continue-on-error: true
+        env:
+          PAGES_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { spawnSync } from 'node:child_process';
+          const home = process.env.PAGES_URL;
+          const site = new URL(home);
+          const fresh = new URL(home); fresh.searchParams.set('fresh-check', String(Date.now()));
+          const problems = [];
+          async function get(url) {
+            try {
+              const r = await fetch(url, {headers: {'cache-control':'no-cache'}, signal:AbortSignal.timeout(15000)});
+              return { status:r.status, type:r.headers.get('content-type')||'', age:r.headers.get('age')||'', body:await r.text() };
+            } catch(e) {return {status:0,type:'',age:'',body:'',error:String(e)};}
+          }
+          const signatures = [];
+          for (const u of [site, fresh]) {
+            const p = await get(u);
+            console.log('HTML_CHECK',JSON.stringify({url:String(u),status:p.status,type:p.type,age:p.age,length:p.body.length,error:p.error}));
+            if(p.status!==200 || !p.type.includes('text/html')) { problems.push('Página no disponible: '+u); continue; }
+            const links = [...new Set([...p.body.matchAll(/(?:src|href)="([^"]+)"/g)].map(m=>m[1]).filter(x=>x.includes('/_next/static/')))];
+            signatures.push(links.join('|'));
+            const checks = await Promise.all(links.slice(0,16).map(async href => {
+              const a=await get(new URL(href.replaceAll('&amp;','&'),u));
+              const suffix=href.endsWith('.css')?'css':href.endsWith('.js')?'javascript':'';
+              return {href,status:a.status,type:a.type,ok:a.status===200&&(!suffix||a.type.includes(suffix))};
+            }));
+            const broken=checks.filter(x=>!x.ok);
+            console.log('ASSET_CHECK',JSON.stringify({total:links.length,checked:checks.length,broken}));
+            if(!links.length||broken.length) problems.push('Archivos estáticos faltantes o incorrectos en '+u);
+          }
+          if(signatures.length===2&&signatures[0]!==signatures[1]) {
+            console.log('HTML_CACHE_MISMATCH: los dos HTML apuntan a builds distintos');
+            problems.push('El HTML normal y el de caché evitada referencian archivos distintos');
+          }
+          const c=spawnSync('google-chrome',['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--disable-background-networking','--virtual-time-budget=6000','--dump-dom',String(fresh)],{encoding:'utf8',timeout:40000,maxBuffer:10000000});
+          const doc=c.stdout||'';
+          const hydrated=/<html\b[^>]*\bdata-loaded(?:[=>\s])/i.test(doc);
+          console.log('BROWSER_CHECK',JSON.stringify({exit:c.status,documentLength:doc.length,hydrated,hasMain:doc.includes('id="main"'),stderr:(c.stderr||'').slice(-1100)}));
+          if(c.status!==0||!hydrated)problems.push('Chrome no completa la hidratación de HeroLoader');
+          if(problems.length){console.error('DIAGNOSIS_FAILED',JSON.stringify(problems));process.exitCode=1;}
+          else console.log('DIAGNOSIS_PASSED: HTML, recursos y cliente correctos');
+          NODE
