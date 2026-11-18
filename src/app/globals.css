@@ -189,8 +189,9 @@
      H1/H2/body/meta son fluidos con cuantización a 8/4 px; Meta admite
      2 px en móvil por legibilidad. H3-H5 conservan sus valores aprobados.
      La geometría vertical del H1 sigue dependiendo de las filas del hero. */
+  /* Tres tonos tipográficos: títulos, Body y Meta. */
   --type-ink: var(--brand-white);
-  /* Meta: gris un paso más oscuro que el anterior, siempre derivado. */
+  --type-body-ink: var(--brand-gray-6);
   --type-meta-ink: var(--brand-gray-5);
 
   --type-h1-size: min(
@@ -521,7 +522,7 @@ html:focus-within {
 body {
   background: var(--surface-canvas);
   transition: background-color var(--theme-ms) linear;
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -539,6 +540,7 @@ h4,
 h5,
 h6 {
   font-family: var(--font-display);
+  color: var(--type-ink);
 }
 /* Clases de uso de los siete tamaños; siempre sin valores propios. */
 .type-h1 { font-family: var(--font-display); font-weight: 400; font-size: var(--type-h1-size); line-height: var(--type-h1-leading); letter-spacing: var(--type-h1-tracking); color: var(--type-ink); }
@@ -546,7 +548,7 @@ h6 {
 .type-h3 { font-family: var(--font-display); font-weight: 400; font-size: var(--type-h3-size); line-height: var(--type-h3-leading); letter-spacing: var(--type-h3-tracking); color: var(--type-ink); }
 .type-h4 { font-family: var(--font-display); font-weight: 400; font-size: var(--type-h4-size); line-height: var(--type-h4-leading); letter-spacing: var(--type-h4-tracking); color: var(--type-ink); }
 .type-h5 { font-family: var(--font-display); font-weight: 400; font-size: var(--type-h5-size); line-height: var(--type-h5-leading); letter-spacing: var(--type-h5-tracking); color: var(--type-ink); }
-.type-body { font-family: var(--font-body); font-size: var(--type-body-size); line-height: var(--type-body-leading); letter-spacing: var(--type-body-tracking); color: var(--type-ink); }
+.type-body { font-family: var(--font-body); font-size: var(--type-body-size); line-height: var(--type-body-leading); letter-spacing: var(--type-body-tracking); color: var(--type-body-ink); }
 .type-meta { font-family: var(--font-body); font-size: var(--type-meta-size); line-height: var(--type-meta-leading); letter-spacing: var(--type-meta-tracking); color: var(--type-meta-ink); }
 /* Los valores siguen a estos tokens en cualquier breakpoint. */
 body:has([data-chromeless]) nav {

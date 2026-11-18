@@ -23,14 +23,15 @@ test("Filosofía: tres elementos en la misma fila desktop, Venn entre ambos",()=
       'Me muevo entre el diseño, la tecnología y la usabilidad para abordar',
       'cada reto desde la raíz, tomando decisiones claras que se miden por resultados reales.',
       '</span></p></div>',
-      '<div class="diagram"><div class="root"><svg class="svg" viewBox="0 28 544 450">',
-      '<circle cx="240" cy="188" r="142"/><circle cx="400" cy="188" r="142"/>',
-      '<circle cx="320" cy="315" r="142"/></svg></div></div>',
       '<div class="editorial"><div class="thoughts">',
       '<p class="thought"><span class="testThoughtStart">Entender a las personas.</span></p>',
       '<p class="thought">Observar antes de actuar.</p>',
       '<p class="thought">Definir los resultados.</p>',
-      '</div></div></div></section>'
+      '</div></div>',
+      '<div class="diagram"><div class="root"><svg class="svg" viewBox="0 28 544 450">',
+      '<circle cx="240" cy="188" r="142"/><circle cx="400" cy="188" r="142"/>',
+      '<circle cx="320" cy="315" r="142"/></svg></div></div>',
+      '</div></section>'
     ].join(" ");
     const html=[
       '<!doctype html><html><head><meta charset="utf-8"></head><body>',
@@ -80,8 +81,8 @@ test("Filosofía: tres elementos en la misma fila desktop, Venn entre ambos",()=
           width+": el título y el contenido quedaron demasiado separados");
       } else {
         assert.equal(columns,4,width+": la retícula móvil debe tener 4 columnas");
-        assert.ok(copy.bottom<venn.top,width+": Venn debe seguir al manifiesto");
-        assert.ok(venn.bottom<right.top,width+": el texto derecho debe seguir al Venn");
+        assert.ok(copy.bottom<right.top,width+": la lista debe seguir al manifiesto");
+        assert.ok(right.bottom<venn.top,width+": el Venn debe seguir a la lista");
       }
       console.log("INTRO_LAYOUT_PASSED",width,"columnas",columns);
     }

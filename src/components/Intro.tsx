@@ -129,8 +129,8 @@ export default function Intro() {
           <h2 className="type-h2" id="intro-heading">{t.heading}</h2>
         </div>
 
-        {/* Orden de lectura y visual: manifiesto → Venn → pensamientos.
-            En desktop todos ocupan explícitamente la misma fila. */}
+        {/* Orden móvil y de lectura: manifiesto → lista → Venn.
+            En desktop las columnas explícitas mantienen el Venn centrado. */}
         <div className={styles.copyColumn} data-scroll-highlight="">
           <p
             className={styles.copy}
@@ -141,16 +141,16 @@ export default function Intro() {
           </p>
         </div>
 
-        <div className={styles.diagram}>
-          <VennFlow lang={lang} />
-        </div>
-
         <div className={styles.editorial}>
           <div className={styles.thoughts}>
             {t.thoughts.map((thought) => (
               <p className={styles.thought} key={thought}>{thought}</p>
             ))}
           </div>
+        </div>
+
+        <div className={styles.diagram}>
+          <VennFlow lang={lang} />
         </div>
       </div>
     </section>

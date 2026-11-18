@@ -3,7 +3,7 @@
   z-index: 1;
   isolation: isolate;
   background: var(--surface-canvas);
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   padding-block: var(--section-pad-mobile);
   transition: background-color var(--theme-ms) linear, color var(--theme-ms) linear;
   /* El diagrama es más ancho que el contenedor en móvil: recorta
@@ -61,13 +61,13 @@
   font-size: var(--type-body-size);
   line-height: var(--type-body-leading);
   letter-spacing: var(--type-body-tracking);
-  color: var(--type-meta-ink);
+  color: var(--type-body-ink);
   padding-block: var(--space-3);
-  border-block-start: var(--border-width) solid var(--neutral-4);
+  border-block-start: var(--border-width) solid var(--border-default);
 }
 
 .thought:last-child {
-  border-block-end: var(--border-width) solid var(--neutral-4);
+  border-block-end: var(--border-width) solid var(--border-default);
 }
 
 .diagram {
@@ -81,7 +81,7 @@
   line-height: var(--type-body-leading);
   letter-spacing: var(--type-body-tracking);
   font-weight: var(--weight-body-lg);
-  color: var(--type-meta-ink);
+  color: var(--type-body-ink);
   text-wrap: pretty;
 }
 
@@ -92,34 +92,34 @@
 
 .toneGray {
   --reveal-from: var(--type-meta-ink);
-  --reveal-to: var(--type-ink);
+  --reveal-to: var(--type-body-ink);
 }
 
 /* Tonos del manifiesto obtenidos de tokens de marca:
    diseño naranja, tecnología azul y usabilidad cian. */
 .toneBlue {
   --reveal-from: var(--type-meta-ink);
-  --reveal-to: var(--type-ink);
+  --reveal-to: var(--type-body-ink);
 }
 
 .toneOrange {
   --reveal-from: var(--type-meta-ink);
-  --reveal-to: var(--type-ink);
+  --reveal-to: var(--type-body-ink);
 }
 
 .toneCyan {
   --reveal-from: var(--type-meta-ink);
-  --reveal-to: var(--type-ink);
+  --reveal-to: var(--type-body-ink);
 }
 
 .toneWhite {
   --reveal-from: var(--type-meta-ink);
-  --reveal-to: var(--type-ink);
+  --reveal-to: var(--type-body-ink);
 }
 
 .letter {
   --t: clamp(0, (var(--p, 0) - var(--i) / var(--n)) * var(--n), 1);
-  color: var(--type-ink);
+  color: var(--type-body-ink);
   display: inline-block;
 }
 
@@ -159,8 +159,12 @@
    16% más ancho que el contenedor, centrado (el sobrante lo
    recorta la sección con overflow-x: clip). */
 @media (max-width: 1023px) {
+  .headingBlock { grid-row: 1; }
+  .copyColumn { grid-row: 2; }
+  .editorial { grid-row: 3; }
   .diagram {
     grid-column: 1 / -1;
+    grid-row: 4;
     inline-size: 116%;
   }
 }
