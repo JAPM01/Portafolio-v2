@@ -23,6 +23,9 @@ const SKIP = new Set([
   "scripts/check-brand-colors.mjs",
   "scripts/check-brand-colors.test.mjs",
   "scripts/test-brand-propagation.mjs",
+  "scripts/check-typography.mjs",
+  "scripts/check-typography.test.mjs",
+  "scripts/test-typography-propagation.mjs",
 ]);
 const HEX = /#(?:[0-9a-f]{8}|[0-9a-f]{6}|[0-9a-f]{4}|[0-9a-f]{3})(?![a-z0-9_-])/gi;
 const COLOR_FUN = /\b(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\s*\(/gi;
