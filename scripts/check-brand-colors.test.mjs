@@ -81,8 +81,11 @@ const shadeViolations = [
     altered("--brand-blue-2: color-mix(in oklch, var(--brand-blue) 86%, var(--brand-white));",
       "--brand-blue-2: rgb(1 2 3);")],
   ["base duplicada",
-    altered("  --brand-blue: #000AFF;",
-      "  --brand-blue: #000AFF;\n  --brand-blue: #000AFF;")],
+    (() => {
+      const declaration = baseCss.match(/^\s*--brand-blue:\s*#[0-9a-f]{6};$/im)?.[0];
+      assert.ok(declaration, "Debe existir exactamente una base azul hexadecimal en globals.css");
+      return altered(declaration, declaration + "\n" + declaration);
+    })()],
   ["shade redefinido en tema",
     baseCss + '\n[data-theme="dark"] { --brand-blue-2: var(--brand-cyan); }\n'],
   ["shade no declarado",
