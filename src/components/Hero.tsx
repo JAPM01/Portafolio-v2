@@ -103,7 +103,14 @@ export default function Hero() {
                 <HeroBackground />
               </div>
             </div>
-            <div className={styles.veil} style={{ background: "var(--brand-gray-1)", opacity: 0.08 }} />
+            <div className={styles.veil} style={{ background: "var(--brand-gray-1)", opacity: 0.24 }} />
+            <svg className={styles.grain} aria-hidden="true">
+              <filter id="hero-grain-filter">
+                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+                <feColorMatrix type="saturate" values="0" />
+              </filter>
+              <rect width="100%" height="100%" filter="url(#hero-grain-filter)" />
+            </svg>
             <div className={styles.topFade} aria-hidden="true">
               <div className={styles.topFadeLayer} />
             </div>

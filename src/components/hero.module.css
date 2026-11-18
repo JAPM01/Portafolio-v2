@@ -69,6 +69,19 @@
   object-fit: cover;
   object-position: center;
 }
+/* Grain elegante sobre el hero: ruido fino (feTurbulence) como SVG
+   en línea, muy sutil, para dar textura sin ensuciar. Vive en su
+   propio elemento para que su intensidad sea independiente de la
+   opacidad del velo (16%). No es un data URI en CSS: el guard de
+   color no admite SVG embebido. */
+.grain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.05;
+  pointer-events: none;
+}
 .bgSource {
   opacity: 1;
   pointer-events: none;
@@ -107,7 +120,7 @@
 .topFadeLayer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, color-mix(in srgb, var(--brand-gray-1) 12.00%, transparent) 0%, transparent 100%);
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--brand-gray-1) 24.00%, transparent) 0%, transparent 100%);
 }
 .bottomDark {
   opacity: 0;
@@ -117,10 +130,10 @@
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    color-mix(in srgb, var(--brand-gray-1) 1.50%, transparent) 35%,
-    color-mix(in srgb, var(--brand-gray-1) 9.00%, transparent) 65%,
-    color-mix(in srgb, var(--brand-gray-1) 22.00%, transparent) 88%,
-    color-mix(in srgb, var(--brand-gray-1) 35.00%, transparent) 100%
+    color-mix(in srgb, var(--brand-gray-1) 2.00%, transparent) 35%,
+    color-mix(in srgb, var(--brand-gray-1) 12.00%, transparent) 65%,
+    color-mix(in srgb, var(--brand-gray-1) 28.00%, transparent) 88%,
+    color-mix(in srgb, var(--brand-gray-1) 45.00%, transparent) 100%
   );
 }
 /* Sin overrides en modo claro: el hero siempre es oscuro (el mesh no
