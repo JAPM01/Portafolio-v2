@@ -35,6 +35,7 @@ const bad=[
  ["nuevo token de tamaño",".label { --type-caption-size: 15px; }"],
  ["redefinición local",".label { --type-h2-size: 100px; }"],
  ["color definido localmente",".label { --type-ink: var(--brand-black); }"],
+ ["Body definido localmente",".label { --type-body-ink: var(--brand-blue); }"],
 ];
 for(const [title,css]of bad){
  test("ROJO demostrado: "+title,()=>{
