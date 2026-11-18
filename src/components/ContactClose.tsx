@@ -148,7 +148,7 @@ export default function ContactClose({
       </div>
 
       <div className={`container-indent ${styles.inner} ${compact ? styles.innerCompact : ""}`}>
-        <div className={styles.head}>
+        <div className={`site-grid ${styles.head}`}>
           <div className={styles.brand}>
             <div className={styles.mark} aria-hidden="true" />
             <ul className={styles.socials}>

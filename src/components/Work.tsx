@@ -177,7 +177,7 @@ export default function Work() {
 
   return (
     <section id="work" className={styles.section} aria-labelledby="work-heading" ref={sectionRef}>
-      <div className="container">
+      <div className="container site-grid">
         <h2 id="work-heading" className={styles.heading}>
           Lorem Ipsum
         </h2>

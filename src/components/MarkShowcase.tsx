@@ -9,7 +9,7 @@ import styles from "./mark-showcase.module.css";
 export default function MarkShowcase() {
   return (
     <section className={styles.section}>
-      <div className="container-indent">
+      <div className="container-indent site-grid">
         <div className={styles.frame} data-mark-media="true">
           <div className={styles.stage} aria-hidden="true">
             <div className={styles.mark} />

@@ -12,17 +12,14 @@
 }
 
 .grid {
-  gap: var(--space-12);
+  row-gap: var(--space-12);
   --faq-travel: 0px;
-  grid-template-columns: 1fr;
   align-items: start;
-  display: grid;
 }
-
+.heading,
+.list { grid-column: 1 / -1; }
 @media (min-width: 1024px) {
-  .grid {
-    gap: max(var(--space-16), var(--type-h2-size));
-  }
+  .grid { row-gap: max(var(--space-16), var(--type-h2-size)); }
 }
 
 .heading,

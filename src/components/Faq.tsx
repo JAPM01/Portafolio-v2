@@ -67,7 +67,7 @@ export default function Faq() {
   const [open, setOpen] = useState<number | null>(null);
   return (
     <section id="faq" className={styles.section} aria-labelledby="faq-heading">
-      <div className={`container-indent ${styles.grid}`}>
+      <div className={`container-indent site-grid ${styles.grid}`}>
         <h2 id="faq-heading" className={styles.heading}>
           Lorem ipsum dolor sit
         </h2>
