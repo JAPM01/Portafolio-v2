@@ -98,9 +98,10 @@ jobs:
             console.log('HTML_CACHE_MISMATCH: los dos HTML apuntan a builds distintos');
             problems.push('El HTML normal y el de caché evitada referencian archivos distintos');
           }
-          const c=spawnSync('google-chrome',['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--disable-background-networking','--virtual-time-budget=6000','--dump-dom',String(fresh)],{encoding:'utf8',timeout:40000,maxBuffer:10000000});
+          const c=spawnSync('google-chrome',['--headless=new','--no-sandbox','--ignore-certificate-errors','--disable-gpu','--disable-dev-shm-usage','--disable-background-networking','--virtual-time-budget=6000','--dump-dom',String(fresh)],{encoding:'utf8',timeout:40000,maxBuffer:10000000});
           const doc=c.stdout||'';
           const hydrated=/<html\b[^>]*\bdata-loaded(?:[=>\s])/i.test(doc);
+          console.log('BROWSER_TITLE',doc.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1] || '(sin título)', 'BROWSER_HEAD',doc.slice(0,400));
           console.log('BROWSER_CHECK',JSON.stringify({exit:c.status,documentLength:doc.length,hydrated,hasMain:doc.includes('id="main"'),stderr:(c.stderr||'').slice(-1100)}));
           if(c.status!==0||!hydrated)problems.push('Chrome no completa la hidratación de HeroLoader');
           if(problems.length){console.error('DIAGNOSIS_FAILED',JSON.stringify(problems));process.exitCode=1;}
