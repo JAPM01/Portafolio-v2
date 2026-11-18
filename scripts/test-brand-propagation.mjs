@@ -66,10 +66,21 @@ test("Cada uno de los cinco colores se propaga al adaptador real del shader", ()
     assert.ok(channels.every(x => x >= 0 && x <= 1));
   }
 
+  // Una variable CSS computada como rgb() sigue procediendo de globals.css.
+  const currentOrange = original.orange.slice(1).match(/../g).map(hex => parseInt(hex, 16));
+  values = {...original, orange: "rgb(" + currentOrange.join(", ") + ")"};
+  assert.equal(exports.brandHex("orange").toUpperCase(), original.orange.toUpperCase());
+  assert.equal(exports.readMeshPalette()[3].toUpperCase(), original.orange.toUpperCase());
+
+  values = {...original, orange: ""};
+  assert.throws(() => exports.readMeshPalette(), /brand-orange/);
+
   assert.match(shader, /readMeshPalette\(\)/);
   assert.match(shader, /gl\.uniform3f\(loc,\s*\.\.\.brandRgb01\(brandColors\[i\]\)\)/);
   assert.doesNotMatch(shader, /\bcolors\s*\?\s*:/);
   assert.match(fluid, /readBrandPalette\(\)/);
+  assert.match(shader, /paletteAttempt < 24/);
+  assert.match(fluid, /paletteAttempt < 24/);
   assert.match(venn, /var\(--brand-cyan\)/);
   assert.match(media, /var\(--surface-raised\)|BrandMedia|styles\.placeholder/);
   console.log("PROPAGACIÓN: cinco bases -> adaptador WebGL y consumidores comprobados");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { readBrandPalette, brandRgb01 } from "../lib/brand-palette";
 
 /** Tinta líquida viva: simulación de fluido WebGL (stable fluids, Jos Stam)
@@ -295,9 +295,21 @@ function createProgram(gl: GL, vs: WebGLShader, fs: WebGLShader): Program {
 
 export default function FluidBackground({ reducedMotion }: { reducedMotion: boolean }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [paletteAttempt, setPaletteAttempt] = useState(0);
 
   useEffect(() => {
-    const brand = readBrandPalette();
+    let brand: ReturnType<typeof readBrandPalette>;
+    try {
+      brand = readBrandPalette();
+    } catch (error) {
+      // Si las variables CSS aún no están disponibles, no bloquear React.
+      if (paletteAttempt < 24) {
+        const retry = window.setTimeout(() => setPaletteAttempt((attempt) => attempt + 1), 250);
+        return () => window.clearTimeout(retry);
+      }
+      console.warn("Fluido omitido: no se pudo leer la paleta CSS oficial", error);
+      return;
+    }
     // La tinta recibe exactamente las bases calculadas por el CSS.
     const PALETTE: Array<[number, number, number]> = [
       brandRgb01(brand.blue),
@@ -793,7 +805,7 @@ export default function FluidBackground({ reducedMotion }: { reducedMotion: bool
       const loseExt = gl.getExtension("WEBGL_lose_context");
       loseExt?.loseContext();
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, paletteAttempt]);
 
   return (
     <canvas

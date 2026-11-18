@@ -11,10 +11,19 @@ export type BrandBase = "blue" | "orange" | "cyan" | "black" | "white";
 export function brandHex(name: BrandBase): string {
   const value = getComputedStyle(document.documentElement)
     .getPropertyValue(`--brand-${name}`).trim();
-  if (!/^#[\da-f]{6}$/i.test(value)) {
-    throw new Error(`Token de marca no definido o inválido: --brand-${name}`);
+  if (/^#[\da-f]{6}$/i.test(value)) return value;
+
+  // Los custom properties registrados pueden serializarse como rgb()
+  // aunque su definición original en globals.css sea hexadecimal.
+  // Se convierten los canales computados; NO existe otra paleta.
+  const rgb = value.match(/^rgb\(\s*(\d+(?:\.\d+)?)\s*[,\s]+\s*(\d+(?:\.\d+)?)\s*[,\s]+\s*(\d+(?:\.\d+)?)\s*\)$/i);
+  if (rgb) {
+    const channels = rgb.slice(1).map(Number);
+    if (channels.every((x) => Number.isInteger(x) && x >= 0 && x <= 255)) {
+      return "#" + channels.map((x) => x.toString(16).padStart(2, "0")).join("");
+    }
   }
-  return value;
+  throw new Error(`Token de marca no disponible o inválido: --brand-${name}; valor CSS: ${JSON.stringify(value)}`);
 }
 
 export function readBrandPalette() {

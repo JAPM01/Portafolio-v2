@@ -2,7 +2,7 @@
 // Free and open source (MIT). If it helped, a star means a lot: https://github.com/shivc868/madeforaward-ui
 'use client'
 
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {readMeshPalette, brandRgb01} from '../lib/brand-palette'
 
 export type FlowGradientBackgroundProps = {
@@ -139,14 +139,28 @@ export default function FlowGradientBackground({
 }: FlowGradientBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const live = useRef({flow, speed, follow})
+  const [paletteAttempt, setPaletteAttempt] = useState(0)
 
   useEffect(() => {
     live.current = {flow, speed, follow}
   }, [flow, speed, follow])
 
   useEffect(() => {
-    const canvas = canvasRef.current!
-    const brandColors = readMeshPalette()
+    const canvas = canvasRef.current
+    if (!canvas) return
+    let brandColors: ReturnType<typeof readMeshPalette>
+    try {
+      brandColors = readMeshPalette()
+    } catch (error) {
+      // Un token momentáneamente indisponible nunca debe derribar React.
+      // Reintentar cuando las hojas de estilo terminen de aplicarse.
+      if (paletteAttempt < 24) {
+        const retry = window.setTimeout(() => setPaletteAttempt((attempt) => attempt + 1), 250)
+        return () => window.clearTimeout(retry)
+      }
+      console.warn('Mesh omitido: no se pudo leer la paleta CSS oficial', error)
+      return
+    }
     const gl = canvas.getContext('webgl')
     if (!gl) return
     const prog = gl.createProgram()!
@@ -314,7 +328,7 @@ export default function FlowGradientBackground({
       gl.deleteBuffer(buf)
       gl.deleteProgram(prog)
     }
-  }, [])
+  }, [paletteAttempt])
 
   return <canvas ref={canvasRef} aria-hidden className={`pointer-events-none block size-full ${className}`} />
 }
