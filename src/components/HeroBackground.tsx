@@ -11,14 +11,16 @@ export default function HeroBackground({
   follow = 0.08,
   zoom = 1,
   center = [0.5, 0.5],
+  referenceSpace = "canvas",
 }: {
   follow?: number;
   zoom?: number;
   center?: [number, number];
+  referenceSpace?: "canvas" | "viewport";
 } = {}) {
   return (
     <div style={{ position: "absolute", inset: 0 }} aria-hidden="true">
-      <FlowGradientBackground follow={follow} zoom={zoom} center={center} className={styles.flowCanvas} />
+      <FlowGradientBackground follow={follow} zoom={zoom} center={center} referenceSpace={referenceSpace} className={styles.flowCanvas} />
     </div>
   );
 }

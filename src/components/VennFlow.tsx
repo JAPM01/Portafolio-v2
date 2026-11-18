@@ -52,6 +52,53 @@ function labelPosition(x: number, y: number) {
   };
 }
 
+type Point = { x: number; y: number };
+
+/* Intersección matemática de los tres círculos. Se calcula una sola vez:
+   los vértices provienen de las intersecciones de pares y los extremos
+   cardinales que pertenecen simultáneamente a los tres círculos. */
+function tripleIntersectionBounds() {
+  const r = G.radius;
+  const inside = (p: Point) => CENTERS.every(c =>
+    (p.x - c.x) ** 2 + (p.y - c.y) ** 2 <= r ** 2 + Number.EPSILON * 10000
+  );
+  const candidates: Point[] = [];
+  for (let i = 0; i < CENTERS.length; i++) {
+    const a = CENTERS[i];
+    const cardinal: Point[] = [
+      { x: a.x - r, y: a.y }, { x: a.x + r, y: a.y },
+      { x: a.x, y: a.y - r }, { x: a.x, y: a.y + r },
+    ];
+    candidates.push(...cardinal.filter(inside));
+    for (let j = i + 1; j < CENTERS.length; j++) {
+      const c = CENTERS[j];
+      const dx = c.x - a.x, dy = c.y - a.y;
+      const d = Math.hypot(dx, dy);
+      if (!d || d > 2 * r) continue;
+      const h = Math.sqrt(r * r - (d / 2) ** 2);
+      for (const sign of [-1, 1]) {
+        const p = {
+          x: (a.x + c.x) / 2 - sign * (dy / d) * h,
+          y: (a.y + c.y) / 2 + sign * (dx / d) * h,
+        };
+        if (inside(p)) candidates.push(p);
+      }
+    }
+  }
+  if (!candidates.length) throw new Error("Venn: sin intersección triple");
+  const left = Math.min(...candidates.map(p => p.x));
+  const right = Math.max(...candidates.map(p => p.x));
+  const top = Math.min(...candidates.map(p => p.y));
+  const bottom = Math.max(...candidates.map(p => p.y));
+  return {
+    insetInlineStart: `${((left - VIEW.x) / VIEW.width) * 100}%`,
+    insetBlockStart: `${((top - VIEW.y) / VIEW.height) * 100}%`,
+    inlineSize: `${((right - left) / VIEW.width) * 100}%`,
+    blockSize: `${((bottom - top) / VIEW.height) * 100}%`,
+  };
+}
+const MESH_ARTWORK = tripleIntersectionBounds();
+
 const LABELS = [
   { key: "design", x: G.design.x - G.radius / 2, y: G.design.y },
   { key: "technology", x: G.technology.x + G.radius / 2, y: G.technology.y },
@@ -193,10 +240,11 @@ export default function VennFlow({ lang }: { lang: Lang }) {
         <div className={styles.meshClip} style={{ clipPath: circleClip(G.design) }}>
           <div className={styles.meshClip} style={{ clipPath: circleClip(G.technology) }}>
             <div className={styles.meshClip} style={{ clipPath: circleClip(G.usability) }}>
-              {/* Mesh estático: sin reacción al mouse, zoom bajo y
-                  encuadre desplazado para que se vean naranja y cian,
-                  no solo el azul del centro. */}
-              <HeroBackground follow={0} zoom={0.55} center={[0.7, 0.65]} />
+              {/* La intersección recibe el frame completo del Hero en
+                  miniatura. Las tres máscaras originales lo recortan. */}
+              <div className={styles.meshArtwork} style={MESH_ARTWORK}>
+                <HeroBackground follow={0} referenceSpace="viewport" />
+              </div>
             </div>
           </div>
         </div>

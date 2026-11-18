@@ -12,7 +12,7 @@
 .circle {
   fill: none;
   stroke: var(--brand-white);
-  stroke-width: calc(var(--border-width) * 2);
+  stroke-width: calc(var(--border-width) * 1.5);
   vector-effect: non-scaling-stroke;
 }
 /* Cada círculo que se enciende usa SU color de marca (el color se
@@ -20,7 +20,7 @@
    usabilidad cian. */
 .litCircle {
   fill: none;
-  stroke-width: calc(var(--border-width) * 3);
+  stroke-width: calc(var(--border-width) * 2);
   vector-effect: non-scaling-stroke;
 }
 /* Glow radial azul muy sutil detrás del Venn: luz ambiental que se
@@ -49,6 +49,12 @@
 .meshClip {
   position: absolute;
   inset: 0;
+}
+/* Muestra la escena WebGL completa dentro del volumen de convergencia;
+   los límites se calculan con los círculos SVG, no con medidas CSS fijas. */
+.meshArtwork {
+  position: absolute;
+  overflow: hidden;
 }
 .svg { position: relative; z-index: 1; }
 .labels { z-index: 2; }

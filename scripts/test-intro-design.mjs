@@ -24,6 +24,15 @@ test("El Venn mantiene tres columnas y conserva las etiquetas Meta a tamaño CSS
   assert.match(jsx, /<HeroBackground[\s\/>]/);
   assert.match(jsx, /clipPath:\s*circleClip\(G\.usability\)/);
   assert.match(css, /stroke:\s*var\(--brand-white\)/);
-  assert.match(css, /stroke-width:\s*calc\(var\(--border-width\) \* 2\)/);
+  assert.match(css, /stroke-width:\s*calc\(var\(--border-width\) \* 1\.5\)/);
   assert.doesNotMatch(jsx, /<radialGradient/);
+  assert.match(intro, /row-gap:\s*var\(--space-6\)/);
+  assert.doesNotMatch(intro, /inline-size:\s*116%/);
+  assert.match(jsx, /const MESH_ARTWORK = tripleIntersectionBounds\(\)/);
+  assert.match(jsx, /<HeroBackground follow={0} referenceSpace="viewport"\s*\/>/);
+  // Muse: cada círculo mantiene su marca, el mismo orden y ciclo de 18s.
+  assert.match(jsx, /"var\(--brand-orange\)"[\s\S]*"var\(--brand-blue\)"[\s\S]*"var\(--brand-cyan\)"/);
+  assert.match(jsx, /P\.on\.forEach/);
+  assert.match(jsx, /style={{ stroke: LIT_COLORS\[i\] }}/);
+  assert.match(read("src/app/globals.css"), /--motion-diagram-cycle:\s*18s/);
 });

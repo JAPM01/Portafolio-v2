@@ -6,8 +6,7 @@
   color: var(--type-body-ink);
   padding-block: var(--section-pad-mobile);
   transition: background-color var(--theme-ms) linear, color var(--theme-ms) linear;
-  /* El diagrama es más ancho que el contenedor en móvil: recorta
-     el sobrante sin crear scroll horizontal. */
+  /* La geometría del Venn cabe dentro de la retícula: sin recortes. */
   overflow-x: clip;
 }
 
@@ -19,7 +18,8 @@
 
 .layout {
   align-items: center;
-  row-gap: var(--section-columns-mobile);
+  /* Una única cadencia entre H2, manifiesto, pensamientos y Venn en móvil. */
+  row-gap: var(--space-6);
 }
 
 .headingBlock {
@@ -154,11 +154,8 @@
   }
 }
 
-/* La retícula global es de cuatro columnas en tablet: los bloques
-   se apilan para conservar ancho legible, nunca se fuerzan cinco
-   pistas dentro de cuatro. El diagrama es más grande en móvil:
-   16% más ancho que el contenedor, centrado (el sobrante lo
-   recorta la sección con overflow-x: clip). */
+/* La retícula global de cuatro columnas mantiene todos los bloques
+   en el mismo ancho; el Venn no rebasa el viewport en móvil/tablet. */
 @media (max-width: 1023px) {
   .headingBlock { grid-row: 1; }
   .copyColumn { grid-row: 2; }
@@ -166,7 +163,7 @@
   .diagram {
     grid-column: 1 / -1;
     grid-row: 4;
-    inline-size: 116%;
+    inline-size: 100%;
   }
 }
 

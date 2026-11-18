@@ -49,7 +49,8 @@ test("Filosofía: tres elementos en la misma fila desktop, Venn entre ambos",()=
       'results.push({width,columns:getComputedStyle(doc.querySelector(".layout")).gridTemplateColumns.split(" ").length,',
       'copy:box(".copyColumn"),venn:box(".diagram"),right:box(".editorial"),',
       'copyText:box(".testCopyStart"),rightText:box(".testThoughtStart"),',
-      'title:box(".headingBlock")});',
+      'title:box(".headingBlock"),',
+      'circles:[...doc.querySelectorAll(".diagram circle")].map(c=>{const r=c.getBoundingClientRect();return {left:r.left,right:r.right};})});',
       'frame.remove();}',
       'document.getElementById("result").textContent=JSON.stringify(results);',
       '})().catch(e=>document.getElementById("result").textContent=JSON.stringify({error:String(e),stack:e.stack}));',
@@ -68,7 +69,7 @@ test("Filosofía: tres elementos en la misma fila desktop, Venn entre ambos",()=
     const rows=JSON.parse(match[1].replaceAll("&amp;","&"));
     assert.ok(Array.isArray(rows),JSON.stringify(rows));
     for(const row of rows) {
-      const {width,columns,copy,venn,right,copyText,rightText,title}=row;
+      const {width,columns,copy,venn,right,copyText,rightText,title,circles}=row;
       if(width>=1024) {
         assert.equal(columns,12,width+": la retícula debe tener 12 columnas");
         assert.ok(copy.right<venn.left,width+": Venn no está a la derecha del manifiesto");
@@ -83,6 +84,12 @@ test("Filosofía: tres elementos en la misma fila desktop, Venn entre ambos",()=
         assert.equal(columns,4,width+": la retícula móvil debe tener 4 columnas");
         assert.ok(copy.bottom<right.top,width+": la lista debe seguir al manifiesto");
         assert.ok(right.bottom<venn.top,width+": el Venn debe seguir a la lista");
+        assert.ok(venn.left>=16-1 && venn.right<=width-16+1,
+          width+": el Venn debe caber dentro de las cuatro columnas sin desbordamiento");
+        for (const circle of circles) {
+          assert.ok(circle.left>=venn.left-1 && circle.right<=venn.right+1,
+            width+": hay un círculo recortado lateralmente");
+        }
       }
       console.log("INTRO_LAYOUT_PASSED",width,"columnas",columns);
     }

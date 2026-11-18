@@ -20,6 +20,9 @@ export type FlowGradientBackgroundProps = {
   /** centro del encuadre en UV (0–1): desplaza la región visible
       del mesh sin cambiar el canvas. */
   center?: [number, number]
+  /** En una miniatura, conserva la geometría de la escena completa
+      usando la proporción real del Hero (viewport). */
+  referenceSpace?: 'canvas' | 'viewport'
   className?: string
 }
 
@@ -169,15 +172,16 @@ export default function FlowGradientBackground({
   follow = 0.05,
   zoom = 1,
   center = [0.5, 0.5],
+  referenceSpace = 'canvas',
   className = '',
 }: FlowGradientBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const live = useRef({flow, speed, follow, zoom, center})
+  const live = useRef({flow, speed, follow, zoom, center, referenceSpace})
   const [paletteAttempt, setPaletteAttempt] = useState(0)
 
   useEffect(() => {
-    live.current = {flow, speed, follow, zoom, center}
-  }, [flow, speed, follow, zoom, center])
+    live.current = {flow, speed, follow, zoom, center, referenceSpace}
+  }, [flow, speed, follow, zoom, center, referenceSpace])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -251,7 +255,11 @@ export default function FlowGradientBackground({
       // El impulso decae ~10% por frame hasta volver a lo normal.
       boost *= Math.pow(0.9, dt / 16.7)
       if (!still) drift += (dt / 1000) * 0.06 * s.speed
-      gl.uniform2f(uRes, canvas.width, canvas.height)
+      // Proyectar el mesh original completo en la lente del Venn, sin
+      // alterar sus formas, colores, tiempos ni fragment shader.
+      const sourceWidth = s.referenceSpace === 'viewport' ? window.innerWidth : canvas.width
+      const sourceHeight = s.referenceSpace === 'viewport' ? window.innerHeight : canvas.height
+      gl.uniform2f(uRes, sourceWidth, sourceHeight)
       gl.uniform2f(uMouse, mouse.x, mouse.y)
       gl.uniform1f(uTime, drift)
       gl.uniform1f(uFlow, s.flow * (1 + boost))
