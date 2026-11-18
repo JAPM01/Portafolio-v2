@@ -9,7 +9,7 @@ test("El Venn mantiene tres columnas y conserva las etiquetas Meta a tamaño CSS
   assert.match(jsx, /className={`type-meta \$\{styles\.circleLabel\}`}/);
   assert.match(css, /\.circleLabel\s*\{[^}]*position:\s*absolute;/);
   assert.doesNotMatch(jsx, /<text\s+className={styles\.circleLabel}/);
-  assert.match(jsx, /const VIEW_WIDTH = DRAWING\.right - DRAWING\.left \+ \(2 \* G\.radius\) \/ 3;/);
+  assert.match(jsx, /const VIEW_WIDTH = DRAWING\.right - DRAWING\.left \+ 24;/);
   assert.match(intro, /\.diagram\s*\{\s*grid-column:\s*6 \/ 9;/);
   assert.match(intro, /align-self:\s*first baseline/);
   // Más aire título-contenido (64px): el Venn va arriba de la fila

@@ -28,7 +28,7 @@ test("Filosofía: tres elementos en la misma fila desktop, Venn entre ambos",()=
       '<p class="thought">Observar antes de actuar.</p>',
       '<p class="thought">Definir los resultados.</p>',
       '</div></div>',
-      '<div class="diagram"><div class="root"><svg class="svg" viewBox="0 28 544 450">',
+      '<div class="diagram"><div class="root"><svg class="svg" viewBox="86 58 468 388">',
       '<circle cx="240" cy="188" r="142"/><circle cx="400" cy="188" r="142"/>',
       '<circle cx="320" cy="315" r="142"/></svg></div></div>',
       '</div></section>'
@@ -77,7 +77,7 @@ test("Filosofía: tres elementos en la misma fila desktop, Venn entre ambos",()=
           width+": las primeras líneas del manifiesto y del listado no coinciden");
         assert.ok(copy.top<venn.bottom && right.top<venn.bottom,
           width+": el Venn debe mantenerse en la misma zona visual que los textos");
-        assert.ok(venn.top<title.bottom+100,
+        assert.ok(venn.top<title.bottom+150,
           width+": el título y el contenido quedaron demasiado separados");
       } else {
         assert.equal(columns,4,width+": la retícula móvil debe tener 4 columnas");

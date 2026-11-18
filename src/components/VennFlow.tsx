@@ -20,18 +20,18 @@ const G = {
 const CENTERS = [G.design, G.technology, G.usability] as const;
 
 /* El encuadre se deriva exclusivamente de la geometría del diagrama.
-   Deja un tercio de radio como aire lateral: aumenta la presencia
-   visual alrededor del 19 %, SIN crecer fuera de sus tres columnas. */
+   Aire lateral mínimo (12 unidades por lado): el Venn llena casi
+   toda su columna y se ve más grande, sin recortar los círculos. */
 const DRAWING = {
   left: Math.min(...CENTERS.map(({ x }) => x - G.radius)),
   right: Math.max(...CENTERS.map(({ x }) => x + G.radius)),
   top: Math.min(...CENTERS.map(({ y }) => y - G.radius)),
   bottom: Math.max(...CENTERS.map(({ y }) => y + G.radius)),
 };
-const VIEW_WIDTH = DRAWING.right - DRAWING.left + (2 * G.radius) / 3;
+const VIEW_WIDTH = DRAWING.right - DRAWING.left + 24;
 const VIEW_HEIGHT = VIEW_WIDTH * (G.height / G.width);
 const VIEW = {
-  x: DRAWING.left - G.radius / 3,
+  x: DRAWING.left - 12,
   y: (DRAWING.top + DRAWING.bottom - VIEW_HEIGHT) / 2,
   width: VIEW_WIDTH,
   height: VIEW_HEIGHT,
@@ -69,11 +69,11 @@ const LIT_COLORS = [
 ] as const;
 
 /**
- * Ventanas de la animación, en fracción del ciclo (12 s, en loop):
+ * Ventanas de la animación, en fracción del ciclo (18 s, en loop):
  * cada círculo se enciende con su color y se apaga, uno por uno;
  * la intersección se rellena del líquido del mesh y ES ELLA la que
- * hace el pulse (late); queda unos segundos con el relleno y luego
- * se apaga para repetirse. Los círculos NUNCA se rellenan: solo su
+ * hace el pulse (late); el mesh queda visible varios segundos antes
+ * de apagarse para repetirse. Los círculos NUNCA se rellenan: solo su
  * contorno prende. No hay ningún círculo de pulse detrás.
  */
 const P = {
@@ -84,8 +84,8 @@ const P = {
   ],
   fillIn: [0.45, 0.53],
   pulse: [0.53, 0.65],
-  hold: [0.65, 0.90],
-  fillOut: [0.90, 0.96],
+  hold: [0.65, 0.93],
+  fillOut: [0.93, 0.98],
 } as const;
 
 const clamp = (n: number) => Math.min(1, Math.max(0, n));

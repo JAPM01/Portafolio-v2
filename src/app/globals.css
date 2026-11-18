@@ -306,7 +306,7 @@
   --gate-fade: 0.9s;
   --gate-travel: 1.2s;
   --theme-ms: 0.35s;
-  --motion-diagram-cycle: 12s;
+  --motion-diagram-cycle: 18s;
   --parallax-travel: calc(var(--type-h2-size) * var(--type-h2-leading));
   --parallax-travel-photo: calc(var(--parallax-travel) * 0.38);
   --parallax-travel-photo-work: calc(var(--parallax-travel-photo) * 5);
