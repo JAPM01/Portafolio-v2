@@ -14,7 +14,7 @@ export default function PrivacyPage() {
       <HeroLoader />
       <SiteNav />
       <main id="main">
-        <div className="container">
+        <div className="container site-grid">
           <div className={styles.page}>
             <h1 className={styles.title}>Privacy</h1>
             <p className={styles.updated}>Updated October 15, 2026</p>

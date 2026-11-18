@@ -168,7 +168,7 @@ export default function WorkDetail({ project, next }: { project: Project; next: 
   };
 
   return (
-    <div className={styles.page}>
+    <div className={`site-grid ${styles.page}`}>
       <header className={styles.header}>
         <h1
           className={`${styles.title} clipped`}
@@ -232,7 +232,7 @@ export default function WorkDetail({ project, next }: { project: Project; next: 
         </button>
       </div>
 
-      <div className={styles.body}>
+      <div className={`site-grid ${styles.body}`}>
         <h2 className={styles.sectionHeading}>The project</h2>
         <div className={styles.explanation}>
           {project.paras.map((p, i) => (
@@ -280,7 +280,7 @@ export default function WorkDetail({ project, next }: { project: Project; next: 
 
       {project.testimonial && (
         <section className={styles.testimonial} aria-labelledby="testimonial-heading">
-          <div className={styles.testimonialGrid}>
+          <div className={`site-grid ${styles.testimonialGrid}`}>
             <h2 id="testimonial-heading" className={styles.testimonialHeading}>
               What the client said
             </h2>

@@ -1,4 +1,5 @@
 .page {
+  grid-column: 1 / -1;
   background: var(--surface-canvas);
   min-height: 100svh;
   padding-block: var(--section-pad-mobile);
