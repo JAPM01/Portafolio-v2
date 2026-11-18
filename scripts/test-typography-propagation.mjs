@@ -34,7 +34,7 @@ test("Chromium: siete categorías, ocho escenarios responsivos y propagación in
     'const markup=levels.map(level=>"<span class=\\"type-"+level+"\\" data-level=\\""+level+"\\">Test</span>").join("");',
     'for(const width of [390,768,1440,1920]){',
     'const iframe=document.createElement("iframe");',
-    'iframe.style.width=width+"px";iframe.style.height="900px";iframe.style.border="0";document.body.append(iframe);',
+    'iframe.style.width=width+"px";iframe.style.height=({390:844,768:1024,1440:900,1920:1080}[width])+"px";iframe.style.border="0";document.body.append(iframe);',
     'await new Promise(ok=>{iframe.onload=ok;iframe.srcdoc="<html><head><style>"+css+"</style></head><body>"+markup+"</body></html>";});',
     'const doc=iframe.contentDocument,win=iframe.contentWindow,root=doc.documentElement;',
     'const measure=()=>{',
@@ -71,6 +71,16 @@ test("Chromium: siete categorías, ocho escenarios responsivos y propagación in
   assert.equal(data.length,8);
   for(const entry of data){
     const {width,theme,before,changed,modifiedWhite}=entry;
+    const expected={
+      390: {h1:76,h2:60,body:16,meta:14},
+      768: {h1:100,h2:84,body:24,meta:16},
+      1440:{h1:160,h2:136,body:32,meta:20},
+      1920:{h1:184,h2:156,body:36,meta:24}
+    };
+    for(const [level,size] of Object.entries(expected[width])){
+      assert.equal(parseFloat(before[level].size),size,
+        width+"/"+theme+"/"+level+": escala editorial distinta de "+size+"px");
+    }
     for(const level of levels){
       assert.match(before[level].size,/^\d+(?:\.\d+)?px$/,width+"/"+theme+"/"+level+" sin tamaño válido");
       assert.ok(parseFloat(before[level].size)>0);

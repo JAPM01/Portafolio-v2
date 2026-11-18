@@ -13,7 +13,7 @@
      Cambiar aquí cualquier base actualiza UI, SVG, Canvas y WebGL
      (estos últimos leen los tokens CSS en el navegador). */
   --brand-blue: #076DFA;
-  --brand-orange: #FF5500;
+  --brand-orange: #FF9636;
   --brand-cyan: #6FD3FF;
   --brand-black: #010101;
   --brand-white: #FEFEFE;
@@ -185,16 +185,16 @@
   --tracking-body-2xs: 0.028em;
   --weight-body-2xs: 500;
 
-  /* ÚNICA ESCALA TIPOGRÁFICA. Todos los tamaños se consumen literalmente
-     desde aquí: h1-h5, body y meta. No se permiten escalas paralelas.
-     H1 conserva el tamaño fluido original del hero.
-     H2-H5/body/meta conservan los valores responsive aprobados. */
+  /* ÚNICA ESCALA TIPOGRÁFICA: h1-h5, body y meta.
+     H1/H2/body/meta son fluidos con cuantización a 8/4 px; Meta admite
+     2 px en móvil por legibilidad. H3-H5 conservan sus valores aprobados.
+     La geometría vertical del H1 sigue dependiendo de las filas del hero. */
   --type-ink: var(--brand-white);
   /* Dos pasos desde el blanco: blanco -> gris 7 -> gris 6. */
   --type-meta-ink: var(--brand-gray-6);
 
   --type-h1-size: min(
-    round(calc(24px + 12.2vw), 8px),
+    round(calc(88px + 5vw), 8px),
     round(
       calc(
         (((100svh - var(--space-6) - var(--space-6) - 11 * var(--space-6)) / 12)
@@ -205,7 +205,8 @@
   );
   --type-h1-leading: 0.93;
   --type-h1-tracking: -0.046em;
-  --type-h2-size: 48px;
+  /* Editorial móvil: 60px @390px; continúa hasta 84px @768px. */
+  --type-h2-size: round(clamp(60px, calc(36px + 6.25vw), 84px), 4px);
   --type-h2-leading: 1.05;
   --type-h2-tracking: -0.02em;
   --type-h3-size: 40px;
@@ -217,10 +218,12 @@
   --type-h5-size: 24px;
   --type-h5-leading: 1.2;
   --type-h5-tracking: -0.015em;
-  --type-body-size: 20px;
+  /* Lectura: 16px @390px, 24px al llegar a tablet. */
+  --type-body-size: round(clamp(16px, calc(8px + 2.083333vw), 24px), 4px);
   --type-body-leading: 1.25;
   --type-body-tracking: -0.015em;
-  --type-meta-size: 16px;
+  /* Meta móvil: excepción óptica 14px, con pasos de 2px. */
+  --type-meta-size: round(clamp(14px, calc(12px + 0.52vw), 16px), 2px);
   --type-meta-leading: 1.25;
   --type-meta-tracking: 0em;
 
@@ -326,10 +329,26 @@
   );
 }
 
-/* ---- Escala tipográfica única: valores desktop (múltiplos de 8) ---- */
+/* Escala editorial fluida desde tablet, siempre desde los mismos tokens.
+   H2: 84/136/156, Body: 24/32/36, Meta: 16/20/24 @768/1440/1920.
+   Los dos tramos de H2 y Body mantienen crecimiento sin salto en 1440. */
+@media (min-width: 768px) {
+  :root {
+    --type-h2-size: round(
+      clamp(84px, min(calc(24px + 7.8vw), calc(76px + 4.166667vw)), 156px),
+      4px
+    );
+    --type-body-size: round(
+      clamp(24px, min(calc(16px + 1.111111vw), calc(20px + 0.833333vw)), 36px),
+      4px
+    );
+    --type-meta-size: round(clamp(16px, calc(12px + 0.56vw), 24px), 4px);
+  }
+}
+
+/* H3-H5 mantienen sus valores desktop aprobados (múltiplos de 8). */
 @media (min-width: 1024px) {
   :root {
-    --type-h2-size: 64px;
     --type-h2-leading: 1.05;
     --type-h3-size: 48px;
     --type-h3-leading: 1.1;
@@ -337,9 +356,7 @@
     --type-h4-leading: 1.15;
     --type-h5-size: 32px;
     --type-h5-leading: 1.2;
-    --type-body-size: 28px;
     --type-body-leading: 1.25;
-    --type-meta-size: 20px;
     --type-meta-leading: 1.25;
   }
 }
@@ -349,10 +366,14 @@
 @media (max-width: 1023px) {
   :root {
     --type-h1-size: min(
-      round(calc(24px + 12.2vw), 8px),
-      calc(
-        (((100svh - (var(--space-4) + 56px) - var(--space-4) - 11 * var(--space-4)) / 12)
-          * 4 + 3 * var(--space-4)) / 2.85
+      round(calc(52px + 6.25vw), 4px),
+      round(
+        down,
+        calc(
+          (((100svh - (var(--space-4) + 56px) - var(--space-4) - 11 * var(--space-4)) / 12)
+            * 4 + 3 * var(--space-4)) / 2.85
+        ),
+        4px
       )
     );
   }
