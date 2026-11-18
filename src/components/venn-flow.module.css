@@ -30,23 +30,36 @@
   filter: drop-shadow(0 0 var(--space-1) color-mix(in srgb, var(--brand-white) 14%, transparent));
 }
 /* Doble contorno técnico: mismo radio de cada círculo, con sangría tomada
-   directamente del token global --space-2. Guionado FINO y regular
-   (2 de trazo, 3 de hueco): línea de construcción técnica, no línea
-   de recortar. Nunca cambia de color: el anillo interno no se pinta. */
+   directamente del token global --space-2. Línea de construcción fina
+   y sutil: trazo hairline (la mitad del borde) y guionado LARGO
+   (10 de trazo, 3 de hueco): pocos guiones largos, como una línea
+   de construcción técnica, nunca una marca de recortar. Opacidad
+   baja para que sea una guía elegante. Nunca cambia de color: el
+   anillo interno no se pinta. */
 .innerRing {
   r: calc(var(--venn-ring-radius) - var(--space-2));
   fill: none;
   stroke: var(--type-meta-ink);
-  stroke-width: var(--border-width);
-  stroke-dasharray: 2 3;
+  stroke-width: calc(var(--border-width) / 2);
+  stroke-dasharray: 10 3;
+  opacity: 0.7;
   vector-effect: non-scaling-stroke;
 }
-/* Pestaña de color sobre el contorno exterior: un arco de 45° por
-   círculo, en su color de marca. Es lo único que se pinta. */
-.accentLitArc {
+/* La animación enciende TODO el círculo sólido exterior con SU color
+   de marca (el color se fija por índice en VennFlow). */
+.litCircle {
+  fill: none;
+  stroke-width: calc(var(--border-width) * 2);
+  vector-effect: non-scaling-stroke;
+}
+/* Chips de color FIJOS de 45° sobre el contorno exterior, con su glow
+   cromático local. Siempre visibles; no son parte de la animación. */
+.accentArc {
   fill: none;
   stroke-linecap: round;
-  stroke-width: calc(var(--border-width) * 3.5);
+  stroke-width: calc(var(--border-width) * 2.5);
+  opacity: 0.85;
+  filter: drop-shadow(0 0 var(--space-1) currentColor);
   vector-effect: non-scaling-stroke;
 }
 /* Glow radial azul muy sutil detrás del Venn: luz ambiental que se
