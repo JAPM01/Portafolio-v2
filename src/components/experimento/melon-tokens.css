@@ -1,0 +1,9 @@
+/* Tokens del clon 1:1 total de Melon (19 Nov 2026).
+   El rojo es base de marca (--brand-red, #FD241A, medido en vivo).
+   Crema y oscuro se derivan de los tokens vía color-mix (el guard prohíbe
+   hex y nuevas familias --brand-*). Distancias medidas en Chromium:
+   crema 10, oscuro 5 (imperceptibles a simple vista). */
+:root {
+  --melon-cream: color-mix(in oklch, var(--brand-white) 94%, var(--brand-red));
+  --melon-dark: color-mix(in oklch, var(--brand-black) 90%, var(--brand-red));
+}

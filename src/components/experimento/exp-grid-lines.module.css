@@ -1,0 +1,31 @@
+/* Líneas verticales de fondo estilo Moisez, medidas en vivo: 13 líneas
+   de 1 px que forman 12 columnas (la 13ª es el borde derecho de la
+   retícula). Capa fija sobre toda la página, por encima de imágenes y
+   texto; gris tenue de baja opacidad. */
+
+.lines {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+  gap: var(--grid-gutter);
+  padding-inline: var(--page-margin);
+  pointer-events: none;
+  border-right: 1px solid color-mix(in oklch, var(--brand-white) 8%, transparent);
+}
+
+.line {
+  border-left: 1px solid color-mix(in oklch, var(--brand-white) 8%, transparent);
+}
+
+/* En móvil la retícula es de 4 columnas: solo 4 líneas. */
+.line:nth-child(n + 5) {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .line:nth-child(n + 5) {
+    display: block;
+  }
+}

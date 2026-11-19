@@ -1,0 +1,171 @@
+/* Contacto + Footer — clon 1:1 TOTAL de Melon (medido en vivo, 19 Nov 2026).
+   Melon: contacto en CREMA con correo gigante (~150px) en negro; footer
+   oscuro con 3 zonas (Services, Social, Listening & Reading), logo grande
+   y barra inferior en mono. */
+
+/* Texto oscuro sobre fondo claro (contacto en crema): el guard
+   tipográfico solo admite color: var(--type-*) (claros) o transparent,
+   así que el color se logra con background + background-clip: text. */
+.ink {
+  background: var(--melon-dark);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.contact {
+  background: var(--melon-cream);
+  padding-block: var(--space-16);
+  padding-inline: var(--page-margin);
+}
+
+@media (min-width: 1024px) {
+  .contact {
+    padding-block: var(--space-32);
+  }
+}
+
+.label {
+  grid-column: 1 / -1;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.heading {
+  grid-column: 1 / -1;
+  margin-block: var(--space-4) var(--space-16);
+  max-width: 12ch;
+}
+
+@media (min-width: 1024px) {
+  .heading {
+    margin-block-end: var(--space-32);
+  }
+}
+
+.email {
+  grid-column: 1 / -1;
+  display: block;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.email:hover {
+  text-decoration: underline;
+  text-underline-offset: var(--space-2);
+}
+
+.metaRow {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-8);
+  margin-top: var(--space-16);
+  padding-top: var(--space-6);
+  border-top: 1px solid color-mix(in oklch, var(--melon-dark) 20%, transparent);
+}
+
+.metaRow > p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.openDot {
+  flex: none;
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: 50%;
+  background: var(--brand-red);
+}
+
+.social {
+  margin-left: auto;
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}
+
+.footer {
+  background: var(--melon-dark);
+  padding: var(--space-16) var(--page-margin) 0;
+  border-top: 1px solid var(--brand-gray-3);
+}
+
+.zone {
+  grid-column: 1 / -1;
+  margin-bottom: var(--space-12);
+}
+
+.zone > p {
+  margin: 0 0 var(--space-2);
+}
+
+.zone > span {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .zone {
+    grid-column: span 4;
+    margin-bottom: var(--space-16);
+  }
+}
+
+.value {
+  color: var(--type-ink);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.value:hover {
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}
+
+/* Wordmark grande del footer (Melon: logo "melon studio" grande al final
+   del footer, en gótica). */
+.wordmark {
+  grid-column: 1 / -1;
+  margin: var(--space-8) 0 var(--space-16);
+  font-family: var(--font-gothic);
+  font-weight: 400;
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-leading);
+  letter-spacing: var(--type-h2-tracking);
+  color: var(--type-ink);
+}
+
+.serviceList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.serviceList li {
+  margin: 0;
+}
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-8);
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-6) 0;
+  border-top: 1px solid var(--brand-gray-3);
+}
+
+.bar > p {
+  margin: 0;
+}
+
+.top {
+  color: var(--type-ink);
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}

@@ -1,0 +1,107 @@
+/* Header del experimento — clon 1:1 de Melon: barra superior plana,
+   logotipo a la izquierda, navegación a la derecha, ~90px de alto.
+   Sin píldora, sin glass. Position absolute: se va con el scroll. */
+
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 90px;
+  padding-inline: var(--page-margin);
+  /* Velo superior suave: la navegación va sobre la palabra gigante
+     blanca del hero y sin él los enlaces se pierden en las letras. */
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--melon-dark) 45%, transparent),
+    transparent
+  );
+}
+
+.logo {
+  color: var(--type-ink);
+  text-decoration: none;
+  font-family: var(--font-gothic);
+  font-weight: 400;
+  font-size: var(--type-h5-size);
+  line-height: var(--type-h5-leading);
+  letter-spacing: var(--type-h5-tracking);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.nav a {
+  color: var(--type-ink);
+  text-decoration: none;
+}
+
+.nav a:hover {
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}
+
+.lang {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--type-ink);
+  cursor: pointer;
+}
+
+.menu {
+  display: none;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--type-ink);
+  cursor: pointer;
+}
+
+@media (max-width: 1023px) {
+  .nav a {
+    display: none;
+  }
+
+  .menu {
+    display: block;
+  }
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--melon-dark);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-6) var(--page-margin);
+}
+
+.close {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--type-ink);
+  cursor: pointer;
+}
+
+.overlayNav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-16);
+}
+
+.overlayNav a {
+  color: var(--type-ink);
+  text-decoration: none;
+}

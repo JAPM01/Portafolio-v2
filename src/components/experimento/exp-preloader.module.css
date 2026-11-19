@@ -1,0 +1,125 @@
+/* Preloader estilo Moisez (v2 con motion), medido en vivo: pantalla azul
+   con disco negro que rebota (asterisco + anillo) y salida en 12 franjas
+   verticales que suben escalonadas de izquierda a derecha. */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.strips {
+  position: absolute;
+  inset: 0;
+  display: flex;
+}
+
+.strip {
+  flex: 1;
+  background: var(--brand-blue);
+  animation: stripUp 0.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+@keyframes stripUp {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-101%);
+  }
+}
+
+/* Disco negro con asterisco de 8 puntas y anillo fino (Moisez: la pelota
+   que rebota mientras suben las franjas). */
+.ball {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  width: 155px;
+  height: 155px;
+  animation: bounce 0.9s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0) scale(1, 1);
+  }
+  35% {
+    transform: translateX(-50%) translateY(-64px) scale(1, 1);
+  }
+  55% {
+    transform: translateX(-50%) translateY(0) scale(1.15, 0.85);
+  }
+  75% {
+    transform: translateX(-50%) translateY(-28px) scale(1, 1);
+  }
+}
+
+.disc {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.discFill {
+  fill: var(--brand-black);
+}
+
+.discRing {
+  fill: none;
+  stroke: var(--brand-blue);
+  stroke-width: 1.5;
+}
+
+.discStar {
+  stroke: var(--brand-blue);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+/* Sombra suave y difusa bajo la pelota. */
+.shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  width: 120px;
+  height: 16px;
+  border-radius: 50%;
+  background: color-mix(in oklch, var(--brand-black) 45%, transparent);
+  filter: blur(8px);
+  transform: translateX(-50%);
+  animation: shadowPulse 0.9s ease-in-out infinite;
+}
+
+@keyframes shadowPulse {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: translateX(-50%) scale(1, 1);
+  }
+  35% {
+    opacity: 0.3;
+    transform: translateX(-50%) scale(0.6, 0.6);
+  }
+  55% {
+    opacity: 0.9;
+    transform: translateX(-50%) scale(1.1, 1);
+  }
+  75% {
+    opacity: 0.4;
+    transform: translateX(-50%) scale(0.75, 0.75);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .strip {
+    animation: none;
+  }
+
+  .ball,
+  .shadow {
+    animation: none;
+  }
+}

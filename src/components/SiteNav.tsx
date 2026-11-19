@@ -13,8 +13,7 @@ const HeaderLiquidGL = dynamic(() => import("./HeaderLiquidGL"), { ssr: false })
 
 const LINKS = [
   { href: px("/"), es: "Inicio", en: "Home" },
-  { href: px("/#work"), es: "Proyectos", en: "Work" },
-  { href: px("/#process-summary"), es: "Proceso", en: "Process" },
+  { href: px("/experimento"), es: "Versión 2 experimento", en: "Version 2 experiment" },
   { href: px("/contact"), es: "Contacto", en: "Contact" },
 ] as const;
 

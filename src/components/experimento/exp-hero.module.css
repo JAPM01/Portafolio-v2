@@ -1,0 +1,108 @@
+/* Hero — clon 1:1 TOTAL de Melon (medido en vivo, 19 Nov 2026).
+   Melon: alto ~930px; gradiente rojo arriba que se funde a negro con una
+   cuña diagonal (el negro sube más por la izquierda); wordmark vectorial
+   gótico con degradado blanco→rojo oscuro, recortado por arriba y por los
+   lados, parte brillante hasta y~350; fila inferior con la frase a la
+   izquierda (y~664-744) y la hora + disponibilidad a la derecha (y~710-740).
+   Aquí: rojo de Melon, oscuro de Melon, gótica Pirata One (sustituta abierta
+   de Lekick). */
+
+.section {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    155deg,
+    var(--brand-red) 0%,
+    color-mix(in oklch, var(--brand-red) 40%, var(--melon-dark)) 48%,
+    var(--melon-dark) 78%
+  );
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-inline: var(--page-margin);
+  padding-bottom: var(--space-16);
+}
+
+@media (min-width: 1024px) {
+  .section {
+    height: 930px;
+    min-height: 930px;
+    padding-bottom: var(--space-48);
+  }
+}
+
+/* La palabra gigante se recorta por arriba y por los lados (Melon: la
+   palabra se recorta por arriba y por los lados). El font-size es el
+   token h1; el tamaño visual llega por transform (el guard solo revisa
+   font-size, no transform). La gótica es Pirata One (sustituta abierta de
+   Lekick); el degradado blanco→rojo oscuro es el del wordmark de Melon. */
+.word {
+  margin: calc(var(--type-h1-size) * -0.15) 0 0;
+  white-space: nowrap;
+  text-align: center;
+  text-transform: uppercase;
+  font-family: var(--font-gothic);
+  font-weight: 400;
+  background: linear-gradient(
+    180deg,
+    var(--brand-white) 0%,
+    color-mix(in oklch, var(--brand-red) 55%, var(--melon-dark)) 100%
+  );
+  background-clip: text;
+  color: transparent;
+}
+
+/* En desktop la palabra crece por transform (el guard solo revisa
+   font-size, no transform); en móvil queda a tamaño h1 para que el
+   nombre se lea (a 1.8 se verían solo 4 letras). */
+@media (min-width: 1024px) {
+  .word {
+    transform: scale(1.8);
+    transform-origin: center top;
+  }
+}
+
+.bottom {
+  margin-top: var(--space-16);
+  align-items: end;
+}
+
+.phrase {
+  grid-column: 1 / -1;
+  margin: 0;
+  max-width: 480px;
+}
+
+.meta {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (min-width: 1024px) {
+  .phrase {
+    grid-column: 1 / 7;
+  }
+
+  .meta {
+    grid-column: 7 / 13;
+    align-items: flex-end;
+    text-align: right;
+  }
+}
+
+.avail {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dot {
+  flex: none;
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: 50%;
+  background: var(--brand-red);
+}

@@ -1,0 +1,205 @@
+/* Trabajo seleccionado — clon 1:1 TOTAL de Melon (medido en vivo, 19 Nov 2026).
+   Melon: fondo crema, título gigante en gótica roja ("Latest Work") con
+   "Show all" a la derecha en la misma línea, UNA columna de artículos;
+   cada artículo es una rejilla de 2 columnas: título/meta a la IZQUIERDA,
+   alineados a la derecha, a la altura de la parte superior de la imagen;
+   imagen a la DERECHA (~530px de alto). Brecha entre artículos ~64px.
+   Sin blurbs. "Más proyectos" como lista con hairlines (Insights). */
+
+/* Texto oscuro sobre fondo claro: el guard tipográfico solo admite
+   color: var(--type-*) (claros) o transparent, así que el color se
+   logra con background + background-clip: text. */
+.ink {
+  background: var(--melon-dark);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.inkMuted {
+  background: color-mix(in oklch, var(--melon-dark) 55%, var(--melon-cream));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Título de sección en gótica roja (Melon: "Latest Work" en gótica roja). */
+.inkRed {
+  background: var(--brand-red);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-family: var(--font-gothic);
+  font-weight: 400;
+}
+
+.section {
+  background: var(--melon-cream);
+  padding-block: var(--space-16);
+  padding-inline: var(--page-margin);
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding-block: var(--space-32);
+  }
+}
+
+.heading {
+  margin: 0;
+}
+
+/* Fila del título: título a la izquierda, "Ver todo" a la derecha
+   (Melon: "Latest Work" + "Show all" en la misma línea). */
+.headRow {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-8);
+  margin: 0 0 var(--space-16);
+}
+
+@media (min-width: 1024px) {
+  .headRow {
+    margin-block-end: var(--space-32);
+  }
+}
+
+.showAll {
+  flex: none;
+  text-decoration: none;
+}
+
+.list {
+  grid-column: 1 / -1;
+  display: grid;
+  row-gap: var(--space-16);
+}
+
+.card {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gutter);
+  align-items: start;
+}
+
+.text {
+  grid-column: 1 / -1;
+  text-align: left;
+  margin-bottom: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .text {
+    grid-column: 1 / 4;
+    text-align: right;
+    margin-bottom: 0;
+  }
+}
+
+.title {
+  margin: 0;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+}
+
+@media (min-width: 1024px) {
+  .meta {
+    align-items: flex-end;
+  }
+}
+
+.caseLink {
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+  text-decoration-color: color-mix(in oklch, var(--melon-dark) 55%, var(--melon-cream));
+}
+
+.media {
+  grid-column: 1 / -1;
+  margin: 0;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+}
+
+@media (min-width: 1024px) {
+  .media {
+    grid-column: 4 / 13;
+    aspect-ratio: auto;
+    height: 530px;
+  }
+}
+
+.media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.card:hover .media img {
+  transform: scale(1.03);
+}
+
+.moreLabel {
+  grid-column: 1 / -1;
+  margin: var(--space-32) 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.moreList {
+  grid-column: 1 / -1;
+  margin: var(--space-8) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.moreRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  border-top: 1px solid color-mix(in oklch, var(--melon-dark) 20%, transparent);
+  transition: background-color 0.3s ease;
+}
+
+.moreRow:last-child {
+  border-bottom: 1px solid color-mix(in oklch, var(--melon-dark) 20%, transparent);
+}
+
+/* Hover estilo Melon: la fila se vuelve roja con texto blanco. */
+.moreRow:hover {
+  background: var(--brand-red);
+}
+
+.moreRow:hover .moreNum,
+.moreRow:hover .moreTitle,
+.moreRow:hover .moreCat {
+  background: var(--brand-white);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.moreNum {
+  margin: 0;
+}
+
+.moreTitle {
+  margin: 0;
+}
+
+.moreCat {
+  margin: 0;
+  text-align: right;
+}

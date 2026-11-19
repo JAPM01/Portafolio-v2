@@ -9,17 +9,30 @@ const read = (path) => readFileSync(new URL("../" + path, import.meta.url), "utf
 const globals = read("src/app/globals.css");
 
 test("Una sola retícula estructural en todas las secciones", () => {
+  // Home (19 Nov 2026): solo Hero + Intro; las demás secciones están en
+  // src/components/_backup-placeholder/ y nada las importa. La versión
+  // experimento vive en src/components/experimento/.
   for (const name of [
-    "Hero", "Intro", "Capabilities", "Work", "ProcessSummary",
-    "MarkShowcase", "Terms", "Faq", "Why", "ContactClose", "WorkDetail",
+    "Hero", "Intro", "ContactClose", "WorkDetail",
+    "experimento/ExpWork", "experimento/ExpExperience",
+    "experimento/ExpClients", "experimento/ExpTestimonials",
+    "experimento/ExpCv", "experimento/ExpClose",
+    "experimento/ExpHero", "experimento/ExpManifesto",
+    // ExpPreloader y ExpGridLines son overlays (velo + líneas de fondo),
+    // no secciones: no usan la retícula.
   ]) {
     assert.match(read("src/components/" + name + ".tsx"), /\bsite-grid\b/,
       name + ": falta la retícula compartida");
   }
   assert.match(read("src/app/privacy/page.tsx"), /\bsite-grid\b/);
   for (const name of [
-    "capabilities", "intro", "terms", "why", "faq", "process-summary",
-    "work-detail", "contact-close", "work", "mark-showcase",
+    "intro", "work-detail", "contact-close",
+    "experimento/exp-work", "experimento/exp-experience",
+    "experimento/exp-clients", "experimento/exp-testimonials",
+    "experimento/exp-cv", "experimento/exp-close",
+    "experimento/exp-hero", "experimento/exp-manifesto",
+    "experimento/exp-header",
+    "experimento/exp-preloader", "experimento/exp-grid-lines",
   ]) {
     assert.doesNotMatch(read("src/components/" + name + ".module.css"),
       /grid-template-columns:\s*minmax\(0,\s*39fr\)/,

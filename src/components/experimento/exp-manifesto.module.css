@@ -1,0 +1,95 @@
+/* Manifiesto — clon 1:1 TOTAL de Melon About (medido en vivo, 19 Nov 2026).
+   Melon: fondo crema, statement gigante a todo lo ancho EN ROJO con un
+   disco rojo con retrato circular incrustado en la frase (aquí disco rojo
+   con "JP" hasta que el retrato entre por git) y debajo dos párrafos en
+   dos columnas + enlace "More about me". Sin principios numerados
+   (eso es Moisez, no Melon). */
+
+/* Texto oscuro sobre fondo claro: el guard tipográfico solo admite
+   color: var(--type-*) (claros) o transparent, así que el color se
+   logra con background + background-clip: text. */
+.ink {
+  background: var(--melon-dark);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.inkMuted {
+  background: color-mix(in oklch, var(--melon-dark) 55%, var(--melon-cream));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Statement en rojo (Melon: el statement de About es rojo). */
+.inkRed {
+  background: var(--brand-red);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.section {
+  background: var(--melon-cream);
+  padding-block: var(--space-16);
+  padding-inline: var(--page-margin);
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding-block: var(--space-32);
+  }
+}
+
+.statement {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+/* Disco rojo con las iniciales (Melon: retrato circular sobre disco rojo
+   incrustado en la frase; aquí el retrato real es placeholder). */
+.disc {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--type-h2-size) * 0.85);
+  height: calc(var(--type-h2-size) * 0.85);
+  margin-inline: 0.12em;
+  border-radius: 50%;
+  background: var(--brand-red);
+  color: var(--type-ink);
+  font-size: var(--type-h4-size);
+  line-height: 1;
+  vertical-align: -0.06em;
+}
+
+.body {
+  grid-column: 1 / -1;
+  margin: var(--space-16) 0 0;
+}
+
+.body p {
+  margin: 0 0 var(--space-6);
+}
+
+.body p:last-child {
+  margin-bottom: 0;
+}
+
+@media (min-width: 1024px) {
+  .body {
+    grid-column: 1 / 7;
+  }
+
+  .bodySecond {
+    grid-column: 7 / 13;
+    margin-top: var(--space-16);
+  }
+}
+
+.moreLink {
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+  text-decoration-color: color-mix(in oklch, var(--melon-dark) 55%, var(--melon-cream));
+}

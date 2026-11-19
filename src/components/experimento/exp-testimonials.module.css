@@ -1,0 +1,103 @@
+/* Testimonios — versión experimento. Cita grande con comillas gigantes. */
+
+.section {
+  background: var(--brand-red);
+  padding-block: var(--space-16);
+  padding-inline: var(--page-margin);
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding-block: var(--space-32);
+  }
+}
+
+.label {
+  grid-column: 1 / -1;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--type-body-ink);
+}
+
+.heading {
+  grid-column: 1 / -1;
+  margin-block: var(--space-4) var(--space-16);
+  max-width: 12ch;
+}
+
+@media (min-width: 1024px) {
+  .heading {
+    margin-block-end: var(--space-32);
+  }
+}
+
+.quote {
+  grid-column: 1 / -1;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 960px;
+  margin-inline: auto;
+  text-align: center;
+  border-top: 1px solid color-mix(in oklch, var(--brand-white) 25%, transparent);
+  padding-top: var(--space-8);
+}
+
+@media (min-width: 1024px) {
+  .quote {
+    grid-column: 2 / 12;
+  }
+}
+
+.mark {
+  font-family: var(--font-display);
+  font-size: var(--type-h1-size);
+  line-height: 0.5;
+  color: var(--type-ink);
+}
+
+.text {
+  margin: 0;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: var(--space-2) var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid color-mix(in oklch, var(--brand-white) 25%, transparent);
+}
+
+.caseLink {
+  margin-left: auto;
+  color: var(--type-ink);
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+.ctrlBtn {
+  width: var(--space-12);
+  height: var(--space-12);
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklch, var(--brand-white) 40%, transparent);
+  background: transparent;
+  color: var(--type-ink);
+  font-size: var(--type-body-size);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}

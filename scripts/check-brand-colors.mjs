@@ -8,7 +8,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dirname, "..");
-const BASES = ["blue", "orange", "cyan", "black", "white"];
+const BASES = ["blue", "orange", "cyan", "black", "white", "red"];
 const SHADE_NAMES = [
   ...Array.from({ length: 7 }, (_, n) => "blue-" + (n + 1)),
   ...Array.from({ length: 3 }, (_, n) => "orange-" + (n + 1)),
@@ -134,7 +134,7 @@ function checkNamedColors(name, source, errors) {
 
 function scanFile(name, raw, errors) {
   const text = withoutComments(raw);
-  const allowedBase = /^\s*--brand-(blue|orange|cyan|black|white):\s*(#[a-f0-9]{6});\s*$/i;
+  const allowedBase = /^\s*--brand-(blue|orange|cyan|black|white|red):\s*(#[a-f0-9]{6});\s*$/i;
   const lines = text.split("\n");
 
   for (const [i, line] of lines.entries()) {
@@ -336,5 +336,5 @@ if (problems.length) {
   for (const item of problems) console.error(" - " + item);
   process.exitCode = 1;
 } else {
-  console.log("COLOR GUARD: VERDE. Cinco bases, shades vinculados y cero colores independientes.");
+  console.log("COLOR GUARD: VERDE. Seis bases, shades vinculados y cero colores independientes.");
 }

@@ -1,0 +1,95 @@
+/* Clientes — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
+   Melon: retícula de 8 columnas, celda ~232×195 px a 1920, logos en
+   gris/blanco separados por hairlines; la última celda rompe la pauta
+   con una invitación ("This spot's open. Let's talk ↗"). Aquí los logos
+   son los nombres en mono (no hay archivos de logo de estos clientes). */
+
+.section {
+  background: var(--melon-dark);
+  padding-block: var(--space-16);
+  padding-inline: var(--page-margin);
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding-block: var(--space-32);
+  }
+}
+
+.heading {
+  grid-column: 1 / -1;
+  margin: 0 0 var(--space-16);
+}
+
+@media (min-width: 1024px) {
+  .heading {
+    margin-block-end: var(--space-32);
+  }
+}
+
+.wall {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid color-mix(in oklch, var(--brand-white) 12%, transparent);
+  border-left: 1px solid color-mix(in oklch, var(--brand-white) 12%, transparent);
+}
+
+@media (min-width: 768px) {
+  .wall {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .wall {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+  border-right: 1px solid color-mix(in oklch, var(--brand-white) 12%, transparent);
+  border-bottom: 1px solid color-mix(in oklch, var(--brand-white) 12%, transparent);
+}
+
+@media (min-width: 1024px) {
+  .cell {
+    height: 195px;
+    min-height: 195px;
+  }
+}
+
+.name {
+  margin: 0;
+}
+
+.ctaCell {
+  padding: 0;
+}
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  height: 100%;
+  padding: var(--space-6) var(--space-4);
+  color: var(--type-ink);
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.cta:hover {
+  background: var(--brand-red);
+}

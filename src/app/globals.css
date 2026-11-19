@@ -1,11 +1,15 @@
 /* ==========================================================================
-   Design system del portafolio: cinco colores base, derivados y tokens semánticos.
+   Design system del portafolio: seis colores base, derivados y tokens semánticos.
    La única paleta editable está en :root, --brand-blue / orange / cyan /
-   black / white. CSS, SVG inline y shaders dependen de esas bases.
+   black / white / red. CSS, SVG inline y shaders dependen de esas bases.
+   El rojo es el de Melon (#FD241A, medido en vivo 19 Nov 2026) y SOLO se
+   usa en la ruta /experimento (clon 1:1 total); el sitio principal no lo usa.
    ========================================================================== */
 
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Pirata+One&display=swap");
 
 :root {
   /* ÚNICA FUENTE DE VERDAD: cinco bases editables de marca.
@@ -17,6 +21,8 @@
   --brand-cyan: #6FD3FF;
   --brand-black: #010101;
   --brand-white: #FEFEFE;
+  /* Rojo de Melon, medido en vivo 19 Nov 2026. SOLO para /experimento. */
+  --brand-red: #FD241A;
 
   /* Tonalidades calculadas, sin nuevos colores literales. */
   --brand-blue-1: var(--brand-blue);
@@ -140,6 +146,12 @@
   /* Títulos: Google Sans (decisión de Jafet, 16 Nov 2026). */
   --font-display: "Google Sans", ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Metadatos: IBM Plex Mono (sistema tipográfico de Lucas Lima, v2 Melon). */
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", "Cascadia Code",
+    Menlo, Consolas, monospace;
+  /* Gótica del clon 1:1 de Melon (Lekick es licenciada a Melon; Pirata One
+     es OFL y es la sustituta abierta más cercana). SOLO para /experimento. */
+  --font-gothic: "Pirata One", "UnifrakturMaguntia", serif;
 
   --leading-heading-6xl: 0.94;
   --tracking-heading-6xl: -0.038em;
@@ -550,6 +562,7 @@ h6 {
 .type-h5 { font-family: var(--font-display); font-weight: 400; font-size: var(--type-h5-size); line-height: var(--type-h5-leading); letter-spacing: var(--type-h5-tracking); color: var(--type-ink); }
 .type-body { font-family: var(--font-body); font-size: var(--type-body-size); line-height: var(--type-body-leading); letter-spacing: var(--type-body-tracking); color: var(--type-body-ink); }
 .type-meta { font-family: var(--font-body); font-size: var(--type-meta-size); line-height: var(--type-meta-leading); letter-spacing: var(--type-meta-tracking); color: var(--type-meta-ink); }
+.type-mono { font-family: var(--font-mono); font-weight: 400; font-size: var(--type-meta-size); line-height: var(--type-meta-leading); color: var(--type-meta-ink); }
 /* Los valores siguen a estos tokens en cualquier breakpoint. */
 body:has([data-chromeless]) nav {
   display: none;
