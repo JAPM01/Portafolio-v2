@@ -29,7 +29,7 @@ test("El Venn mantiene tres columnas y conserva las etiquetas Meta a tamaño CSS
   assert.match(intro, /row-gap:\s*var\(--space-6\)/);
   assert.doesNotMatch(intro, /inline-size:\s*116%/);
   assert.match(jsx, /const MESH_ARTWORK = tripleIntersectionBounds\(\)/);
-  assert.match(jsx, /<HeroBackground follow=\{0\} zoom=\{0\.2\} center=\{\[0\.6, 0\.5\]\} referenceSpace="viewport"\s*\/>/);
+  assert.match(jsx, /<HeroBackground follow=\{0\} referenceSpace="viewport"\s*\/>/);
   // Muse: cada círculo mantiene su marca, el mismo orden y ciclo de 18s.
   assert.match(jsx, /"var\(--brand-orange\)"[\s\S]*"var\(--brand-blue\)"[\s\S]*"var\(--brand-cyan\)"/);
   assert.match(jsx, /P\.on\.forEach/);
@@ -66,5 +66,5 @@ test("El Venn mantiene tres columnas y conserva las etiquetas Meta a tamaño CSS
   assert.match(jsx, /lit\[i\]!\.setAttribute\("opacity", String\(v\)\)/);
   // El pulso, el mesh y las ventanas de encendido originales permanecen.
   assert.match(jsx, /hold:\s*\[0\.65, 0\.93\]/);
-  assert.match(jsx, /<HeroBackground follow=\{0\} zoom=\{0\.2\} center=\{\[0\.6, 0\.5\]\} referenceSpace="viewport"/);
+  assert.match(jsx, /<HeroBackground follow=\{0\} referenceSpace="viewport"/);
 });
