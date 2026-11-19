@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import { MorphIcon } from "morphicons/react";
-import { ArrowUpRight, Globe, Languages, Menu, Moon, Sun, X } from "lucide";
+import { ArrowUpRight, Globe, Languages, Menu, X } from "lucide";
 import { px } from "../lib/paths";
 import styles from "./site-nav.module.css";
 
@@ -19,7 +19,6 @@ const LINKS = [
 ] as const;
 
 type Language = "es" | "en";
-type Theme = "dark" | "light";
 
 function subscribeLanguage(listener: () => void) {
   window.addEventListener("site-lang", listener);
@@ -28,19 +27,6 @@ function subscribeLanguage(listener: () => void) {
 
 function currentLanguage(): Language {
   return document.documentElement.lang === "en" ? "en" : "es";
-}
-
-function subscribeTheme(listener: () => void) {
-  const observer = new MutationObserver(listener);
-  observer.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ["data-theme"],
-  });
-  return () => observer.disconnect();
-}
-
-function currentTheme(): Theme {
-  return document.documentElement.dataset.theme === "light" ? "light" : "dark";
 }
 
 function subscribeScroll(listener: () => void) {
@@ -70,7 +56,6 @@ export default function SiteNav() {
   // Server snapshot stays stable during hydration; actual state is read
   // from the existing <html> attributes once the browser is ready.
   const language = useSyncExternalStore(subscribeLanguage, currentLanguage, () => "es");
-  const theme = useSyncExternalStore(subscribeTheme, currentTheme, () => "dark");
   const scrolled = useSyncExternalStore(subscribeScroll, isScrolled, () => false);
   const overHero = useSyncExternalStore(subscribeScroll, isOverHero, () => false);
 
@@ -111,16 +96,6 @@ export default function SiteNav() {
     window.dispatchEvent(new CustomEvent("site-lang", { detail: next }));
   }
 
-  function toggleTheme() {
-    const next: Theme = theme === "light" ? "dark" : "light";
-    document.documentElement.dataset.theme = next;
-    try {
-      localStorage.setItem("site-theme", next);
-    } catch {
-      // The theme change remains functional without persistence.
-    }
-  }
-
   // No glass capsule over the hero at rest. On scroll (or elsewhere on
   // the site), the liquidGL lens refracts the content behind the same nav.
   const showGlass = scrolled || !overHero;
@@ -152,24 +127,9 @@ export default function SiteNav() {
                     English. The title still names the target language. */}
                 <MorphIcon icon={isSpanish ? Globe : Languages} size={22} strokeWidth={1.9} reducedMotion="user" />
               </button>
-              <button
-                type="button"
-                className={styles.iconButton}
-                onClick={toggleTheme}
-                aria-label={
-                  theme === "light"
-                    ? isSpanish ? "Activar modo oscuro" : "Enable dark mode"
-                    : isSpanish ? "Activar modo claro" : "Enable light mode"
-                }
-                title={theme === "light" ? "Dark mode" : "Light mode"}
-              >
-                <MorphIcon
-                  icon={theme === "light" ? Moon : Sun}
-                  size={22}
-                  strokeWidth={1.9}
-                  reducedMotion="user"
-                />
-              </button>
+              {/* Sin icono de tema: el sitio queda fijo en oscuro, que es
+                  su paleta final. Quedan solo el icono de idioma y el
+                  menú. */}
               <span className={styles.divider} aria-hidden="true" />
               <button
                 ref={menuButtonRef}

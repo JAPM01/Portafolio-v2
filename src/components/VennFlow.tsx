@@ -276,9 +276,14 @@ export default function VennFlow({ lang }: { lang: Lang }) {
           <div className={styles.meshClip} style={{ clipPath: circleClip(G.technology) }}>
             <div className={styles.meshClip} style={{ clipPath: circleClip(G.usability) }}>
               {/* La intersección recibe el frame completo del Hero en
-                  miniatura. Las tres máscaras originales lo recortan. */}
+                  miniatura. Las tres máscaras originales lo recortan.
+                  Encuadre muy alejado (zoom 0.2) para que entren los
+                  3 colores como en el hero (azul, cian y naranja) y el
+                  brillo blanco/cian sea solo una veta fina, no un
+                  manchón: sin ese encuadre el recorte se ve como una
+                  mancha. */}
               <div className={styles.meshArtwork} style={MESH_ARTWORK}>
-                <HeroBackground follow={0} referenceSpace="viewport" />
+                <HeroBackground follow={0} zoom={0.2} center={[0.6, 0.5]} referenceSpace="viewport" />
               </div>
             </div>
           </div>

@@ -29,7 +29,7 @@ test("El Venn mantiene tres columnas y conserva las etiquetas Meta a tamaño CSS
   assert.match(intro, /row-gap:\s*var\(--space-6\)/);
   assert.doesNotMatch(intro, /inline-size:\s*116%/);
   assert.match(jsx, /const MESH_ARTWORK = tripleIntersectionBounds\(\)/);
-  assert.match(jsx, /<HeroBackground follow=\{0\} referenceSpace="viewport"\s*\/>/);
+  assert.match(jsx, /<HeroBackground follow=\{0\} zoom=\{0\.2\} center=\{\[0\.6, 0\.5\]\} referenceSpace="viewport"\s*\/>/);
   // Muse: cada círculo mantiene su marca, el mismo orden y ciclo de 18s.
   assert.match(jsx, /"var\(--brand-orange\)"[\s\S]*"var\(--brand-blue\)"[\s\S]*"var\(--brand-cyan\)"/);
   assert.match(jsx, /P\.on\.forEach/);
@@ -39,11 +39,12 @@ test("El Venn mantiene tres columnas y conserva las etiquetas Meta a tamaño CSS
   assert.doesNotMatch(section, /SOBRE MI MÉTODO|ABOUT MY METHOD|t\.eyebrow/);
   assert.match(intro, /\.headingBlock\s*\{[^}]*text-align:\s*center/);
   // El anillo interno es una línea de construcción fina y sutil
-  // (trazo hairline, guionado LARGO 10/3, opacidad baja), va debajo
-  // del mesh y NUNCA se pinta: solo el círculo sólido exterior.
+  // (trazo hairline aún más fino, guionado MUY LARGO 16/4, opacidad
+  // baja), va debajo del mesh y NUNCA se pinta: solo el círculo
+  // sólido exterior.
   assert.match(css, /\.innerRing\s*\{[^}]*r:\s*calc\(var\(--venn-ring-radius\) - var\(--space-2\)\)/);
-  assert.match(css, /stroke-dasharray:\s*10 3/);
-  assert.match(css, /stroke-width:\s*calc\(var\(--border-width\) \/ 2\)/);
+  assert.match(css, /stroke-dasharray:\s*16 4/);
+  assert.match(css, /stroke-width:\s*calc\(var\(--border-width\) \/ 4\)/);
   assert.match(jsx, /className=\{styles\.innerRing\}/);
   assert.doesNotMatch(jsx, /innerLitRing|accentLitArc/);
   assert.doesNotMatch(css, /\.innerLitRing|\.accentLitArc/);
@@ -65,5 +66,5 @@ test("El Venn mantiene tres columnas y conserva las etiquetas Meta a tamaño CSS
   assert.match(jsx, /lit\[i\]!\.setAttribute\("opacity", String\(v\)\)/);
   // El pulso, el mesh y las ventanas de encendido originales permanecen.
   assert.match(jsx, /hold:\s*\[0\.65, 0\.93\]/);
-  assert.match(jsx, /<HeroBackground follow=\{0\} referenceSpace="viewport"/);
+  assert.match(jsx, /<HeroBackground follow=\{0\} zoom=\{0\.2\} center=\{\[0\.6, 0\.5\]\} referenceSpace="viewport"/);
 });

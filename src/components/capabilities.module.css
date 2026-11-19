@@ -49,16 +49,16 @@
   max-width: 42ch;
 }
 
-/* Acentos: en "armed" todo el párrafo es un gris medio; al entrar al
-   viewport ("in") transiciona 1.1s a su color final (gris el texto,
-   color primario los acentos). */
+/* Acentos: en "armed" el párrafo ya es el gris del body (#CECECE);
+   al entrar al viewport ("in") transiciona 1.1s y luego queda en
+   "done". El body no pasa por el gris medio de meta (#A4A4A4). */
 .copy[data-tone="armed"] {
   --tone-mid: color-mix(in oklch, var(--neutral-9) 50%, var(--text-primary));
-  color: var(--type-meta-ink);
+  color: var(--type-body-ink);
 }
 
 .copy[data-tone="armed"] .accent {
-  color: var(--type-meta-ink);
+  color: var(--type-body-ink);
 }
 
 .copy[data-tone="in"],

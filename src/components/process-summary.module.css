@@ -151,11 +151,11 @@
 
 .text[data-tone="armed"] {
   --tone-mid: color-mix(in oklch, var(--neutral-9) 50%, var(--text-primary));
-  color: var(--type-meta-ink);
+  color: var(--type-body-ink);
 }
 
 .text[data-tone="armed"] .accent {
-  color: var(--type-meta-ink);
+  color: var(--type-body-ink);
 }
 
 .text[data-tone="in"],

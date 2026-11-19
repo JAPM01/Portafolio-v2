@@ -31,18 +31,18 @@
 }
 /* Doble contorno técnico: mismo radio de cada círculo, con sangría tomada
    directamente del token global --space-2. Línea de construcción fina
-   y sutil: trazo hairline (la mitad del borde) y guionado LARGO
-   (10 de trazo, 3 de hueco): pocos guiones largos, como una línea
-   de construcción técnica, nunca una marca de recortar. Opacidad
-   baja para que sea una guía elegante. Nunca cambia de color: el
-   anillo interno no se pinta. */
+   y sutil: trazo hairline aún más fino (la cuarta parte del borde,
+   0.25px) y guionado MUY LARGO (16 de trazo, 4 de hueco): pocos
+   guiones largos, como una guía técnica, nunca una marca de recortar
+   ni una perforación. Opacidad baja para que sea solo una guía
+   elegante. Nunca cambia de color: el anillo interno no se pinta. */
 .innerRing {
   r: calc(var(--venn-ring-radius) - var(--space-2));
   fill: none;
   stroke: var(--type-meta-ink);
-  stroke-width: calc(var(--border-width) / 2);
-  stroke-dasharray: 10 3;
-  opacity: 0.7;
+  stroke-width: calc(var(--border-width) / 4);
+  stroke-dasharray: 16 4;
+  opacity: 0.45;
   vector-effect: non-scaling-stroke;
 }
 /* La animación enciende TODO el círculo sólido exterior con SU color
