@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
  *
  * Las imágenes se referencian por URL remota a melon.studio porque el
  * snapshot de GitHub no admite binarios. Para validación local se
- * sustituye el prefijo MELON_BASE por /Portafolio-v2/exp/melon: las
+ * sustituye el prefijo MELON_BASE por https://melon.studio: las
  * copias locales en public/exp/melon replican la estructura de rutas
  * de melon.studio (media/..., brand/...). RESTAURAR las remotas antes
  * de subir.

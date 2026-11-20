@@ -1,7 +1,9 @@
 "use client";
 
+import { useRef } from "react";
 import { EXP_EXPERIENCE, EXP_FREELANCE, EXP_STRINGS } from "../../lib/exp-content";
 import styles from "./exp-experience.module.css";
+import { useLiquidReveal } from "./useLiquidReveal";
 
 /**
  * Experiencia — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
@@ -9,15 +11,20 @@ import styles from "./exp-experience.module.css";
  * derecha); cada fila: logo cuadrado 72×72 + nombre + rol gris + fecha
  * en mono a la derecha; hairlines. Abajo: "As a freelancer I worked
  * with" + los 4 nombres como wordmarks de texto.
+ * Motion (estudio visual, 19 Nov 2026): el encabezado "Experience"
+ * entra con el reveal liquid rojo-borroso; las filas NO tienen animación
+ * de scroll ni de hover (no son enlaces).
  */
 export default function ExpExperience() {
   const t = EXP_STRINGS.experience;
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
+  useLiquidReveal(headingRef);
 
   return (
     <section className={styles.section} id="exp-experience" aria-labelledby="exp-experience-heading">
       <div className="site-grid">
         <div className={styles.head}>
-          <h2 className={"type-h2 " + styles.heading} id="exp-experience-heading">
+          <h2 className={"type-h2 " + styles.heading} id="exp-experience-heading" ref={headingRef}>
             {t.heading}
           </h2>
         </div>

@@ -45,6 +45,9 @@
 
 .heading {
   margin: 0;
+  /* Reveal liquid ligado al scroll (useLiquidReveal). */
+  filter: blur(var(--liq-blur, 40px));
+  opacity: var(--liq-op, 0);
 }
 
 .headRow {

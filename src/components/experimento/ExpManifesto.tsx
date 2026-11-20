@@ -5,39 +5,71 @@ import { EXP_STRINGS } from "../../lib/exp-content";
 import styles from "./exp-manifesto.module.css";
 
 /**
- * Manifiesto — clon 1:1 TOTAL de Melon About (medido en vivo, 19 Nov 2026).
- * Melon: statement gigante a todo lo ancho EN ROJO con el retrato circular
- * sobre disco rojo incrustado tras "Piotr", y debajo dos párrafos en dos
- * columnas + enlace "More about me". Sin etiqueta visible (el h2 "About
- * me" de Melon es solo para lectores de pantalla).
- *
- * Animación ligada al scroll (la que faltaba, 19 Nov 2026): el statement
- * se desenfoca progresivamente al hacer scroll (blur según la posición
- * en el viewport), como en Melon. Se respeta prefers-reduced-motion.
+ * Manifiesto — clon 1:1 TOTAL de Melon About, motion sección por sección
+ * (revisión técnica + estudio visual en navegador, 19 Nov 2026):
+ * Melon revela el statement PALABRA POR PALABRA ligado al scroll: las
+ * palabras aún no reveladas son manchas rojas borrosas y onduladas
+ * (tinta líquida); al revelarse quedan negras y nítidas, salvo "slick
+ * SaaS" y "details that", que quedan en rojo. Avanza de izquierda a
+ * derecha y de arriba a abajo, ~6 palabras por cada ~250px de scroll.
+ * La foto circular (disco) y los dos párrafos pequeños son nítidos, sin
+ * efecto. Se respeta prefers-reduced-motion (todo nítido).
  */
+const HIGHLIGHT = new Set(["slick", "SaaS", "details", "that"]);
+
 export default function ExpManifesto() {
   const t = EXP_STRINGS.about;
   const statementRef = useRef<HTMLParagraphElement | null>(null);
+  const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+
+  // Palabras del statement: antes + disco tras "Piotr" + después.
+  const beforeWords = t.statementBefore.split(" ");
+  const afterWords = t.statementAfter.split(" ");
+  const words: { text: string; highlight: boolean }[] = [
+    ...beforeWords.map((w) => ({ text: w, highlight: HIGHLIGHT.has(w) })),
+    ...afterWords.map((w) => ({ text: w, highlight: HIGHLIGHT.has(w) })),
+  ];
+  const discAfter = beforeWords.length; // el disco va tras "Piotr"
 
   useEffect(() => {
     const el = statementRef.current;
     if (!el) return;
     const target: HTMLParagraphElement = el;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const spans = wordRefs.current;
+    if (reduced) {
+      spans.forEach((s, i) => {
+        if (!s) return;
+        s.style.filter = "";
+        // Revelado completo: oscuro (o rojo si es destacada).
+        s.style.setProperty("--w", words[i]?.highlight ? "0" : "1");
+      });
+      return;
+    }
     let raf = 0;
+
     function update() {
       raf = 0;
       const rect = target.getBoundingClientRect();
-      const center = rect.top + rect.height / 2;
-      const vpCenter = window.innerHeight / 2;
-      // El blur crece cuando el statement sube por encima del centro.
-      const progress = Math.max(0, Math.min(1, (vpCenter - center) / window.innerHeight));
-      const blur = progress * 10;
-      target.style.setProperty("--blur", blur.toFixed(2) + "px");
+      const vpH = window.innerHeight;
+      const total = Math.min(1, Math.max(0, (vpH - rect.top) / (vpH + rect.height)));
+      const n = spans.length;
+      spans.forEach((s, i) => {
+        if (!s) return;
+        const p = Math.min(1, Math.max(0, total * n - i));
+        const blur = (1 - p) * 8;
+        s.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "";
+        // El color se interpola en CSS con color-mix y --w (rojo → oscuro;
+        // las destacadas quedan en rojo: --w = 0 siempre).
+        const hl = words[i]?.highlight;
+        s.style.setProperty("--w", hl ? "0" : p.toFixed(3));
+      });
     }
+
     function onScroll() {
       if (!raf) raf = window.requestAnimationFrame(update);
     }
+
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
@@ -46,6 +78,7 @@ export default function ExpManifesto() {
       window.removeEventListener("resize", onScroll);
       if (raf) window.cancelAnimationFrame(raf);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -54,15 +87,35 @@ export default function ExpManifesto() {
         <h2 className="sr-only" id="exp-manifesto-heading">
           About me
         </h2>
-        <p
-          className={"type-h2 " + styles.statement + " " + styles.inkRed}
-          ref={statementRef}
-        >
-          {t.statementBefore}
+        <p className={"type-h2 " + styles.statement} ref={statementRef}>
+          {words.slice(0, discAfter).map((w, i) => (
+            <span
+              key={i}
+              className={styles.word}
+              ref={(s) => {
+                wordRefs.current[i] = s;
+              }}
+            >
+              {w.text}{" "}
+            </span>
+          ))}
           <span className={styles.disc} aria-hidden="true">
             <img src={t.portrait} alt="" loading="lazy" />
           </span>{" "}
-          {t.statementAfter}
+          {words.slice(discAfter).map((w, j) => {
+            const i = discAfter + j;
+            return (
+              <span
+                key={i}
+                className={styles.word}
+                ref={(s) => {
+                  wordRefs.current[i] = s;
+                }}
+              >
+                {w.text}{" "}
+              </span>
+            );
+          })}
         </p>
 
         <div className={styles.body}>

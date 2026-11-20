@@ -1,20 +1,16 @@
 /* Contacto + Footer — clon 1:1 TOTAL de Melon (medido en vivo, 19 Nov 2026).
-   Melon: contacto en CREMA con solo el correo gigante en negro +
-   "Start a project →"; footer oscuro con 3 zonas (Contact + Services,
-   Social, Listening & Reading), logo grande y barra inferior en mono. */
+   CORRECCIÓN (revisión del DOM de Melon, 19 Nov 2026): la sección de
+   contacto es data-tone="black" — FONDO NEGRO con el correo gigante en
+   BLANCO (no crema/negro como se había leído). Un bloque negro con
+   borde superior suave y ondulado sube como mancha de tinta y cubre la
+   sección roja de testimonios; el correo lleva un resplandor rojo
+   difuminado detrás de su lado derecho. Footer oscuro con 3 zonas. */
 
-/* Texto oscuro sobre fondo claro (contacto en crema): el guard
-   tipográfico solo admite color: var(--type-*) (claros) o transparent,
-   así que el color se logra con background + background-clip: text. */
-.ink {
-  background: var(--melon-dark);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
+/* Texto claro sobre fondo oscuro (contacto negro): color directo
+   var(--type-ink) (blanco), admitido por el guard tipográfico. */
 .contact {
-  background: var(--melon-cream);
+  position: relative;
+  background: var(--melon-dark);
   padding-block: var(--space-16);
   padding-inline: var(--page-margin);
 }
@@ -25,11 +21,29 @@
   }
 }
 
+/* Borde superior ondulado (mancha de tinta): SVG con el borde superior
+   en onda suave, que se solapa con la sección de arriba. */
+.wave {
+  display: block;
+  width: 100%;
+  height: 60px;
+  margin-top: -60px;
+  position: relative;
+  z-index: 1;
+}
+
+.wave path {
+  fill: var(--melon-dark);
+}
+
 .email {
   grid-column: 1 / -1;
   display: block;
   text-decoration: none;
   overflow-wrap: anywhere;
+  color: var(--type-ink);
+  position: relative;
+  z-index: 1;
 }
 
 .email:hover {
@@ -37,11 +51,32 @@
   text-underline-offset: var(--space-2);
 }
 
+/* Resplandor rojo difuminado detrás del lado derecho del correo. */
+.glow {
+  position: absolute;
+  z-index: 0;
+  right: 0;
+  top: 50%;
+  width: 55%;
+  height: 160%;
+  transform: translateY(-50%);
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklch, var(--brand-red) 55%, transparent),
+    color-mix(in oklch, var(--brand-red) 0%, transparent)
+  );
+  filter: blur(24px);
+  pointer-events: none;
+}
+
 .startProject {
   grid-column: 1 / -1;
   display: block;
   margin-top: var(--space-16);
   text-decoration: none;
+  color: var(--type-ink);
+  position: relative;
+  z-index: 1;
 }
 
 .startProject:hover {
@@ -55,6 +90,8 @@
   height: var(--space-2);
   border-radius: 50%;
   background: var(--brand-red);
+  /* Halo rojo (Melon: punto rojo con halo). */
+  box-shadow: 0 0 12px 2px color-mix(in oklch, var(--brand-red) 65%, transparent);
 }
 
 .footer {

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { EXP_STRINGS, EXP_TESTIMONIALS } from "../../lib/exp-content";
 import styles from "./exp-testimonials.module.css";
+import { useLiquidReveal } from "./useLiquidReveal";
 
 /**
  * Testimonios — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
@@ -17,6 +18,8 @@ export default function ExpTestimonials() {
   const [index, setIndex] = useState(0);
   const total = EXP_TESTIMONIALS.length;
   const item = EXP_TESTIMONIALS[index];
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
+  useLiquidReveal(headingRef);
 
   function prev() {
     setIndex((i) => (i - 1 + total) % total);
@@ -30,7 +33,7 @@ export default function ExpTestimonials() {
     <section className={styles.section} id="exp-testimonials" aria-labelledby="exp-testimonials-heading">
       <div className={styles.fade} aria-hidden="true" />
       <div className={"site-grid " + styles.content}>
-        <h2 className={"type-h2 " + styles.heading} id="exp-testimonials-heading">
+        <h2 className={"type-h2 " + styles.heading} id="exp-testimonials-heading" ref={headingRef}>
           {t.heading}
         </h2>
 

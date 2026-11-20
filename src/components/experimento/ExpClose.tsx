@@ -28,16 +28,20 @@ export default function ExpClose() {
   return (
     <>
       <section className={styles.contact} id="exp-contact" aria-labelledby="exp-contact-heading">
+        <svg className={styles.wave} viewBox="0 0 1920 60" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,60 L0,32 Q160,12 320,26 T640,22 T960,32 T1280,16 T1600,28 T1920,24 L1920,60 Z" />
+        </svg>
         <div className="site-grid">
           <h2 className="sr-only" id="exp-contact-heading">
             Contact
           </h2>
 
-          <a className={"type-h2 " + styles.email + " " + styles.ink} href={"mailto:" + EXP_EMAIL}>
+          <div className={styles.glow} aria-hidden="true" />
+          <a className={"type-h2 " + styles.email} href={"mailto:" + EXP_EMAIL}>
             hello@melon.studio
           </a>
 
-          <a className={"type-mono " + styles.startProject + " " + styles.ink} href={t.startProjectHref}>
+          <a className={"type-mono " + styles.startProject} href={t.startProjectHref}>
             {t.startProject} →
           </a>
         </div>

@@ -1,25 +1,50 @@
 /* Header del experimento — clon 1:1 de Melon: barra superior plana,
    logotipo a la izquierda, navegación a la derecha, ~90px de alto.
-   Sin píldora, sin glass. Position absolute: se va con el scroll. */
+   Sin píldora, sin glass, sin velo. FIXED: se desliza fuera de la vista
+   al bajar y vuelve al subir. El color se adapta al fondo (data-tone):
+   negro sobre rojo/crema, blanco sobre negro. */
 
 .header {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: fixed;
+  top: 22px;
+  left: var(--page-margin);
+  right: var(--page-margin);
   z-index: 50;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  height: 90px;
-  padding-inline: var(--page-margin);
-  /* Velo superior suave: la navegación va sobre la palabra gigante
-     blanca del hero y sin él los enlaces se pierden en las letras. */
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklch, var(--melon-dark) 45%, transparent),
-    transparent
-  );
+  transition: transform 0.45s cubic-bezier(0.11, 0.06, 0.18, 1);
+  animation: headerIn 0.7s cubic-bezier(0.11, 0.06, 0.18, 1) both;
+}
+
+@keyframes headerIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header.hidden {
+  transform: translateY(-120%);
+}
+
+/* Tono claro (sobre rojo/crema): texto negro y logo invertido. El guard
+   tipográfico solo admite color: var(--type-*) o transparent, así que el
+   negro se logra con background + background-clip: text. */
+.header[data-tone="light"] .nav a,
+.header[data-tone="light"] .menu {
+  background: var(--melon-dark);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.header[data-tone="light"] .logo img {
+  filter: invert(1);
 }
 
 .logo {

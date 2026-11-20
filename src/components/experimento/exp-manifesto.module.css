@@ -45,9 +45,21 @@
 .statement {
   grid-column: 1 / -1;
   margin: 0;
-  /* Desenfoque ligado al scroll (Melon): el JS fija --blur según la
-     posición del statement en el viewport. */
-  filter: blur(var(--blur, 0px));
+}
+
+/* Cada palabra del statement: el JS fija su blur y --w (progreso del
+   reveal). El color se interpola en CSS con color-mix (rojo → oscuro);
+   las destacadas quedan en rojo (--w = 0). Por defecto (sin JS /
+   reduced-motion) es oscura. */
+.word {
+  background: color-mix(
+    in oklch,
+    var(--brand-red) calc((1 - var(--w, 0)) * 100%),
+    var(--melon-dark) calc(var(--w, 0) * 100%)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
   will-change: filter;
 }
 

@@ -1,107 +1,138 @@
-/* Hero — clon 1:1 TOTAL de Melon (medido en vivo, 19 Nov 2026).
-   Melon: alto ~930px; gradiente rojo arriba que se funde a negro con una
-   cuña diagonal (el negro sube más por la izquierda); wordmark vectorial
-   gótico con degradado blanco→rojo oscuro, recortado por arriba y por los
-   lados, parte brillante hasta y~350; fila inferior con la frase a la
-   izquierda (y~664-744) y la hora + disponibilidad a la derecha (y~710-740).
-   Aquí: rojo de Melon, oscuro de Melon, gótica Pirata One (sustituta abierta
-   de Lekick). */
+/* Hero — clon 1:1 TOTAL de Melon (revisión técnica con dev tools /
+   scraping / DOM, 19 Nov 2026). Melon: alto ~930px; fondo = imagen fija
+   (hero-still-1600.webp, base del gradiente WebGL animado); wordmark
+   VECTORIAL (melon-gradient-tlo.svg) como máscara sobre degradado
+   radial blanco→rojo oscuro, recortado por arriba y por los lados;
+   parallax translate3d(0, scrollY*0.4) + fade a negro ligado al scroll
+   (--hero-fade 0→1 entre el 3% y el 22% del alto); frase con reveal de
+   líneas con máscara y meta con yPercent. Las URLs son remotas de
+   melon.studio; en local se cambian a /Portafolio-v2/exp/melon/... */
 
 .section {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(
-    155deg,
-    var(--brand-red) 0%,
-    color-mix(in oklch, var(--brand-red) 40%, var(--melon-dark)) 48%,
-    var(--melon-dark) 78%
-  );
   min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding-inline: var(--page-margin);
-  padding-bottom: var(--space-16);
 }
 
-@media (min-width: 1024px) {
-  .section {
-    height: 930px;
-    min-height: 930px;
-    padding-bottom: var(--space-48);
-  }
+/* La capa interna lleva el fondo y el wordmark; es la que hace parallax
+   (translate3d por JS). El fondo es la imagen fija de Melon. */
+.inner {
+  position: absolute;
+  inset: 0;
+  background: var(--melon-dark) url("https://melon.studio/brand/hero-still-1600.webp")
+    50% 0 / cover no-repeat;
+  will-change: transform;
 }
 
-/* La palabra gigante se recorta por arriba y por los lados (Melon: la
-   palabra se recorta por arriba y por los lados). El font-size es el
-   token h1; el tamaño visual llega por transform (el guard solo revisa
-   font-size, no transform). La gótica es Pirata One (sustituta abierta de
-   Lekick); el degradado blanco→rojo oscuro es el del wordmark de Melon.
-   "melon" va en minúsculas, como el wordmark de Melon. */
-.word {
-  margin: calc(var(--type-h1-size) * -0.15) 0 0;
-  white-space: nowrap;
-  text-align: center;
-  font-family: var(--font-gothic);
-  font-weight: 400;
-  background: linear-gradient(
-    180deg,
+/* Wordmark vectorial de Melon como máscara sobre el degradado radial
+   blanco→rojo oscuro. La máscara es 1920×622 (ratio 3.08681). */
+.wordmark {
+  position: absolute;
+  top: 0.8vh;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1920 / 622;
+  background: radial-gradient(
+    56% 156% at 47.1% 1.9%,
     var(--brand-white) 0%,
     var(--brand-white) 40%,
     color-mix(in oklch, var(--brand-red) 55%, var(--melon-dark)) 100%
   );
-  background-clip: text;
-  color: transparent;
-  /* En móvil la palabra también crece por transform para llenar el
-     ancho y recortarse por arriba y por los lados como en Melon. */
-  transform: scale(2);
-  transform-origin: center top;
+  -webkit-mask-image: url("https://melon.studio/brand/melon-gradient-tlo.svg");
+  mask-image: url("https://melon.studio/brand/melon-gradient-tlo.svg");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 50% 0;
+  mask-position: 50% 0;
   animation: rise 0.9s ease both;
 }
 
 @keyframes rise {
   from {
     opacity: 0;
-    transform: scale(2) translateY(4%);
+    transform: translateY(4%);
   }
   to {
     opacity: 1;
-    transform: scale(2) translateY(0);
+    transform: translateY(0);
   }
 }
 
-/* En desktop la palabra crece por transform (el guard solo revisa
-   font-size, no transform). "melon" tiene 5 letras, así que el factor
-   es mayor que el de "Jafet Pérez" para llenar el ancho y recortarse
-   por los lados como en Melon; en móvil queda a tamaño h1. */
-@media (min-width: 1024px) {
-  .word {
-    transform: scale(3.6);
-    transform-origin: center top;
-    animation-name: riseDesktop;
-  }
-
-  @keyframes riseDesktop {
-    from {
-      opacity: 0;
-      transform: scale(3.6) translateY(4%);
-    }
-    to {
-      opacity: 1;
-      transform: scale(3.6) translateY(0);
-    }
-  }
+/* Silueta oscura bajo el wordmark (mismo vector, degradado a rojo
+   oscuro, blend darken) — da la profundidad de la parte baja. */
+.silhouette {
+  position: absolute;
+  top: 0.8vh;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1920 / 622;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--melon-dark) 0%, transparent) 20%,
+    color-mix(in oklch, var(--brand-red) 72%, var(--melon-dark)) 100%
+  );
+  mix-blend-mode: darken;
+  -webkit-mask-image: url("https://melon.studio/brand/melon-gradient-tlo.svg");
+  mask-image: url("https://melon.studio/brand/melon-gradient-tlo.svg");
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 50% 0;
+  mask-position: 50% 0;
 }
 
-.bottom {
-  margin-top: var(--space-16);
+/* Fade a negro en la parte baja, ligado al scroll (--hero-fade). */
+.fade {
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 34%;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklch, var(--melon-dark) 0%, transparent) 0%,
+    color-mix(in oklch, var(--melon-dark) 75%, transparent) 45%,
+    var(--melon-dark) 80%
+  );
+  opacity: var(--hero-fade, 0);
+  pointer-events: none;
+}
+
+/* Fila inferior (frase + meta): posición como Melon (.atf-what) y
+   parallax con --hero-y (mismo desplazamiento que .inner). */
+.bottomWrap {
+  position: absolute;
+  z-index: 3;
+  left: var(--page-margin);
+  right: var(--page-margin);
+  bottom: calc(16vh + 24px);
   align-items: end;
+  transform: translateY(var(--hero-y, 0px));
 }
 
 .phrase {
   grid-column: 1 / -1;
   margin: 0;
   max-width: 480px;
+  overflow: hidden;
+}
+
+.phraseLine {
+  display: block;
+  animation: lineIn 0.9s cubic-bezier(0.11, 0.06, 0.18, 1) 0.15s both;
+}
+
+@keyframes lineIn {
+  from {
+    transform: translateY(110%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 .meta {
@@ -109,9 +140,33 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  overflow: hidden;
+}
+
+.metaLine {
+  display: block;
+  animation: lineIn 0.9s cubic-bezier(0.11, 0.06, 0.18, 1) 0.3s both;
 }
 
 @media (min-width: 1024px) {
+  .section {
+    height: 930px;
+    min-height: 930px;
+  }
+
+  /* En desktop el wordmark se recorta por arriba y por los lados como
+     en Melon (la palabra es más ancha que el viewport). */
+  .wordmark,
+  .silhouette {
+    width: 110vw;
+    left: -5vw;
+  }
+
+  .bottomWrap {
+    top: calc(0.8vh + 32.4vw + clamp(14px, 1.5vw, 28px));
+    bottom: auto;
+  }
+
   .phrase {
     grid-column: 1 / 7;
   }

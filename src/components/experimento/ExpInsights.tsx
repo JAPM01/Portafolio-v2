@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { EXP_INSIGHTS, EXP_STRINGS } from "../../lib/exp-content";
 import styles from "./exp-insights.module.css";
+import { useLiquidReveal } from "./useLiquidReveal";
 
 /**
  * Insights — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
@@ -17,12 +18,14 @@ export default function ExpInsights() {
   const t = EXP_STRINGS.insights;
   const [active, setActive] = useState(0);
   const activePost = EXP_INSIGHTS[active];
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
+  useLiquidReveal(headingRef);
 
   return (
     <section className={styles.section} id="exp-insights" aria-labelledby="exp-insights-heading">
       <div className="site-grid">
         <div className={styles.headRow}>
-          <h2 className={"type-h2 " + styles.heading + " " + styles.inkRed} id="exp-insights-heading">
+          <h2 className={"type-h2 " + styles.heading + " " + styles.inkRed} id="exp-insights-heading" ref={headingRef}>
             {t.heading}
           </h2>
           <a className={"type-mono " + styles.allNotes + " " + styles.ink} href={t.allNotesHref}>

@@ -1,7 +1,9 @@
 "use client";
 
+import { useRef } from "react";
 import { EXP_CLIENTS, EXP_STRINGS } from "../../lib/exp-content";
 import styles from "./exp-clients.module.css";
+import { useLiquidReveal } from "./useLiquidReveal";
 
 /**
  * Clientes — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
@@ -12,12 +14,14 @@ import styles from "./exp-clients.module.css";
  */
 export default function ExpClients() {
   const t = EXP_STRINGS.clients;
+  const headingRef = useRef<HTMLHeadingElement | null>(null);
+  useLiquidReveal(headingRef);
 
   return (
     <section className={styles.section} id="exp-clients" aria-labelledby="exp-clients-heading">
       <div className="site-grid">
         <div className={styles.head}>
-          <h2 className={"type-h2 " + styles.heading} id="exp-clients-heading">
+          <h2 className={"type-h2 " + styles.heading} id="exp-clients-heading" ref={headingRef}>
             {t.heading}
           </h2>
           <p className={"type-body " + styles.note}>{t.note}</p>

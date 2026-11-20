@@ -19,6 +19,9 @@
 .heading {
   grid-column: 1 / -1;
   margin: 0;
+  /* Reveal liquid ligado al scroll (useLiquidReveal). */
+  filter: blur(var(--liq-blur, 40px));
+  opacity: var(--liq-op, 0);
 }
 
 .head {
@@ -88,7 +91,9 @@
   text-align: center;
 }
 
-/* Logos en gris por defecto (Melon: logos gris/blanco), a color al hover. */
+/* Logos en gris por defecto (Melon: logos gris/blanco), a color al hover.
+   Hover (Melon): la celda se INVIERTE — fondo blanco, logo a color
+   pleno (o oscuro) y etiqueta en negro. */
 .logo {
   display: block;
   max-width: 72%;
@@ -96,6 +101,26 @@
   object-fit: contain;
   filter: grayscale(1) brightness(1.6);
   transition: filter 0.3s ease;
+}
+
+.cell {
+  transition: background-color 0.3s ease;
+}
+
+.cell:hover {
+  background: var(--brand-white);
+}
+
+/* Texto oscuro sobre la celda blanca: el guard tipográfico solo admite
+   color: var(--type-*) o transparent, así que el color se logra con
+   background + background-clip: text. */
+.cell:hover .name,
+.cell:hover .caseStudy,
+.cell:hover .arrow {
+  background: var(--melon-dark);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
 }
 
 .cellLink:hover .logo {
