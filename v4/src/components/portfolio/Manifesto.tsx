@@ -36,22 +36,22 @@ export function Manifesto() {
 
   const show3D = tier === "full" || tier === "lite";
   return (
-    <section id="manifesto" ref={secRef} className="relative overflow-hidden px-5 py-24 md:px-10 md:py-32" aria-label="Manifiesto">
+    <section id="manifesto" ref={secRef} className="relative overflow-hidden px-5 py-20 md:px-10 md:py-28" aria-label="Manifiesto">
       <SectionTitle num="02" label="Manifiesto" title="Design at the edge of utility & form" />
-      <div className="mt-14 grid items-center gap-12 md:mt-20 md:grid-cols-12 md:gap-x-6">
-        <div ref={textRef} className={`md:col-span-4 md:col-start-4 ${inView ? "is-in" : ""}`}>
+      <div className="mt-10 grid items-center gap-12 md:mt-14 md:grid-cols-12 md:gap-x-6">
+        <div ref={textRef} className={`md:col-span-5 md:col-start-1 ${inView ? "is-in" : ""}`}>
           <p data-fx className="fx-words text-[clamp(28px,3vw,46px)] font-medium leading-[1.08] tracking-[-0.04em]">
             <ScrollWords parts={[
               { text: "Craft lives in what nobody sees" },
               { text: " — the edge case, the empty state, the ", tone: "muted" },
               { text: "token" },
               { text: " that makes ten products feel like ", tone: "muted" },
-              { text: "one." },
+              { text: "one.", tone: "muted" },
             ]} />
           </p>
         </div>
-        <div data-fx className="fx-venn relative md:col-span-5">
-          <div ref={vennRef} className="relative mx-auto aspect-square w-[112%] max-w-none -mx-[6%] md:w-[140%] md:-mx-[20%]">
+        <div data-fx className="fx-venn relative md:col-span-6 md:col-start-7">
+          <div ref={vennRef} className="relative mx-auto aspect-square w-full max-w-[560px]">
             {show3D ? (
               
                 <Suspense fallback={<VennFallback />}>
@@ -60,9 +60,10 @@ export function Manifesto() {
               
             ) : <VennFallback />}
             <div className="pointer-events-none absolute inset-0 font-mono text-[11px] uppercase">
-              <span className="absolute left-1/2 top-[8%] -translate-x-1/2">Producto</span>
-              <span className="absolute left-[2%] bottom-[10%]">Diseño</span>
-              <span className="absolute right-[2%] bottom-[10%]">Código</span>
+              <span className="absolute left-1/2 top-[28%] -translate-x-1/2">Producto</span>
+              <span className="absolute left-[34%] top-[61%] -translate-x-1/2">Diseño</span>
+              <span className="absolute left-[66%] top-[61%] -translate-x-1/2">Código</span>
+              <span className="absolute left-1/2 top-[48%] -translate-x-1/2 text-foreground/70">Punto dulce</span>
             </div>
           </div>
         </div>

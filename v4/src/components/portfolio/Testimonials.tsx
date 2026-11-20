@@ -11,9 +11,9 @@ export function Testimonials({ onOpen }: { onOpen: (project: Project) => void })
   if (!entry) return null;
   const project = PROJECTS.find(item => item.slug === entry.projectSlug);
   return (
-    <section id="testimonials" className="relative px-5 py-24 md:px-10 md:py-32" aria-label="Testimonios">
+    <section id="testimonials" className="relative px-5 py-20 md:px-10 md:py-28" aria-label="Testimonios">
       <SectionTitle num="05" label="Testimonios" title="What people say" />
-      <div className="mt-14 grid grid-cols-1 gap-y-6 md:mt-20 md:grid-cols-12 md:gap-x-6">
+      <div className="mt-10 grid grid-cols-1 gap-y-6 md:mt-14 md:grid-cols-12 md:gap-x-6">
         <span data-fx className="fx-quote testimonial-quote-mark md:col-span-3" aria-hidden="true">“</span>
         <div data-fx className="fx-rise md:col-span-9">
           <div className="testimonial-content" key={index} aria-live="polite" aria-atomic="true">
@@ -25,12 +25,11 @@ export function Testimonials({ onOpen }: { onOpen: (project: Project) => void })
             {project && <button type="button" className="mt-3 inline-flex items-center gap-2 text-[15px] underline decoration-foreground/30 underline-offset-4 transition-colors hover:decoration-foreground" onClick={() => onOpen(project)}>
               {project.name} case study <ArrowUpRight size={15} />
             </button>}
-            <span className="mt-6 block font-mono text-[10px] uppercase text-muted-foreground">Contenido de muestra · pendiente de aprobación</span>
           </div>
-          <div className="mt-12 flex items-center gap-5">
-            <CircleButton label="Testimonio anterior" onClick={() => setIndex(testimonialIndex(index, -1))}><ArrowLeft /></CircleButton>
-            <span className="w-14 text-center font-mono text-[11px] tabular-nums">{String(index + 1).padStart(2, "0")} / {String(TESTIMONIALS.length).padStart(2, "0")}</span>
-            <CircleButton label="Siguiente testimonio" onClick={() => setIndex(testimonialIndex(index, 1))}><ArrowRight /></CircleButton>
+          <div className="mt-10 flex items-center gap-5">
+            <CircleButton large label="Testimonio anterior" onClick={() => setIndex(testimonialIndex(index, -1))}><ArrowLeft /></CircleButton>
+            <span className="w-14 text-center font-mono text-[11px] tabular-nums text-foreground/70">{String(index + 1).padStart(2, "0")} / {String(TESTIMONIALS.length).padStart(2, "0")}</span>
+            <CircleButton large label="Siguiente testimonio" onClick={() => setIndex(testimonialIndex(index, 1))}><ArrowRight /></CircleButton>
           </div>
         </div>
       </div>

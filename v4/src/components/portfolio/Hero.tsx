@@ -54,28 +54,28 @@ export function Hero() {
         </div>
       )}
       {!show3D && <div ref={fluteRef} className="flute pointer-events-none absolute inset-0 will-change-transform" aria-hidden />}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" aria-hidden />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-background via-background/60 to-transparent" aria-hidden />
 
       <div className="relative flex h-full flex-col justify-end px-5 pb-14 pt-28 md:px-10 md:pb-20">
         <div className="flex flex-wrap gap-3">
-          <span className="inline-flex h-7 items-center gap-2 rounded-sm border bg-surface px-3 font-mono text-[11px] uppercase">
+          <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase text-foreground/50">
             <span className="h-1 w-1 bg-highlight" /><span ref={coordRef}>X 040 · Y 0000</span>
           </span>
           <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase text-status">
             <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-status" />Open Q1 2027
           </span>
-          <span className="ml-auto hidden font-mono text-[11px] text-muted-foreground md:inline">HG_SHADER · {tier === "lite" ? "LITE" : "60FPS"}</span>
+          <span className="ml-auto hidden font-mono text-[11px] text-foreground/70 md:inline">HG_SHADER · {tier === "lite" ? "LITE" : "60FPS"}</span>
         </div>
         <h1 ref={titleRef} className="mt-6 text-[clamp(52px,10.4vw,148px)] font-medium uppercase leading-[0.84] tracking-[-0.06em]">
           <span data-line className="block will-change-transform">Senior Product</span>
-          <span data-line className="block will-change-transform">Designer <span className="text-highlight">&amp;</span></span>
-          <span data-line className="block will-change-transform">Brand Architect</span>
+          <span data-line className="block will-change-transform">Designer</span>
+          <span data-line className="block will-change-transform"><span className="text-highlight">&amp;</span> Brand Architect</span>
         </h1>
         <div className="mt-8 flex flex-wrap items-center gap-6">
           <button onClick={copyEmail} className="group inline-flex items-center gap-2 font-mono text-[13px] hover:text-muted-foreground" aria-label={`Copiar email ${CONTACT.email}`}>
             {CONTACT.email}<Copy size={13} className="opacity-50 group-hover:opacity-100" />
           </button>
-          <a href="#work" className="inline-flex items-center gap-2 font-mono text-[11px] uppercase text-muted-foreground hover:text-foreground">
+          <a href="#work" className="inline-flex items-center gap-2 font-mono text-[11px] uppercase text-foreground/70 hover:text-foreground">
             <ArrowDown size={13} /> Scroll · Trabajo seleccionado
           </a>
         </div>

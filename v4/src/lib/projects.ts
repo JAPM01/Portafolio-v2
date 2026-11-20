@@ -133,5 +133,5 @@ export const PROJECTS: Project[] = [
 export const CONTACT = {
   email: "hola@jpstudio.design",
   phone: "+34 611 204 880",
-  coords: "40.4168° N · 3.7038° W",
+  coords: "41.3874° N · 2.1686° E",
 };

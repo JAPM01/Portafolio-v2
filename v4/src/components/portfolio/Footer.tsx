@@ -18,7 +18,7 @@ export function Footer({ onContact }: { onContact: () => void }) {
   const show3D = tier === "full" || tier === "lite";
   const phrase = "Let's build something iconic —";
   return (
-    <footer id="contact" data-fx className="fx-footer relative overflow-hidden pt-20" aria-label="Contacto">
+    <footer id="contact" data-fx className="fx-footer relative overflow-hidden pt-20 pb-8" aria-label="Contacto">
       <div className="relative grid grid-cols-1 items-center gap-10 px-5 md:grid-cols-[1fr_auto_1fr] md:px-10">
         <div className="space-y-4 font-mono text-[12px]">
           <button onClick={copyEmail} className="group flex items-center gap-2 font-display text-[22px] font-medium tracking-tight hover:text-muted-foreground md:text-[26px]">
@@ -48,7 +48,7 @@ export function Footer({ onContact }: { onContact: () => void }) {
       <div className="relative mt-16 overflow-hidden border-t border-foreground/10" aria-hidden>
         <div className="fx-marquee"><div className="kit-mq flex w-max whitespace-nowrap">
           {[0, 1].map((k) => (
-            <span key={k} className="pr-10 text-[clamp(80px,14vw,220px)] font-medium uppercase leading-[0.78] tracking-[-0.06em] translate-y-[14%]">{phrase} {phrase}</span>
+            <span key={k} className="pr-10 text-[clamp(80px,14vw,220px)] font-medium uppercase leading-[0.85] tracking-[-0.06em]">{phrase} {phrase}</span>
           ))}
         </div></div>
       </div>

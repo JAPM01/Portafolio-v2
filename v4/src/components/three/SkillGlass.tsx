@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { SKILLS, radarPoint } from "../../lib/portfolio-sections";
 import { pointer } from "../../lib/pointer";
-import { GlassBackdrop, GlassGroup, GlassLights, GlassMaterial, useLensGeometry } from "./glass";
+import { GlassBackdrop, GlassGroup, GlassLights, useLensGeometry } from "./glass";
 
 // SVG viewBox (1200×800, y down) → world units (y up, centred).
 const toWorld = (x: number, y: number) => new THREE.Vector2(x - 600, 400 - y);
@@ -28,26 +28,28 @@ function Grid() {
       }
     });
     for (let i = 0; i < 6; i++) {
-      const e = radarPoint(i, 112); const w = toWorld(e.x, e.y);
+      const e = radarPoint(i, 128); const w = toWorld(e.x, e.y);
       pts.push(0, 0, 0, w.x, w.y, 0);
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.Float32BufferAttribute(pts, 3));
     return g;
   }, []);
-  return <lineSegments geometry={geo} position={[0, 0, -60]}><lineBasicMaterial color="#FEFEFE" transparent opacity={0.14} /></lineSegments>;
+  return <lineSegments geometry={geo} position={[0, 0, -60]}><lineBasicMaterial color="#FEFEFE" transparent opacity={0.3} /></lineSegments>;
 }
 
 function Radar({ active, visible, lite }: { active: number | null; visible: boolean; lite: boolean }) {
   const tilt = useRef<THREE.Group>(null);
-  const shape = useRef<THREE.Mesh>(null);
+  const shape = useRef<THREE.Group>(null);
   const nodes = useRef<(THREE.Mesh | null)[]>([]);
   const lens = useLensGeometry(18, 7, 48);
   const shapeGeo = useMemo(() => {
     const s = new THREE.Shape(SKILLS.map((k, i) => { const p = radarPoint(i, k.value); return toWorld(p.x, p.y); }));
-    const g = new THREE.ExtrudeGeometry(s, { depth: 10, bevelEnabled: true, bevelThickness: 16, bevelSize: 14, bevelSegments: 8, curveSegments: 4 });
-    g.translate(0, 0, -5);
-    return g;
+    return new THREE.ShapeGeometry(s);
+  }, []);
+  const outlineGeo = useMemo(() => {
+    const pts = SKILLS.map((k, i) => { const p = radarPoint(i, k.value); const w = toWorld(p.x, p.y); return new THREE.Vector3(w.x, w.y, 0); });
+    return new THREE.BufferGeometry().setFromPoints([...pts, pts[0]!]);
   }, []);
   useFrame((state, delta) => {
     const k = 1 - Math.exp(-4 * Math.min(delta, 0.05));
@@ -70,10 +72,13 @@ function Radar({ active, visible, lite }: { active: number | null; visible: bool
     <group ref={tilt}>
       <Grid />
       <GlassGroup resolution={lite ? 512 : 1024}>
-        <mesh ref={shape} geometry={shapeGeo} scale={0.6}><GlassMaterial lite={lite} thickness={60} /></mesh>
+        <group ref={shape} scale={0.6}>
+          <mesh geometry={shapeGeo}><meshBasicMaterial color="#000AFF" transparent opacity={0.1} side={THREE.DoubleSide} depthWrite={false} /></mesh>
+          <lineLoop geometry={outlineGeo}><lineBasicMaterial color="#000AFF" transparent opacity={0.85} /></lineLoop>
+        </group>
         {SKILLS.map((k, i) => {
           const p = radarPoint(i, k.value); const w = toWorld(p.x, p.y);
-          return <mesh key={k.axis} ref={el => { nodes.current[i] = el; }} geometry={lens} position={[w.x, w.y, 40]}><GlassMaterial lite={lite} thickness={20} /></mesh>;
+          return <mesh key={k.axis} ref={el => { nodes.current[i] = el; }} geometry={lens} position={[w.x, w.y, 40]}><meshStandardMaterial color="#FEFEFE" roughness={0.25} metalness={0} /></mesh>;
         })}
       </GlassGroup>
     </group>

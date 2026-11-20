@@ -57,7 +57,7 @@ export default function ChromeMonogram({ active, lite }: { active: boolean; lite
         <Lightformer intensity={2} color="#000AFF" position={[0, -3, -5]} scale={[10, 4, 1]} />
       </Environment>
       <Monogram active={active} />
-      <OrbitControls enableZoom={false} enablePan={false} autoRotate={active} autoRotateSpeed={1.2} minPolarAngle={Math.PI / 3} maxPolarAngle={(2 * Math.PI) / 3} />
+      <OrbitControls enableZoom={false} enablePan={false} autoRotate={false} minPolarAngle={Math.PI / 3} maxPolarAngle={(2 * Math.PI) / 3} />
     </Canvas>
   );
 }

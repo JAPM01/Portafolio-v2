@@ -32,10 +32,10 @@ export function GlassMaterial({ lite = false, thickness = 0.6 }: { lite?: boolea
       thickness={thickness}
       roughness={0.04}
       ior={1.38}
-      chromaticAberration={lite ? 0.25 : 0.9}
+      chromaticAberration={lite ? 0.15 : 0.35}
       anisotropicBlur={0.15}
-      distortion={0.35}
-      distortionScale={0.4}
+      distortion={0.2}
+      distortionScale={0.25}
       temporalDistortion={0.08}
       clearcoat={1}
       clearcoatRoughness={0.05}

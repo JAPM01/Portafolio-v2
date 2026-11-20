@@ -51,22 +51,22 @@ void main(){
   vec2 distanceToCursor = (vUv - mouse) * vec2(aspect, 1.);
   float influence = exp(-dot(distanceToCursor, distanceToCursor) * 9.);
   // Wide cylindrical flutes: each column is a vertical lens that compresses and mirrors the metal.
-  float ribs = clamp(uRes.x / 150., 4., 11.);
+  float ribs = clamp(uRes.x / 320., 3., 6.);
   float fx = vUv.x * ribs + influence * .18 * sin(uTime * .5);
   float t = fract(fx) * 2. - 1.;
   float profile = sqrt(max(0., 1. - t * t));
-  float strength = mix(.35, 1., smoothstep(.0, .55, vUv.x));
-  float power = (.055 + influence * .07) * strength;
+  float strength = mix(.15, .5, smoothstep(.0, .55, vUv.x));
+  float power = (.03 + influence * .04) * strength;
   vec2 bend = vec2(-t * power, (1. - profile) * influence * .03 * strength);
   vec2 uv = clamp(vUv + bend, vec2(.001), vec2(.999));
-  float dispersion = t * (.004 + influence * .008) * strength;
+  float dispersion = t * (.002 + influence * .004) * strength;
   vec3 glass = vec3(chromeColor(uv + vec2(dispersion, 0.)).r,
                     chromeColor(uv).g,
                     chromeColor(uv - vec2(dispersion, 0.)).b);
   float edge = smoothstep(.72, 1., abs(t));
-  glass *= 1. - .42 * edge * strength;
-  float spec = pow(max(0., 1. - abs(t + .38) * 3.2), 3.) * (.10 + influence * .18);
-  float rim = smoothstep(.94, 1., abs(t)) * .10;
+  glass *= 1. - .18 * edge * strength;
+  float spec = pow(max(0., 1. - abs(t + .38) * 3.2), 3.) * (.05 + influence * .08);
+  float rim = smoothstep(.94, 1., abs(t)) * .05;
   glass += vec3(spec + rim) * strength;
   gl_FragColor = vec4(glass, 1.);
 }`;

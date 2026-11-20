@@ -19,7 +19,7 @@ export function SkillMap() {
   const reduced = useReducedMotion();
   const show3D = tier === "full" || tier === "lite";
   return (
-    <section id="stack" className="px-5 py-24 md:px-10 md:py-32" aria-label="Stack y capacidades">
+    <section id="stack" className="px-5 py-20 md:px-10 md:py-28" aria-label="Stack y capacidades">
       <SectionTitle num="04" label="Stack" title="Skill map" />
       <div ref={ref} data-fx className={`fx-zoom skill-map ${visible ? "skill-map-visible" : ""} ${show3D ? "skill-map-3d" : ""}`} onMouseLeave={() => setActive(null)}>
         {show3D && <div ref={glRef} className="skill-glass" aria-hidden>
@@ -54,7 +54,7 @@ export function SkillMap() {
         >
           <span className="skill-value">{skill.value}</span>
           <span className="skill-name">{skill.label}</span>
-          <span className="skill-tools" aria-hidden={active !== i}>{active === i ? skill.tools : "\u00a0"}</span>
+          <span className="skill-tools">{skill.tools}</span>
         </Button>)}
       </div>
     </section>

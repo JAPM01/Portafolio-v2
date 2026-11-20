@@ -28,7 +28,7 @@ function Lenses({ lite }: { lite: boolean }) {
       <group ref={group}>
         {POS.map((p, i) => (
           <mesh key={i} geometry={geo} position={p} rotation={[TILT[i]?.[0] ?? 0, TILT[i]?.[1] ?? 0, 0]}>
-            <GlassMaterial lite={lite} thickness={0.5} />
+            <GlassMaterial lite={lite} thickness={0.35} />
           </mesh>
         ))}
       </group>
@@ -38,7 +38,7 @@ function Lenses({ lite }: { lite: boolean }) {
 
 export default function VennLenses({ lite, active }: { lite: boolean; active: boolean }) {
   return (
-    <Canvas dpr={lite ? [0.7, 1] : [1, 1.5]} frameloop={active ? "always" : "never"} camera={{ position: [0, 0, 4.9], fov: 40 }} gl={{ alpha: true, antialias: true }} aria-hidden>
+    <Canvas dpr={lite ? [0.7, 1] : [1, 1.5]} frameloop={active ? "always" : "never"} camera={{ position: [0, 0, 6.2], fov: 40 }} gl={{ alpha: true, antialias: true }} aria-hidden>
       <GlassLights lite={lite} />
       <GlassBackdrop size={[5, 5]} z={-1.6} />
       <Lenses lite={lite} />

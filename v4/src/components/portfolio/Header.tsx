@@ -34,9 +34,9 @@ export function Header({ onContact }: { onContact: () => void }) {
           {nav.map((n) => (
             <a key={n.href} href={n.href} className="hidden transition-colors text-muted-foreground hover:text-foreground lg:inline">{n.label}</a>
           ))}
-          <span className="hidden text-muted-foreground 2xl:inline">41.3874°N 2.1686°E</span>
-          <span className="ml-auto hidden text-muted-foreground md:inline" suppressHydrationWarning>UTC {t?.utc ?? "--:--"}</span>
-          <span className="hidden md:inline" suppressHydrationWarning>BCN {t?.bcn ?? "--:--"}</span>
+          <span className="hidden text-foreground/60 2xl:inline">41.3874°N 2.1686°E</span>
+          <span className="ml-auto hidden text-foreground/60 xl:inline" suppressHydrationWarning>UTC {t?.utc ?? "--:--"}</span>
+          <span className="hidden text-foreground/60 xl:inline" suppressHydrationWarning>BCN {t?.bcn ?? "--:--"}</span>
         </nav>
         <div className="flex h-full items-center gap-3 border-l pl-3 pr-2 md:gap-4 md:pl-5">
           <span className="flex items-center gap-2 text-status">
