@@ -18,13 +18,23 @@
 
 .heading {
   grid-column: 1 / -1;
+  margin: 0;
+}
+
+.head {
+  grid-column: 1 / -1;
   margin: 0 0 var(--space-16);
 }
 
 @media (min-width: 1024px) {
-  .heading {
+  .head {
     margin-block-end: var(--space-32);
   }
+}
+
+.note {
+  margin: var(--space-4) 0 0;
+  max-width: 560px;
 }
 
 .wall {
@@ -51,12 +61,9 @@
 }
 
 .cell {
+  position: relative;
   display: flex;
-  align-items: center;
-  justify-content: center;
   min-height: 160px;
-  padding: var(--space-6) var(--space-4);
-  text-align: center;
   border-right: 1px solid color-mix(in oklch, var(--brand-white) 12%, transparent);
   border-bottom: 1px solid color-mix(in oklch, var(--brand-white) 12%, transparent);
 }
@@ -68,8 +75,54 @@
   }
 }
 
+.cellLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-6) var(--space-4);
+  color: var(--type-ink);
+  text-decoration: none;
+  text-align: center;
+}
+
+/* Logos en gris por defecto (Melon: logos gris/blanco), a color al hover. */
+.logo {
+  display: block;
+  max-width: 72%;
+  max-height: 56px;
+  object-fit: contain;
+  filter: grayscale(1) brightness(1.6);
+  transition: filter 0.3s ease;
+}
+
+.cellLink:hover .logo {
+  filter: none;
+}
+
+.cap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  align-items: center;
+}
+
 .name {
   margin: 0;
+}
+
+.caseStudy {
+  margin: 0;
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
+}
+
+.arrow {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
 }
 
 .ctaCell {
@@ -78,9 +131,10 @@
 
 .cta {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
+  gap: var(--space-1);
   width: 100%;
   height: 100%;
   padding: var(--space-6) var(--space-4);

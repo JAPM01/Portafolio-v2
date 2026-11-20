@@ -1,0 +1,190 @@
+/* Insights — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
+   Melon: fondo crema, "Insights" + "All notes" a la derecha; split
+   1/3–2/3: imagen del artículo activo a la izquierda, filas con
+   hairlines a la derecha. Hover: la fila se vuelve roja con texto
+   blanco y la imagen cambia. */
+
+/* Texto oscuro sobre fondo claro: el guard tipográfico solo admite
+   color: var(--type-*) (claros) o transparent, así que el color se
+   logra con background + background-clip: text. */
+.ink {
+  background: var(--melon-dark);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.inkMuted {
+  background: color-mix(in oklch, var(--melon-dark) 55%, var(--melon-cream));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* Título de sección en gótica roja (Melon: títulos de sección en crema). */
+.inkRed {
+  background: var(--brand-red);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-family: var(--font-gothic);
+  font-weight: 400;
+}
+
+.section {
+  background: var(--melon-cream);
+  padding-block: var(--space-16);
+  padding-inline: var(--page-margin);
+}
+
+@media (min-width: 1024px) {
+  .section {
+    padding-block: var(--space-32);
+  }
+}
+
+.heading {
+  margin: 0;
+}
+
+.headRow {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-8);
+  margin: 0 0 var(--space-16);
+}
+
+@media (min-width: 1024px) {
+  .headRow {
+    margin-block-end: var(--space-32);
+  }
+}
+
+.allNotes {
+  flex: none;
+  text-decoration: none;
+}
+
+.peek {
+  grid-column: 1 / -1;
+  margin: 0 0 var(--space-8);
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  max-width: 595px;
+}
+
+@media (min-width: 1024px) {
+  .peek {
+    grid-column: 1 / 5;
+    margin-bottom: 0;
+  }
+}
+
+.peekImg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: peekIn 0.45s ease both;
+}
+
+@keyframes peekIn {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.list {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 1024px) {
+  .list {
+    grid-column: 5 / 13;
+  }
+}
+
+.row {
+  border-top: 1px solid color-mix(in oklch, var(--melon-dark) 20%, transparent);
+}
+
+.row:last-child {
+  border-bottom: 1px solid color-mix(in oklch, var(--melon-dark) 20%, transparent);
+}
+
+.rowLink {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-2) var(--space-4);
+  align-items: start;
+  padding-block: var(--space-6);
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+@media (min-width: 1024px) {
+  .rowLink {
+    grid-template-columns: var(--space-16) minmax(0, 1fr) auto;
+    gap: var(--space-4) var(--space-8);
+    align-items: baseline;
+  }
+}
+
+.date {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.title {
+  margin: 0;
+}
+
+.excerpt {
+  margin: 0;
+}
+
+.meta {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+}
+
+@media (min-width: 1024px) {
+  .meta {
+    grid-column: auto;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    gap: var(--space-1);
+  }
+}
+
+/* Hover estilo Melon: la fila se vuelve roja con texto blanco. */
+.rowLink:hover {
+  background: var(--brand-red);
+}
+
+.rowLink:hover .ink,
+.rowLink:hover .inkMuted {
+  background: var(--brand-white);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}

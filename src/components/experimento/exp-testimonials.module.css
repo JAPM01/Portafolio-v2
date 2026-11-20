@@ -1,9 +1,15 @@
-/* Testimonios — versión experimento. Cita grande con comillas gigantes. */
+/* Testimonios — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
+   Melon: "What people say" (sin etiqueta), cita a la IZQUIERDA en
+   columna con comilla gigante, atribución con guion + nombre + cargo,
+   enlace "case study", paginación ← 01/03 → abajo a la izquierda.
+   El bloque rojo se oscurece abajo (fade a negro). */
 
 .section {
+  position: relative;
   background: var(--brand-red);
   padding-block: var(--space-16);
   padding-inline: var(--page-margin);
+  overflow: hidden;
 }
 
 @media (min-width: 1024px) {
@@ -12,18 +18,24 @@
   }
 }
 
-.label {
-  grid-column: 1 / -1;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--type-body-ink);
+/* Fade a negro en la parte inferior del bloque rojo (Melon). */
+.fade {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 45%;
+  background: linear-gradient(180deg, transparent, var(--melon-dark) 90%);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
 }
 
 .heading {
   grid-column: 1 / -1;
-  margin-block: var(--space-4) var(--space-16);
-  max-width: 12ch;
+  margin: 0 0 var(--space-16);
 }
 
 @media (min-width: 1024px) {
@@ -32,48 +44,80 @@
   }
 }
 
-.quote {
+.box {
   grid-column: 1 / -1;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-  max-width: 960px;
-  margin-inline: auto;
-  text-align: center;
-  border-top: 1px solid color-mix(in oklch, var(--brand-white) 25%, transparent);
-  padding-top: var(--space-8);
+  position: relative;
 }
 
 @media (min-width: 1024px) {
-  .quote {
-    grid-column: 2 / 12;
+  .box {
+    grid-column: 1 / 10;
   }
 }
 
 .mark {
+  display: block;
+  line-height: 0.5;
+  margin-bottom: var(--space-4);
+}
+
+.markIn {
   font-family: var(--font-display);
   font-size: var(--type-h1-size);
   line-height: 0.5;
   color: var(--type-ink);
 }
 
+.item {
+  margin: 0;
+  animation: itemIn 0.5s ease both;
+}
+
+@keyframes itemIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .text {
+  margin: 0;
+  max-width: 754px;
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-top: var(--space-8);
+}
+
+.dash {
+  display: block;
+  width: var(--space-16);
+  height: 1px;
+  background: var(--type-ink);
+  margin-bottom: var(--space-4);
+}
+
+.name {
+  margin: 0;
+  font-weight: 700;
+}
+
+.role {
   margin: 0;
 }
 
-.foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: center;
-  gap: var(--space-2) var(--space-6);
-  padding-top: var(--space-4);
-  border-top: 1px solid color-mix(in oklch, var(--brand-white) 25%, transparent);
+.case {
+  margin: var(--space-6) 0 0;
 }
 
 .caseLink {
-  margin-left: auto;
   color: var(--type-ink);
   text-decoration: underline;
   text-underline-offset: var(--space-1);
@@ -82,9 +126,8 @@
 .controls {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: var(--space-4);
-  margin-top: var(--space-8);
+  margin-top: var(--space-16);
 }
 
 .ctrlBtn {

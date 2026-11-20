@@ -6,25 +6,31 @@ import ExpHero from "../../components/experimento/ExpHero";
 import ExpManifesto from "../../components/experimento/ExpManifesto";
 import ExpWork from "../../components/experimento/ExpWork";
 import ExpExperience from "../../components/experimento/ExpExperience";
+import ExpInsights from "../../components/experimento/ExpInsights";
 import ExpClients from "../../components/experimento/ExpClients";
 import ExpTestimonials from "../../components/experimento/ExpTestimonials";
-import ExpCv from "../../components/experimento/ExpCv";
 import ExpClose from "../../components/experimento/ExpClose";
 
 export const metadata: Metadata = {
-  title: "Jafet Pérez — Versión 2 experimento",
+  title: "melon studio — web, app & SaaS design studio in Poznań",
   description:
-    "Versión experimento del portafolio: trabajo seleccionado, manifiesto, experiencia, clientes, testimonios, CV y contacto.",
+    "melon studio — UX/UI, web, app and SaaS design studio in Poznań, Poland",
 };
 
-// Versión experimento (19 Nov 2026, clon 1:1 TOTAL de Melon, medido en vivo):
+// Versión experimento (19 Nov 2026, clon 1:1 TOTAL de Melon, pixel a pixel):
 // Melon exacto en layout, distribución, jerarquía, estilo, tipografía gótica
-// (Pirata One, sustituta abierta de Lekick) y color (rojo #FD241A, crema
-// #F6EFEF y oscuro #0F0000, con el contenido de Jafet). Los detalles de Tom
-// (footer y header), Moisez (preloader y líneas verticales) y Lucas Lima
-// (mono) se implementan DESPUÉS de tener el clon exacto. Orden: Hero,
-// Trabajo seleccionado, Manifiesto, Experiencia, Clientes, Testimonios, Mi
-// CV, Contacto y Footer. La home principal queda solo con Hero + Intro.
+// (Pirata One, sustituta abierta de Lekick), color (rojo #FD241A, crema
+// #F6EFEF y oscuro #0F0000) Y TEXTOS (por indicación de Jafet, 17:57 CST:
+// "tal cual... exactamente igual pixel a pixel"). Animaciones ligadas al
+// scroll: deformación 3D de las tarjetas de trabajo y desenfoque del
+// statement. Orden de Melon: Hero, Trabajo, Manifiesto (About),
+// Experiencia, Insights, Clientes, Testimonios, Contacto y Footer.
+// SIN sección Mi CV (Jafet, 18:24 CST: "Quitarlo para clon total" — Melon
+// no tiene CV; el componente ExpCv.tsx se conserva sin renderizar para
+// reponerlo cuando el clon se apruebe y el contenido pase a ser el suyo).
+// Los detalles de Tom (footer y header), Moisez (preloader y líneas
+// verticales) y Lucas Lima (mono) se implementan DESPUÉS de tener el clon
+// exacto. La home principal queda solo con Hero + Intro.
 export default function Experimento() {
   return (
     <>
@@ -38,9 +44,9 @@ export default function Experimento() {
         <ExpWork />
         <ExpManifesto />
         <ExpExperience />
+        <ExpInsights />
         <ExpClients />
         <ExpTestimonials />
-        <ExpCv />
         <ExpClose />
       </main>
     </>

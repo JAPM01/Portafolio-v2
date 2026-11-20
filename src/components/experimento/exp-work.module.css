@@ -4,7 +4,10 @@
    cada artículo es una rejilla de 2 columnas: título/meta a la IZQUIERDA,
    alineados a la derecha, a la altura de la parte superior de la imagen;
    imagen a la DERECHA (~530px de alto). Brecha entre artículos ~64px.
-   Sin blurbs. "Más proyectos" como lista con hairlines (Insights). */
+   Sin blurbs, sin "Más proyectos" (Melon no lo tiene en la home).
+   Animación 3D ligada al scroll: la imagen se deforma (rotateX sobre
+   perspectiva, --tilt/--bend fijados por JS según la posición en el
+   viewport) y nunca es un rectángulo plano al hacer scroll. */
 
 /* Texto oscuro sobre fondo claro: el guard tipográfico solo admite
    color: var(--type-*) (claros) o transparent, así que el color se
@@ -127,6 +130,11 @@
   margin: 0;
   overflow: hidden;
   aspect-ratio: 16 / 10;
+  /* Deformación 3D ligada al scroll (Melon): el JS fija --tilt/--bend
+     según la posición de la tarjeta en el viewport. */
+  transform: perspective(1200px) rotateX(var(--tilt, 0deg)) scale(var(--bend, 1));
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 @media (min-width: 1024px) {
@@ -135,6 +143,12 @@
     aspect-ratio: auto;
     height: 530px;
   }
+}
+
+.media a {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .media img {
@@ -147,59 +161,4 @@
 
 .card:hover .media img {
   transform: scale(1.03);
-}
-
-.moreLabel {
-  grid-column: 1 / -1;
-  margin: var(--space-32) 0 0;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-}
-
-.moreList {
-  grid-column: 1 / -1;
-  margin: var(--space-8) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.moreRow {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: var(--space-4);
-  padding-block: var(--space-4);
-  border-top: 1px solid color-mix(in oklch, var(--melon-dark) 20%, transparent);
-  transition: background-color 0.3s ease;
-}
-
-.moreRow:last-child {
-  border-bottom: 1px solid color-mix(in oklch, var(--melon-dark) 20%, transparent);
-}
-
-/* Hover estilo Melon: la fila se vuelve roja con texto blanco. */
-.moreRow:hover {
-  background: var(--brand-red);
-}
-
-.moreRow:hover .moreNum,
-.moreRow:hover .moreTitle,
-.moreRow:hover .moreCat {
-  background: var(--brand-white);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-.moreNum {
-  margin: 0;
-}
-
-.moreTitle {
-  margin: 0;
-}
-
-.moreCat {
-  margin: 0;
-  text-align: right;
 }

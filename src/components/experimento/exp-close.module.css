@@ -1,7 +1,7 @@
 /* Contacto + Footer — clon 1:1 TOTAL de Melon (medido en vivo, 19 Nov 2026).
-   Melon: contacto en CREMA con correo gigante (~150px) en negro; footer
-   oscuro con 3 zonas (Services, Social, Listening & Reading), logo grande
-   y barra inferior en mono. */
+   Melon: contacto en CREMA con solo el correo gigante en negro +
+   "Start a project →"; footer oscuro con 3 zonas (Contact + Services,
+   Social, Listening & Reading), logo grande y barra inferior en mono. */
 
 /* Texto oscuro sobre fondo claro (contacto en crema): el guard
    tipográfico solo admite color: var(--type-*) (claros) o transparent,
@@ -25,25 +25,6 @@
   }
 }
 
-.label {
-  grid-column: 1 / -1;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-}
-
-.heading {
-  grid-column: 1 / -1;
-  margin-block: var(--space-4) var(--space-16);
-  max-width: 12ch;
-}
-
-@media (min-width: 1024px) {
-  .heading {
-    margin-block-end: var(--space-32);
-  }
-}
-
 .email {
   grid-column: 1 / -1;
   display: block;
@@ -56,21 +37,16 @@
   text-underline-offset: var(--space-2);
 }
 
-.metaRow {
+.startProject {
   grid-column: 1 / -1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2) var(--space-8);
+  display: block;
   margin-top: var(--space-16);
-  padding-top: var(--space-6);
-  border-top: 1px solid color-mix(in oklch, var(--melon-dark) 20%, transparent);
+  text-decoration: none;
 }
 
-.metaRow > p {
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
+.startProject:hover {
+  text-decoration: underline;
+  text-underline-offset: var(--space-1);
 }
 
 .openDot {
@@ -79,12 +55,6 @@
   height: var(--space-2);
   border-radius: 50%;
   background: var(--brand-red);
-}
-
-.social {
-  margin-left: auto;
-  text-decoration: underline;
-  text-underline-offset: var(--space-1);
 }
 
 .footer {
@@ -102,15 +72,18 @@
   margin: 0 0 var(--space-2);
 }
 
-.zone > span {
-  display: block;
-}
-
 @media (min-width: 1024px) {
   .zone {
     grid-column: span 4;
     margin-bottom: var(--space-16);
   }
+}
+
+.cta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-8);
 }
 
 .value {
@@ -122,19 +95,6 @@
 .value:hover {
   text-decoration: underline;
   text-underline-offset: var(--space-1);
-}
-
-/* Wordmark grande del footer (Melon: logo "melon studio" grande al final
-   del footer, en gótica). */
-.wordmark {
-  grid-column: 1 / -1;
-  margin: var(--space-8) 0 var(--space-16);
-  font-family: var(--font-gothic);
-  font-weight: 400;
-  font-size: var(--type-h2-size);
-  line-height: var(--type-h2-leading);
-  letter-spacing: var(--type-h2-tracking);
-  color: var(--type-ink);
 }
 
 .serviceList {
@@ -150,22 +110,60 @@
   margin: 0;
 }
 
-.bar {
+.nowItem {
+  margin-bottom: var(--space-6);
+}
+
+.nowItem p {
+  margin: 0 0 var(--space-1);
+}
+
+.nowItem .value {
+  display: block;
+  margin-bottom: var(--space-1);
+}
+
+/* Logo grande del footer (Melon: logo "melon studio" al final del
+   footer, ~326px de ancho en desktop). */
+.footRow {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-8);
-  align-items: baseline;
+  gap: var(--space-4) var(--space-8);
+  align-items: center;
   justify-content: space-between;
-  padding: var(--space-6) 0;
+  padding: var(--space-8) 0 var(--space-6);
   border-top: 1px solid var(--brand-gray-3);
 }
 
-.bar > p {
+.footRow > p {
   margin: 0;
 }
 
-.top {
+.footLogo {
+  display: block;
+  width: 110px;
+  height: 50px;
+}
+
+@media (min-width: 1024px) {
+  .footLogo {
+    width: 326px;
+    height: auto;
+  }
+}
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+}
+
+.legal a {
   color: var(--type-ink);
+  text-decoration: none;
+}
+
+.legal a:hover {
   text-decoration: underline;
   text-underline-offset: var(--space-1);
 }

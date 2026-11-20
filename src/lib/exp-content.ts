@@ -1,47 +1,40 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 
 /**
- * Contenido REAL de la versión experimento (/experimento).
- * Fuente: CV de diseño de Jafet (docx 15 Nov 2026) y lo acordado en chat.
- * Sin métricas inventadas: solo hay año donde el CV lo da (Nu 2022,
- * Gobierno 2017-2019); el resto usa tipo/estado como metadato.
- * Los testimonios son BORRADORES redactados a petición de Jafet
- * (19 Nov 2026): él afirma haber recibido buenos comentarios pero no
- * los tiene por escrito. Están basados en hechos reales de cada proyecto
- * y atribuidos al equipo/cliente, SIN inventar nombres de personas ni
- * métricas. Jafet debe confirmarlos o reemplazarlos por las citas reales.
- * Las imágenes de Trabajo son PLACEHOLDERS que se ven reales (búsqueda
- * web, verificadas una por una: cargan y muestran el tema correcto);
- * Jafet las cambiará por mockups reales de cada proyecto.
+ * Contenido LITERAL de Melon (melon.studio) para el clon 1:1 pixel a pixel
+ * de /experimento, por indicación de Jafet (19 Nov 2026, 17:57 CST):
+ * "tal cual... exactamente igual pixel a pixel", incluyendo los textos.
+ * Extraído del HTML en vivo de melon.studio el 19 Nov 2026 (textos,
+ * proyectos, testimonios, experiencia, clientes, insights, contacto y
+ * footer, con sus URLs de imágenes).
+ *
+ * Las imágenes se referencian por URL remota a melon.studio porque el
+ * snapshot de GitHub no admite binarios. Para validación local se
+ * sustituye el prefijo MELON_BASE por /Portafolio-v2/exp/melon: las
+ * copias locales en public/exp/melon replican la estructura de rutas
+ * de melon.studio (media/..., brand/...). RESTAURAR las remotas antes
+ * de subir.
+ *
+ * La sección Mi CV es la única que conserva contenido de Jafet (la pidió
+ * en sus secciones de la v2; Melon no tiene equivalente). Va en inglés
+ * para que el clon sea uniforme.
  */
 
-export type ExpLang = "es" | "en";
+export const MELON_BASE = "https://melon.studio";
 
-function getExpLang(): ExpLang {
-  if (typeof window === "undefined") return "es";
-  return window.localStorage.getItem("site-lang") === "en" ? "en" : "es";
-}
+const media = (path: string) => `${MELON_BASE}${path}`;
 
-function subscribeExpLang(callback: () => void) {
-  window.addEventListener("site-lang", callback);
-  return () => window.removeEventListener("site-lang", callback);
-}
-
-export function useExpLang(): ExpLang {
-  return useSyncExternalStore<ExpLang>(subscribeExpLang, getExpLang, () => "es");
-}
-
-export function usePachucaTime() {
+export function usePoznanTime() {
   const [time, setTime] = useState("--:--");
   useEffect(() => {
     function tick() {
       setTime(
-        new Intl.DateTimeFormat("es-MX", {
+        new Intl.DateTimeFormat("en-GB", {
           hour: "2-digit",
           minute: "2-digit",
-          timeZone: "America/Mexico_City",
+          timeZone: "Europe/Warsaw",
         }).format(new Date()),
       );
     }
@@ -52,303 +45,369 @@ export function usePachucaTime() {
   return time;
 }
 
+export const EXP_LOGO = media("/brand/Logo-melon.svg");
+export const EXP_LOGO_FOOTER = media("/brand/logo-footer.svg");
+export const EXP_EMAIL = "hello@melon.studio";
+
+export const EXP_STRINGS = {
+  hero: {
+    word: "melon",
+    phrase: "I design and build websites and digital products.",
+    place: "Poznań, Poland",
+    available: "Open to new projects.",
+  },
+  work: {
+    heading: "Latest Work",
+    showAll: "Show all",
+    showAllHref: `${MELON_BASE}/work`,
+  },
+  about: {
+    statementBefore: "I'm Piotr",
+    statementAfter:
+      " — Product Designer / Design Engineer based in Poland, deep into Design Systems. I build slick SaaS products, apps, and websites - down to the details that make them click.",
+    portrait: media("/media/home/about/head.png"),
+    paragraphs: [
+      "Currently, I'm focused on growing in AI and design engineering. I build projects in code from the very start, checking my work with developers along the way. This new way of designing, where a designer can work in code, really excites me.",
+      "I'm also a fan of sharing knowledge - whether it's mentoring teams, giving feedback, helping people level up in Figma, or showing how AI can actually make our work smarter, faster, and more fun.",
+    ],
+    moreAbout: "More about me",
+    moreAboutHref: `${MELON_BASE}/about`,
+  },
+  experience: {
+    heading: "Experience",
+    freelanceLabel: "As a freelancer I worked with",
+  },
+  insights: {
+    heading: "Insights",
+    allNotes: "All notes",
+    allNotesHref: `${MELON_BASE}/insights`,
+  },
+  clients: {
+    heading: "Clients",
+    note: "Brands and teams I have designed for: in-house, with agencies and as a freelancer.",
+    caseStudy: "Case study",
+    ctaTop: "This spot's open.",
+    ctaBottom: "Let's talk",
+    ctaHref: `${MELON_BASE}/contact`,
+  },
+  testimonials: {
+    heading: "What people say",
+    prev: "Previous review",
+    next: "Next review",
+  },
+  cv: {
+    label: "My CV",
+    heading: "One CV, one trajectory.",
+    skills: "Tools",
+    education: "Education",
+  },
+  contact: {
+    heading: "Let's start a project.",
+    startProject: "Start a project",
+    startProjectHref: `${MELON_BASE}/contact`,
+  },
+  footer: {
+    contact: "Contact",
+    services: "Services",
+    social: "Social",
+    listening: "Listening & Reading",
+    nowPlaying: "Now playing",
+    reading: "Reading",
+    backTop: "Back to top",
+    rights: "All rights reserved.",
+  },
+} as const;
+
 export type ExpProject = {
   title: string;
-  category: string;
-  status: string;
-  blurb: { es: string; en: string };
+  meta: string;
   image: string;
-  imageAlt: { es: string; en: string };
-  link?: string;
-  linkLabel?: { es: string; en: string };
+  imageAlt: string;
+  link: string;
 };
 
 export const EXP_FEATURED: ExpProject[] = [
   {
-    title: "Pincali",
-    category: "Product Design",
-    status: "Implementado",
-    blurb: {
-      es: "Rediseño UX de la tarjeta de producto: el precio como ancla, títulos estándar y contraste WCAG.",
-      en: "UX redesign of the product card: price as the anchor, standard titles and WCAG contrast.",
-    },
-    image:
-      "https://framerusercontent.com/images/bCzGrRmGUfukngZtbSoo6PsU2M.png?width=3000&height=2250",
-    imageAlt: {
-      es: "Tienda en línea con listado de productos en una laptop",
-      en: "Online store with a product listing on a laptop",
-    },
-    link: "https://www.figma.com/deck/imyrOm9oZ59UkfaXetfYXs/UX-redesign-concept-for-the-PLP-card",
-    linkLabel: { es: "Ver caso", en: "View case" },
+    title: "Mastercard Music",
+    meta: "Product design, 2025",
+    image: media("/media/projects/mastercard-music/thumbnail.webp"),
+    imageAlt: "Mastercard Music: Product design",
+    link: `${MELON_BASE}/work/mastercard-music`,
   },
   {
-    title: "Rappi",
-    category: "Product Design",
-    status: "Propuesta pagada",
-    blurb: {
-      es: "Personalización de recomendaciones: 61% de los usuarios se sentía abrumado por las opciones al pedir comida.",
-      en: "Recommendation personalisation: 61% of users felt overwhelmed by the options when ordering food.",
-    },
-    image:
-      "https://eatthis.com/wp-content/uploads/sites/4/2021/12/online-food-delivery-phone.jpg?quality=82&strip=all&w=640",
-    imageAlt: {
-      es: "Aplicación de entrega de comida en un teléfono",
-      en: "Food delivery app on a phone",
-    },
+    title: "All Aces Games",
+    meta: "Brand and website, 2026",
+    image: media("/media/projects/allaces-games/thumbnail.webp"),
+    imageAlt: "All Aces Games: Brand and website",
+    link: `${MELON_BASE}/work/allaces-games`,
   },
   {
-    title: "HiringBe",
-    category: "UX Design · Branding",
-    status: "En vivo",
-    blurb: {
-      es: "Plataforma de reclutamiento con IA: estructura, experiencia y scoring candidato–vacante.",
-      en: "AI recruitment platform: structure, experience and candidate–vacancy scoring.",
-    },
-    image:
-      "https://cdn.prod.website-files.com/6386dd27a0ad72f77e46db23/6931cb5daab90f706d3613a1_recruiting-dashboard%20(1)-p-1080.png",
-    imageAlt: {
-      es: "Panel de reclutamiento con analítica en una laptop",
-      en: "Recruitment dashboard with analytics on a laptop",
-    },
+    title: "oneDynamics",
+    meta: "Company website, 2026",
+    image: media("/media/projects/onedynamics/thumbnail.webp"),
+    imageAlt: "oneDynamics: Company website",
+    link: `${MELON_BASE}/work/onedynamics`,
   },
   {
-    title: "Wildfork",
-    category: "UX Design",
-    status: "Implementado",
-    blurb: {
-      es: "Rediseño de registro y compra: validaciones en tiempo real y mensajes de error claros.",
-      en: "Signup and checkout redesign: real-time validation and clear error messages.",
-    },
-    image:
-      "https://source.inblog.dev/featured_image/2026-03-06T10:24:48.199Z-bc68d608-7daf-4213-9c44-bdd809588043",
-    imageAlt: {
-      es: "Carnicería con cortes de carne en vitrina",
-      en: "Butcher shop with meat cuts on display",
-    },
+    title: "Sawicki Legal",
+    meta: "Law firm website, 2025",
+    image: media("/media/projects/sawicki-legal/thumbnail.webp"),
+    imageAlt: "Sawicki Legal: Law firm website",
+    link: `${MELON_BASE}/work/sawicki-legal`,
   },
   {
-    title: "Nu Collections",
-    category: "Branding",
-    status: "2022",
-    blurb: {
-      es: "Brandbook 2022: imagotipo, sistema, paleta y criterios de accesibilidad para Collections.",
-      en: "2022 Brandbook: wordmark, system, palette and accessibility criteria for Collections.",
-    },
-    image:
-      "https://agencialuminus.com.br/wp-content/uploads/2026/04/Stationery-Branding-Mockup-1.jpg",
-    imageAlt: {
-      es: "Papelería de identidad de marca sobre fondo azul",
-      en: "Brand identity stationery on a blue background",
-    },
+    title: "Huuuge Games",
+    meta: "Games website, 2024",
+    image: media("/media/projects/huuuge-games/thumbnail.webp"),
+    imageAlt: "Huuuge Games: Games website",
+    link: `${MELON_BASE}/work/huuuge-games`,
   },
   {
-    title: "Revo",
-    category: "Product Design",
-    status: "Propuesta pagada",
-    blurb: {
-      es: "Rediseño de interfaz para convertir usuarios gratuitos a premium.",
-      en: "Interface redesign to convert free users to premium.",
-    },
-    image:
-      "https://legend1st.com/wp-content/uploads/2022/07/application-interface-ui-smartphone-3d-rendering-scaled.webp",
-    imageAlt: {
-      es: "Pantallas de aplicación móvil en un teléfono",
-      en: "Mobile app screens on a phone",
-    },
+    title: "Interact",
+    meta: "Redesign concept, 2025",
+    image: media("/media/projects/ipg-interact/thumbnail.webp"),
+    imageAlt: "Interact: Redesign concept",
+    link: `${MELON_BASE}/work/ipg-interact`,
   },
   {
-    title: "AIFA",
-    category: "Branding",
-    status: "Propuesta pagada",
-    blurb: {
-      es: "Isotipo FA + águila + avión, con círculos de proporción áurea y sistema de retícula.",
-      en: "FA monogram + eagle + plane, built on golden-ratio circles and a grid system.",
-    },
-    image: "https://intercs.org/wp-content/uploads/2022/06/872411.png",
-    imageAlt: {
-      es: "Terminal de aeropuerto con aviones en pista",
-      en: "Airport terminal with planes on the tarmac",
-    },
+    title: "HiProMine",
+    meta: "Home page design, 2025",
+    image: media("/media/projects/hipromine/thumbnail.webp"),
+    imageAlt: "HiProMine: Home page design",
+    link: `${MELON_BASE}/work/hipromine`,
   },
 ];
 
-export type ExpMoreProject = {
-  title: string;
-  category: string;
-  status: string;
-  blurb: { es: string; en: string };
+export type ExpExperience = {
+  name: string;
+  role: string;
+  dates: string;
+  tile: string;
+  tileAlt: string;
 };
 
-export const EXP_MORE: ExpMoreProject[] = [
+export const EXP_EXPERIENCE: ExpExperience[] = [
   {
-    title: "Proxemia",
-    category: "Branding",
-    status: "Logotipo",
-    blurb: {
-      es: "Diseño de logotipo con conceptualización completa de marca.",
-      en: "Logo design with full brand conceptualisation.",
-    },
+    name: "Kinesso",
+    role: "Product Designer",
+    dates: "2024 – Present",
+    tile: media("/media/home/experience/roles/0/tile.svg"),
+    tileAlt: "Kinesso logo",
   },
   {
-    title: "OnlyFast",
-    category: "Branding",
-    status: "Identidad",
-    blurb: {
-      es: "Branding, logotipo e imagen para redes de una marca de comida rápida.",
-      en: "Branding, logo and social imagery for a fast-food brand.",
-    },
+    name: "Webmetric",
+    role: "UX/UI Designer",
+    dates: "2023 – Present",
+    tile: media("/media/home/experience/roles/1/tile.svg"),
+    tileAlt: "Webmetric logo",
   },
   {
-    title: "UPMH",
-    category: "Diseño editorial",
-    status: "Por proyecto",
-    blurb: {
-      es: "Logotipo de la carrera de TI y diseño completo de la revista Pueblos Mágicos.",
-      en: "IT degree logo and full design of the Pueblos Mágicos interactive magazine.",
-    },
+    name: "Froggly",
+    role: "UI Designer",
+    dates: "2023 – 2024",
+    tile: media("/media/home/experience/roles/2/tile.svg"),
+    tileAlt: "Froggly logo",
+  },
+  {
+    name: "GPD Agency & Film Studio",
+    role: "Senior Graphic Designer & UX/UI Designer",
+    dates: "2018 – 2023",
+    tile: media("/media/home/experience/roles/3/tile.png"),
+    tileAlt: "GPD Agency & Film Studio logo",
+  },
+  {
+    name: "Pit Bull West Coast",
+    role: "Graphic Designer",
+    dates: "2018",
+    tile: media("/media/home/experience/roles/4/tile.svg"),
+    tileAlt: "Pit Bull West Coast logo",
   },
 ];
 
-export const EXP_EXPERIENCE = [
-  {
-    name: "Freelance Independiente",
-    role: { es: "Diseñador Digital & UI/UX Senior", en: "Senior Digital & UI/UX Designer" },
-    dates: { es: "Ene 2015 — Actualidad", en: "Jan 2015 — Present" },
-    mono: "FI",
-    tile: "red",
-  },
-  {
-    name: "Gobierno del Estado de Hidalgo",
-    role: { es: "Diseñador Gráfico e Identidad Institucional", en: "Graphic & Institutional Identity Designer" },
-    dates: { es: "Abr 2017 — Ene 2019", en: "Apr 2017 — Jan 2019" },
-    mono: "GEH",
-    tile: "outline",
-  },
-  {
-    name: "UPMH",
-    role: { es: "Diseñador Gráfico y Editorial", en: "Graphic & Editorial Designer" },
-    dates: { es: "Por proyecto", en: "Per project" },
-    mono: "UPMH",
-    tile: "dark",
-  },
-  {
-    name: "Pieza Creativa",
-    role: { es: "Diseñador Gráfico", en: "Graphic Designer" },
-    dates: { es: "Etapa inicial", en: "Early stage" },
-    mono: "PC",
-    tile: "gray",
-  },
-] as const;
+export const EXP_FREELANCE = ["Stagwell", "zu.agency", "teacode.io", "brandma.pl"] as const;
 
-export const EXP_CLIENTS = [
-  "Rappi",
-  "Pincali",
-  "Wildfork",
-  "Nu México",
-  "Gobierno Federal",
-  "Gobierno del Estado de Hidalgo",
-  "ION Financiera",
-  "UPMH",
-  "Mantiz Game Studios",
-  "HiringBe",
-  "IDAI",
-  "Prosmile",
-  "Ictica",
-  "Business Solutions",
-  "Proxemia",
-  "OnlyFast",
-  "Revo",
-  "AIFA",
-] as const;
+export type ExpInsight = {
+  date: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  read: string;
+  image: string;
+  link: string;
+};
+
+export const EXP_INSIGHTS: ExpInsight[] = [
+  {
+    date: "Oct 7",
+    title: "Redefining Navigation for Interact SaaS",
+    excerpt:
+      "As part of the broader redesign initiative for Interact, an industry-leading SaaS for media planning and campaign management, I was responsible for creating one of the three conceptual directions.",
+    category: "Product design",
+    read: "3 min read",
+    image: media("/media/posts/redefining-navigation-for-interact-saas/homeImage/src.webp"),
+    link: `${MELON_BASE}/insights/redefining-navigation-for-interact-saas`,
+  },
+  {
+    date: "Oct 14",
+    title: "Stable Diffusion 3 vs Midjourney and Dall·E 3",
+    excerpt: "Understand the differences and choose which one is right for you?",
+    category: "AI",
+    read: "3 min read",
+    image: media("/media/posts/stable-diffusion-3-vs-midjourney-and-dall-e-3/homeImage/src.webp"),
+    link: `${MELON_BASE}/insights/stable-diffusion-3-vs-midjourney-and-dall-e-3`,
+  },
+  {
+    date: "Oct 14",
+    title: "WebGPU: The future of web applications.",
+    excerpt: "Let's analyze what WebGPU is and what impact it can have.",
+    category: "Web design",
+    read: "Quick read",
+    image: media("/media/posts/webgpu-the-future-of-web-applications/homeImage/src.webp"),
+    link: `${MELON_BASE}/insights/webgpu-the-future-of-web-applications`,
+  },
+  {
+    date: "Oct 13",
+    title: "Discover New Music with Spotify's Smart Shuffle ✨",
+    excerpt: "Music that perfectly match your unique vibe. Discover new favorites!",
+    category: "AI",
+    read: "2 min read",
+    image: media("/media/posts/discover-new-music-with-spotifys-smart-shuffle/homeImage/src.webp"),
+    link: `${MELON_BASE}/insights/discover-new-music-with-spotifys-smart-shuffle`,
+  },
+  {
+    date: "Oct 13",
+    title: "Valentine's Matchmaker",
+    excerpt: "Event Design for the SkinsMonkey CS2 Community",
+    category: "AI",
+    read: "2 min read",
+    image: media("/media/posts/valentines-matchmaker/homeImage/src.webp"),
+    link: `${MELON_BASE}/insights/valentines-matchmaker`,
+  },
+];
+
+export type ExpClient = {
+  name: string;
+  logo: string;
+  caseStudy?: string;
+};
+
+export const EXP_CLIENTS: ExpClient[] = [
+  { name: "Mastercard", logo: media("/media/logos/mastercard/colour.svg"), caseStudy: `${MELON_BASE}/work/mastercard-music` },
+  { name: "Lidl", logo: media("/media/logos/lidl/colour.svg") },
+  { name: "Bayer", logo: media("/media/logos/bayer/colour.svg") },
+  { name: "Huuuge Games", logo: media("/media/logos/huuuge/colour.svg"), caseStudy: `${MELON_BASE}/work/huuuge-games` },
+  { name: "Poczta Polska", logo: media("/media/logos/pocztapolska/colour.svg") },
+  { name: "PKP", logo: media("/media/logos/pkp/colour.svg") },
+  { name: "Stagwell", logo: media("/media/logos/stagwell/colour.svg") },
+  { name: "Omnicom", logo: media("/media/logos/omnicom/colour.png"), caseStudy: `${MELON_BASE}/work` },
+  { name: "Enea", logo: media("/media/logos/enea/colour.svg") },
+  { name: "Kinesso", logo: media("/media/logos/kinesso/colour.svg") },
+  { name: "All Aces Games", logo: media("/media/logos/allaces/colour.svg"), caseStudy: `${MELON_BASE}/work/allaces-games` },
+  { name: "WSiP", logo: media("/media/logos/wsip/colour.svg") },
+  { name: "Kinderkraft", logo: media("/media/logos/kinderkraft/colour.svg") },
+  { name: "Państwowa Inspekcja Pracy", logo: media("/media/logos/pip/colour.svg") },
+  { name: "Barter", logo: media("/media/logos/barter/colour.svg") },
+  { name: "HiProMine", logo: media("/media/logos/hipromine/colour.svg"), caseStudy: `${MELON_BASE}/work/hipromine` },
+  { name: "Sawicki Legal", logo: media("/media/logos/sawicki/colour.svg"), caseStudy: `${MELON_BASE}/work/sawicki-legal` },
+  { name: "John Dog", logo: media("/media/logos/johndog/colour.svg") },
+  { name: "Pitbull West Coast", logo: media("/media/logos/pitbull/colour.svg") },
+  { name: "Webmetric", logo: media("/media/logos/webmetric/colour.svg") },
+  { name: "Froggly", logo: media("/media/logos/froggly/colour.svg") },
+  { name: "oneDynamics", logo: media("/media/logos/onedynamics/colour.svg"), caseStudy: `${MELON_BASE}/work/onedynamics` },
+  { name: "GPD Agency & Film Studio", logo: media("/media/logos/gpd/colour.svg") },
+  { name: "teacode.io", logo: media("/media/logos/teacode/colour.svg") },
+  { name: "Sisem", logo: media("/media/logos/sisem/colour.svg") },
+  { name: "zu.agency", logo: media("/media/logos/zuagency/colour.svg") },
+  { name: "One Day More", logo: media("/media/logos/onedaymore/colour.svg") },
+  { name: "BKT Elektronik", logo: media("/media/logos/bkt/colour.svg") },
+  { name: "SEOHOST", logo: media("/media/logos/seohost/colour.svg") },
+  { name: "brandma.pl", logo: media("/media/logos/brandma/colour.svg") },
+  { name: "Tenzi", logo: media("/media/logos/tenzi/colour.svg") },
+];
 
 export type ExpTestimonial = {
-  quote: { es: string; en: string };
-  by: { es: string; en: string };
-  link?: string;
-  linkLabel?: { es: string; en: string };
+  quote: string;
+  name: string;
+  role: string;
+  caseStudy?: string;
+  caseStudyLabel?: string;
 };
 
 export const EXP_TESTIMONIALS: ExpTestimonial[] = [
   {
-    quote: {
-      es: "El rediseño de la tarjeta ordenó la jerarquía: el precio manda, los títulos se leen de un vistazo y el contraste por fin cumple WCAG.",
-      en: "The card redesign fixed the hierarchy: price leads, titles scan at a glance, and contrast finally meets WCAG.",
-    },
-    by: { es: "Equipo de Producto, Pincali", en: "Product Team, Pincali" },
-    link: "https://www.figma.com/deck/imyrOm9oZ59UkfaXetfYXs/UX-redesign-concept-for-the-PLP-card",
-    linkLabel: { es: "Ver caso", en: "View case" },
+    quote:
+      "Piotr Brzeziński was responsible for the entire design of Huuuge's new website, and he absolutely nailed it! It was a pleasure working with him, and I hope our paths cross again soon!",
+    name: "Agata Rutkowska",
+    role: "Brand Identity Manager at Huuuge Games",
+    caseStudy: `${MELON_BASE}/work/huuuge-games`,
+    caseStudyLabel: "Huuuge Games case study",
   },
   {
-    quote: {
-      es: "El brandbook le dio orden a todo Collections: imagotipo, sistema, paleta y accesibilidad en un solo documento claro.",
-      en: "The brandbook brought order to all of Collections: wordmark, system, palette and accessibility in one clear document.",
-    },
-    by: { es: "Equipo de Collections, Nu México", en: "Collections Team, Nu México" },
+    quote:
+      "Piotr is a highly skilled UX/UI specialist, and working with him day to day is remarkably smooth. His diverse experience lets him see the product from a broader perspective and offer valuable advice.",
+    name: "Justyna Pakuła-Steć",
+    role: "Senior IT Project Manager at Poczta Polska",
   },
   {
-    quote: {
-      es: "El registro y la compra por fin se sienten fáciles: errores claros, validación en tiempo real y un flujo sin fricción.",
-      en: "Signup and checkout finally feel easy: clear errors, real-time validation and a frictionless flow.",
-    },
-    by: { es: "Equipo de Producto, Wildfork", en: "Product Team, Wildfork" },
+    quote:
+      "Piotr is a proactive and talented Product Designer who combines excellent UX/UI skills with strong communication, leadership, and problem-solving abilities, making him a great asset to any team.",
+    name: "Rafal Jablonski",
+    role: "AI & Automation Offering Lead at iteo",
   },
 ];
 
-export const EXP_MANIFESTO = {
-  principles: [
-    {
-      title: { es: "Entender a las personas.", en: "Understanding people." },
-      desc: {
-        es: "Investigación de usuarios y mercado antes de cualquier pantalla.",
-        en: "User and market research before any screen.",
-      },
-    },
-    {
-      title: { es: "Observar antes de actuar.", en: "Observing before acting." },
-      desc: {
-        es: "Miro cómo se usa lo que existe y dónde se rompe.",
-        en: "I look at how what exists is used, and where it breaks.",
-      },
-    },
-    {
-      title: { es: "Definir los resultados.", en: "Defining outcomes." },
-      desc: {
-        es: "Cada decisión tiene una forma de medirse.",
-        en: "Every decision has a way to be measured.",
-      },
-    },
-  ],
+export const EXP_SOCIAL = [
+  { label: "Behance", href: "https://www.behance.net/MelonToPies" },
+  { label: "Dribbble", href: "https://dribbble.com/MelonToPies" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/piotr-brzezinski-ux-ui-design/" },
+] as const;
+
+export const EXP_SERVICES = [
+  { label: "SaaS & product design", href: `${MELON_BASE}/services/saas-product-design` },
+  { label: "Web design", href: `${MELON_BASE}/services/web-design` },
+  { label: "Design for agencies", href: `${MELON_BASE}/services/design-for-agencies` },
+] as const;
+
+export const EXP_LISTENING = {
+  nowPlaying: {
+    title: "Syn okiennika",
+    by: "Kacperczyk, Artur Rojek",
+    href: "https://open.spotify.com/track/5Y4KDqJPuqIp2GdG35KKNi",
+  },
+  reading: {
+    title: "The Umami Strategy",
+    by: "Aga Szóstek",
+    href: "https://www.bispublishers.com/the-umami-strategy.html",
+  },
 } as const;
 
+/**
+ * Mi CV — contenido de Jafet (única sección que conserva su contenido;
+ * Melon no tiene equivalente). En inglés para que el clon sea uniforme.
+ * Fuente: CV de diseño (docx 15 Nov 2026) + estructura última acordada.
+ */
 export const EXP_CV_STATS = [
-  { value: "50+", label: { es: "marcas y empresas", en: "brands and companies" } },
-  { value: "10+", label: { es: "años de trayectoria", en: "years of practice" } },
-  { value: "7", label: { es: "proyectos destacados", en: "featured projects" } },
+  { value: "50+", label: "brands and companies" },
+  { value: "10+", label: "years of practice" },
+  { value: "5", label: "featured projects" },
 ] as const;
 
 export const EXP_CV = {
-  header: {
-    es: "Diseñador Digital & UI/UX Senior | Consultoría y Proyectos Independientes",
-    en: "Senior Digital & UI/UX Designer | Consulting & Independent Projects",
-  },
-  meta: {
-    es: "Remoto / Híbrido · Enero 2015 — Actualidad",
-    en: "Remote / Hybrid · January 2015 — Present",
-  },
-  bullets: {
-    es: [
-      "Lidero diseño de producto y UX/UI por proyecto, de discovery a validación con usuarios reales.",
-      "Construyo marcas con proceso completo: investigación, conceptualización, identidad y sistemas visuales.",
-      "Diseño experiencias que se miden por resultados: usabilidad, accesibilidad y conversión.",
-      "Trabajo con empresas grandes, instituciones y emprendimientos, en remoto e híbrido.",
-    ],
-    en: [
-      "I lead product and UX/UI design per project, from discovery to validation with real users.",
-      "I build brands through the full process: research, conceptualisation, identity and visual systems.",
-      "I design experiences measured by results: usability, accessibility and conversion.",
-      "I work with large companies, institutions and startups, remote and hybrid.",
-    ],
-  },
+  header: "Senior Digital & UI/UX Designer | Consulting & Independent Projects",
+  meta: "Remote / Hybrid · January 2015 — Present",
+  bullets: [
+    "I lead product and UX/UI design per project, from discovery to validation with real users.",
+    "I build brands through the full process: research, conceptualisation, identity and visual systems.",
+    "I design experiences measured by results: usability, accessibility and conversion.",
+    "I work with large companies, institutions and startups, remote and hybrid.",
+  ],
+  featured: [
+    { title: "Pincali", category: "Product Design" },
+    { title: "Rappi", category: "Product Design" },
+    { title: "HiringBe", category: "UX Design" },
+    { title: "Wildfork", category: "UX Design" },
+    { title: "Nu Collections", category: "Branding" },
+  ],
   tools: [
     "Figma",
     "Adobe Illustrator",
@@ -362,81 +421,7 @@ export const EXP_CV = {
     "Claude",
     "Gemini",
   ],
-  education: {
-    es: "Ingeniería en Tecnologías de la Información — UPMH, 2013–2016",
-    en: "BEng in Information Technologies — UPMH, 2013–2016",
-  },
-  cert: {
-    es: "Digital Marketing Fundamentals (SCDM-F) — SMstudy",
-    en: "Digital Marketing Fundamentals (SCDM-F) — SMstudy",
-  },
-  english: { es: "Inglés B1", en: "English B1" },
+  education: "BEng in Information Technologies — UPMH, 2013–2016",
+  cert: "Digital Marketing Fundamentals (SCDM-F) — SMstudy",
+  english: "English B1",
 } as const;
-
-export const EXP_STRINGS = {
-  hero: {
-    phrase: { es: "Diseño que se mide en resultados.", en: "Design measured by results." },
-    available: { es: "Disponible para proyectos", en: "Open to new projects" },
-  },
-  manifesto: {
-    label: { es: "Manifiesto", en: "Manifesto" },
-    heading: { es: "Cómo trabajo.", en: "How I work." },
-    intro: {
-      es: "Me muevo entre el diseño, la tecnología y la usabilidad para abordar cada reto desde la raíz, tomando decisiones claras que se miden por resultados reales.",
-      en: "Moving between design, technology, and usability to tackle every challenge from the root, making clear decisions measured by real outcomes.",
-    },
-  },
-  work: {
-    label: { es: "Trabajo seleccionado", en: "Selected work" },
-    heading: { es: "Trabajo que se mide en resultados.", en: "Work measured by results." },
-    showAll: { es: "Ver todo", en: "Show all" },
-    moreLabel: { es: "Más proyectos", en: "More projects" },
-    implemented: { es: "Implementado", en: "Implemented" },
-  },
-  experience: {
-    label: { es: "Experiencia", en: "Experience" },
-    heading: { es: "Trayectoria en diseño.", en: "Design trajectory." },
-    note: {
-      es: "Más de 50 marcas, empresas e instituciones, locales, nacionales e internacionales.",
-      en: "More than 50 brands, companies and institutions, local, national and international.",
-    },
-  },
-  clients: {
-    label: { es: "Clientes", en: "Clients" },
-    heading: { es: "Marcas que confiaron en mí.", en: "Brands that trusted me." },
-    cta: { es: "¿Tu marca aquí? Hablemos", en: "Your brand here? Let's talk" },
-  },
-  testimonials: {
-    label: { es: "Testimonios", en: "Testimonials" },
-    heading: { es: "Lo que dicen de mi trabajo.", en: "What they say about my work." },
-    prev: { es: "Testimonio anterior", en: "Previous testimonial" },
-    next: { es: "Testimonio siguiente", en: "Next testimonial" },
-  },
-  cv: {
-    label: { es: "Mi CV", en: "My CV" },
-    heading: { es: "Un solo CV, una sola trayectoria.", en: "One CV, one trajectory." },
-    skills: { es: "Herramientas", en: "Tools" },
-    education: { es: "Formación", en: "Education" },
-  },
-  contact: {
-    label: { es: "Contacto", en: "Contact" },
-    heading: { es: "Empecemos un proyecto.", en: "Let's start a project." },
-    available: { es: "Disponible para proyectos", en: "Open to new projects" },
-    location: { es: "Pachuca, Hidalgo · Remoto / Híbrido", en: "Pachuca, Hidalgo · Remote / Hybrid" },
-    emailLabel: { es: "Escríbeme", en: "Write to me" },
-  },
-  footer: {
-    backTop: { es: "Volver arriba", en: "Back to top" },
-    rights: { es: "Todos los derechos reservados.", en: "All rights reserved." },
-    portfolio: { es: "Portafolio 2026", en: "Portfolio 2026" },
-    mail: { es: "Mail", en: "Mail" },
-    place: { es: "Ubicación", en: "Location" },
-    linkedin: { es: "LinkedIn", en: "LinkedIn" },
-    listening: { es: "Escuchando y leyendo", en: "Listening & Reading" },
-    listening1: { es: "Artículo — por definir", en: "Article — to be defined" },
-    listening2: { es: "Libro — por definir", en: "Book — to be defined" },
-  },
-} as const;
-
-export const EXP_EMAIL = "jperez.mond@gmail.com";
-export const EXP_LINKEDIN = "https://www.linkedin.com/in/jafetperezmondragon";

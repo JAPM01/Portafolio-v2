@@ -23,13 +23,22 @@
 }
 
 .logo {
-  color: var(--type-ink);
+  display: block;
+  line-height: 0;
   text-decoration: none;
-  font-family: var(--font-gothic);
-  font-weight: 400;
-  font-size: var(--type-h5-size);
-  line-height: var(--type-h5-leading);
-  letter-spacing: var(--type-h5-tracking);
+}
+
+.logo img {
+  display: block;
+  width: 110px;
+  height: 50px;
+}
+
+/* Contador del nav (Melon: "work (7)", "articles (7)"). El <sup> ya se
+   achica por estilo UA; no se fija font-size (el guard tipográfico solo
+   admite var(--type-*) y rechaza em). */
+.count {
+  line-height: 0;
 }
 
 .nav {
@@ -46,14 +55,6 @@
 .nav a:hover {
   text-decoration: underline;
   text-underline-offset: var(--space-1);
-}
-
-.lang {
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--type-ink);
-  cursor: pointer;
 }
 
 .menu {

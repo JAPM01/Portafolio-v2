@@ -15,6 +15,7 @@ test("Una sola retícula estructural en todas las secciones", () => {
   for (const name of [
     "Hero", "Intro", "ContactClose", "WorkDetail",
     "experimento/ExpWork", "experimento/ExpExperience",
+    "experimento/ExpInsights",
     "experimento/ExpClients", "experimento/ExpTestimonials",
     "experimento/ExpCv", "experimento/ExpClose",
     "experimento/ExpHero", "experimento/ExpManifesto",
@@ -28,6 +29,7 @@ test("Una sola retícula estructural en todas las secciones", () => {
   for (const name of [
     "intro", "work-detail", "contact-close",
     "experimento/exp-work", "experimento/exp-experience",
+    "experimento/exp-insights",
     "experimento/exp-clients", "experimento/exp-testimonials",
     "experimento/exp-cv", "experimento/exp-close",
     "experimento/exp-hero", "experimento/exp-manifesto",

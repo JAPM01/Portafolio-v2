@@ -1,67 +1,46 @@
 "use client";
 
 import { useState } from "react";
-import { useExpLang } from "../../lib/exp-content";
+import { EXP_LOGO, MELON_BASE } from "../../lib/exp-content";
 import styles from "./exp-header.module.css";
 
 /**
  * Header del experimento — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
- * Melon: barra superior plana (sin píldora), logotipo a la izquierda,
- * navegación a la derecha, ~90px de alto. Aquí el logotipo es "JPM" en
- * texto y la navegación son las secciones de la v2 + idioma. Es
- * position: absolute (se va con el scroll) para no chocar con las
- * secciones claras; el header de Tom viene después del clon exacto.
+ * Melon: barra superior plana (sin píldora), logotipo SVG a la izquierda,
+ * navegación a la derecha: work (7), articles (7), about, contact.
+ * Sin toggle de idioma (Melon es solo inglés). Position absolute: se va
+ * con el scroll. En móvil, botón Menú con overlay.
  */
 const NAV = [
-  { id: "exp-work", es: "Trabajo", en: "Work" },
-  { id: "exp-manifesto", es: "Manifiesto", en: "Manifesto" },
-  { id: "exp-experience", es: "Experiencia", en: "Experience" },
-  { id: "exp-clients", es: "Clientes", en: "Clients" },
-  { id: "exp-close", es: "Contacto", en: "Contact" },
+  { id: "exp-work", label: "work", count: 7 },
+  { id: "exp-insights", label: "articles", count: 7 },
+  { id: "exp-manifesto", label: "about", count: null },
+  { id: "exp-contact", label: "contact", count: null },
 ] as const;
 
 export default function ExpHeader() {
-  const lang = useExpLang();
   const [open, setOpen] = useState(false);
-
-  const toggleLang = () => {
-    const next = lang === "es" ? "en" : "es";
-    document.documentElement.lang = next;
-    try {
-      localStorage.setItem("site-lang", next);
-    } catch {
-      // La lengua cambia aunque no persista.
-    }
-    window.dispatchEvent(new CustomEvent("site-lang", { detail: next }));
-  };
 
   return (
     <>
       <header className={styles.header}>
-        <a className={styles.logo} href="#exp-hero">
-          JPM
+        <a className={styles.logo} href="#exp-hero" aria-label="melon studio, back to top">
+          <img src={EXP_LOGO} alt="melon studio" width={110} height={50} />
         </a>
-        <nav className={styles.nav} aria-label={lang === "es" ? "Navegación principal" : "Main navigation"}>
+        <nav className={styles.nav} aria-label="Main">
           {NAV.map((item) => (
             <a className="type-mono" key={item.id} href={`#${item.id}`}>
-              {item[lang]}
+              {item.label}
+              {item.count ? <sup className={styles.count}>({item.count})</sup> : null}
             </a>
           ))}
-          <button
-            className={"type-mono " + styles.lang}
-            type="button"
-            onClick={toggleLang}
-            aria-label={lang === "es" ? "Cambiar idioma a inglés" : "Switch language to Spanish"}
-          >
-            {lang === "es" ? "EN" : "ES"}
-          </button>
           <button
             className={"type-mono " + styles.menu}
             type="button"
             onClick={() => setOpen(true)}
-            aria-label={lang === "es" ? "Abrir menú" : "Open menu"}
+            aria-label="Open menu"
           >
-            {lang === "es" ? "Menú" : "Menu"}
+            Menu
           </button>
         </nav>
       </header>
@@ -72,13 +51,13 @@ export default function ExpHeader() {
             className={"type-mono " + styles.close}
             type="button"
             onClick={() => setOpen(false)}
-            aria-label={lang === "es" ? "Cerrar menú" : "Close menu"}
+            aria-label="Close menu"
           >
-            {lang === "es" ? "Cerrar ✕" : "Close ✕"}
+            Close ✕
           </button>
-          <nav className={styles.overlayNav} aria-label={lang === "es" ? "Menú" : "Menu"}>
-            <a className="type-h3" href="/" onClick={() => setOpen(false)}>
-              {lang === "es" ? "Inicio" : "Home"}
+          <nav className={styles.overlayNav} aria-label="Menu">
+            <a className="type-h3" href={MELON_BASE} onClick={() => setOpen(false)}>
+              Home
             </a>
             {NAV.map((item) => (
               <a
@@ -87,12 +66,10 @@ export default function ExpHeader() {
                 href={`#${item.id}`}
                 onClick={() => setOpen(false)}
               >
-                {item[lang]}
+                {item.label}
+                {item.count ? ` (${item.count})` : ""}
               </a>
             ))}
-            <a className="type-h3" href="/contact" onClick={() => setOpen(false)}>
-              {lang === "es" ? "Contacto" : "Contact"}
-            </a>
           </nav>
         </div>
       ) : null}

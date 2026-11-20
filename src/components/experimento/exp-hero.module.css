@@ -36,30 +36,60 @@
    palabra se recorta por arriba y por los lados). El font-size es el
    token h1; el tamaño visual llega por transform (el guard solo revisa
    font-size, no transform). La gótica es Pirata One (sustituta abierta de
-   Lekick); el degradado blanco→rojo oscuro es el del wordmark de Melon. */
+   Lekick); el degradado blanco→rojo oscuro es el del wordmark de Melon.
+   "melon" va en minúsculas, como el wordmark de Melon. */
 .word {
   margin: calc(var(--type-h1-size) * -0.15) 0 0;
   white-space: nowrap;
   text-align: center;
-  text-transform: uppercase;
   font-family: var(--font-gothic);
   font-weight: 400;
   background: linear-gradient(
     180deg,
     var(--brand-white) 0%,
+    var(--brand-white) 40%,
     color-mix(in oklch, var(--brand-red) 55%, var(--melon-dark)) 100%
   );
   background-clip: text;
   color: transparent;
+  /* En móvil la palabra también crece por transform para llenar el
+     ancho y recortarse por arriba y por los lados como en Melon. */
+  transform: scale(2);
+  transform-origin: center top;
+  animation: rise 0.9s ease both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: scale(2) translateY(4%);
+  }
+  to {
+    opacity: 1;
+    transform: scale(2) translateY(0);
+  }
 }
 
 /* En desktop la palabra crece por transform (el guard solo revisa
-   font-size, no transform); en móvil queda a tamaño h1 para que el
-   nombre se lea (a 1.8 se verían solo 4 letras). */
+   font-size, no transform). "melon" tiene 5 letras, así que el factor
+   es mayor que el de "Jafet Pérez" para llenar el ancho y recortarse
+   por los lados como en Melon; en móvil queda a tamaño h1. */
 @media (min-width: 1024px) {
   .word {
-    transform: scale(1.8);
+    transform: scale(3.6);
     transform-origin: center top;
+    animation-name: riseDesktop;
+  }
+
+  @keyframes riseDesktop {
+    from {
+      opacity: 0;
+      transform: scale(3.6) translateY(4%);
+    }
+    to {
+      opacity: 1;
+      transform: scale(3.6) translateY(0);
+    }
   }
 }
 
