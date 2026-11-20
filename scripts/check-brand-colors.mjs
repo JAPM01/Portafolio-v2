@@ -67,6 +67,7 @@ function findFiles(dir, items = []) {
       // v3 es una app independiente dentro del repo (su propio Tailwind y
       // tokens del brief de jprat.studio); el guard de marca del v2 no aplica.
       if (name.startsWith("v3/")) continue;
+      if (name.startsWith("v4/")) continue;
       if (!SKIP.has(name)) items.push({ name, text: readFileSync(full, "utf8") });
     }
   }

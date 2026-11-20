@@ -1,0 +1,7 @@
+node_modules
+dist
+.env*
+*.local
+# Assets decodificados en el build (viajan como base64 en assets-b64/)
+src/assets/*.jpg
+public/favicon.ico

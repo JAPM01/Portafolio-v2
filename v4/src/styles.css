@@ -1,0 +1,157 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-display: "Inter Tight", ui-sans-serif, sans-serif;
+  --font-sans: "Inter Tight", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: var(--radius);
+  --radius-xl: 24px;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-highlight: var(--highlight);
+  --color-status: var(--status);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+}
+
+:root {
+  --radius: 14px;
+  --background: oklch(0.08 0 0);           /* #010101 */
+  --foreground: oklch(0.995 0 0);          /* #FEFEFE */
+  --surface: oklch(0.16 0.006 270);        /* #0B0C10 */
+  --surface-2: oklch(0.21 0.01 265);       /* #14161c */
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.45 0.31 264);         /* #000AFF electric — buttons only, text on it is white */
+  --primary-foreground: oklch(0.995 0 0);
+  --secondary: var(--surface-2);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--surface-2);
+  --muted-foreground: oklch(0.73 0.008 265); /* #A4A7AF */
+  --accent: var(--surface-2);
+  --accent-foreground: var(--foreground);
+  --highlight: oklch(0.995 0 0);           /* UI stays monochrome; colour lives only in 3D light */
+  --status: oklch(0.995 0 0);
+  --destructive: oklch(0.65 0.2 25);
+  --destructive-foreground: oklch(0.995 0 0);
+  --border: oklch(0.25 0.012 270);         /* #1E2029 */
+  --input: oklch(0.25 0.012 270);
+  --ring: oklch(0.995 0 0);
+  --glow-blue: oklch(0.45 0.31 264);
+  --glow-amber: oklch(0.77 0.16 58);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html { background: var(--color-background); color-scheme: dark; }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--highlight); color: var(--background); }
+}
+
+@utility kit-dots {
+  background-image: radial-gradient(color-mix(in oklab, var(--foreground) 15%, transparent) 1px, transparent 1.2px);
+  background-size: 56px 56px;
+}
+@utility kit-bevel {
+  background: linear-gradient(180deg, var(--surface-2), oklch(0.12 0.004 270));
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--foreground) 15%, transparent), inset 0 -1px 0 oklch(0 0 0), 0 0 0 1px color-mix(in oklab, var(--foreground) 7%, transparent);
+}
+@utility kit-chrome {
+  background: linear-gradient(120deg, oklch(0.47 0.01 260), oklch(0.97 0.003 250) 22%, oklch(0.29 0.01 265) 40%, var(--surface) 58%, oklch(0.84 0.008 260) 78%, oklch(0.36 0.01 265));
+  box-shadow: inset 2px 2px 0 color-mix(in oklab, var(--foreground) 60%, transparent), inset -3px -3px 0 oklch(0 0 0 / 0.65);
+}
+@utility flute {
+  background: repeating-linear-gradient(90deg, oklch(1 0 0 / 0.08) 0 2px, oklch(1 0 0 / 0.02) 6px, oklch(0 0 0 / 0.25) 22px, oklch(1 0 0 / 0.06) 28px);
+  backdrop-filter: blur(14px) saturate(130%);
+}
+@utility chrome-fallback {
+  background:
+    radial-gradient(60% 50% at 30% 40%, oklch(0.29 0.01 265), transparent 70%),
+    radial-gradient(40% 40% at 70% 70%, color-mix(in oklab, var(--glow-blue) 30%, transparent), transparent 70%),
+    radial-gradient(30% 30% at 55% 25%, oklch(0.84 0.008 260 / 0.35), transparent 70%),
+    var(--background);
+}
+
+@keyframes kit-mq { to { transform: translateX(-50%); } }
+@utility kit-mq { animation: kit-mq 28s linear infinite; }
+@keyframes pulse-dot { 0%,100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--status) 60%, transparent); } 50% { box-shadow: 0 0 0 6px transparent; } }
+@utility pulse-dot { animation: pulse-dot 2s ease-out infinite; }
+
+.reveal-line { display: block; overflow: hidden; }
+.reveal-line > span { display: inline-block; transform: translateY(105%); transition: transform 1s cubic-bezier(.2,.8,.1,1); }
+.is-in .reveal-line > span { transform: none; }
+
+.skill-map { position: relative; width: 100%; aspect-ratio: 3 / 2; margin-top: 48px; }
+.skill-radar { position: relative; width: 100%; height: 100%; overflow: visible; }
+.skill-glass { position: absolute; left: 0; top: 50%; width: 100%; aspect-ratio: 3 / 2; transform: translateY(-50%); }
+.skill-map-3d .radar-flat { display: none; }
+.radar-grid { stroke: color-mix(in oklab, var(--foreground) 20%, transparent); stroke-width: 1; }
+.radar-shape { fill: color-mix(in oklab, var(--foreground) 10%, transparent); stroke: var(--foreground); stroke-width: 1; transform-origin: 600px 400px; transform: scale(.7); opacity: 0; transition: transform 1.4s ease, opacity 1.2s ease; }
+.skill-map-visible .radar-shape { transform: scale(1); opacity: 1; }
+.radar-dot { fill: var(--foreground); }
+.skill-label { position: absolute; transform: translate(-50%, -50%); width: 24%; height: auto; padding: 6px 2px; display: flex; flex-direction: column; align-items: center; gap: 6px; border-radius: 0; white-space: normal; text-align: center; background: transparent; color: var(--muted-foreground); transition: color .3s; }
+.skill-label:hover, .skill-label-active { background: transparent !important; color: var(--foreground); }
+.skill-name { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; line-height: 1.3; }
+.skill-value { font-size: 34px; font-weight: 500; letter-spacing: -.05em; line-height: 1; color: var(--foreground); }
+.skill-tools { font-family: var(--font-mono); font-size: 11px; line-height: 1.3; min-height: 15px; color: var(--muted-foreground); }
+.skill-visual { left: 50%; top: 3%; }
+.skill-architecture { left: 82%; top: 27%; }
+.skill-coding { left: 82%; top: 73%; }
+.skill-frontend { left: 50%; top: 97%; }
+.skill-strategy { left: 18%; top: 73%; }
+.skill-interaction { left: 18%; top: 27%; }
+.testimonial-section { background: linear-gradient(to bottom, var(--background) 0%, var(--background) 40%, color-mix(in oklab, var(--glow-blue) 22%, var(--background)) 100%); }
+.footer-fused { background: linear-gradient(to bottom, color-mix(in oklab, var(--glow-blue) 22%, var(--background)) 0%, var(--background) 75%); }
+.testimonial-quote-mark { display: block; font-size: clamp(96px, 12vw, 180px); font-weight: 600; line-height: .7; color: var(--foreground); }
+.testimonial-content { min-height: 380px; animation: testimonial-enter .45s ease both; }
+@keyframes testimonial-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@media (max-width: 640px) {
+  .skill-map { aspect-ratio: 1; }
+  .skill-name { font-size: 9px; }
+  .skill-value { font-size: 22px; }
+  .skill-tools { font-size: 9px; }
+  .skill-label { width: 30%; gap: 3px; }
+  .skill-visual { top: 13%; }
+  .skill-frontend { top: 87%; }
+  .skill-architecture, .skill-coding { left: 85%; }
+  .skill-strategy, .skill-interaction { left: 15%; }
+  .skill-architecture, .skill-interaction { top: 30%; }
+  .skill-coding, .skill-strategy { top: 70%; }
+  .testimonial-content { min-height: 420px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  .reveal-line > span { transform: none; }
+  .radar-shape { transform: none; opacity: 1; }
+}

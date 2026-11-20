@@ -32,6 +32,7 @@ function files(dir,result=[]){
    // v3 es una app independiente dentro del repo (su propia escala
    // tipográfica del brief de jprat.studio); el guard del v2 no aplica.
    if(name.startsWith("v3/"))continue;
+   if(name.startsWith("v4/"))continue;
    if(!OMIT.has(name))result.push({name,code:readFileSync(path,"utf8")});
   }
  }

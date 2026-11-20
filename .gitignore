@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# v3 (app independiente dentro del repo, con su propio build)
+/v3/node_modules
+/v3/.next/
+/v3/out/
+
+# v4 (app independiente dentro del repo, con su propio build)
+/v4/node_modules
+/v4/dist/
