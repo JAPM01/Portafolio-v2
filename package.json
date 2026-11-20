@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && npm ci --prefix v3 && NEXT_PUBLIC_BASE_PATH=/Portafolio-v2/v3 npm run build --prefix v3 && cp -r v3/out out/v3",
+    "build": "npm ci --prefix v3 && next build && NEXT_PUBLIC_BASE_PATH=/Portafolio-v2/v3 npm run build --prefix v3 && cp -r v3/out out/v3",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "node scripts/patch-liquid-glass.mjs",
