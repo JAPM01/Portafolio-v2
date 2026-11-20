@@ -1,25 +1,27 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { EXP_LOGO, MELON_BASE } from "../../lib/exp-content";
+import { useEffect, useRef } from "react";
+import { EXP_LOGO } from "../../lib/exp-content";
 import styles from "./exp-header.module.css";
 
 /**
- * Header del experimento — clon 1:1 de Melon, motion sección por sección
- * (estudio visual en navegador, 19 Nov 2026):
- * Melon: barra superior plana (sin píldora), logotipo SVG a la izquierda,
- * navegación a la derecha: work (7), articles (7), about, contact.
- * Sin toggle de idioma. Es FIXED: se desliza hacia arriba fuera de la
- * vista al bajar (translateY −100%) y vuelve al subir; no vuelve solo.
- * Su color se adapta al fondo: negro sobre hero rojo y crema, blanco
- * sobre negro (Experience, Clients, Contacto, Footer). Entrada animada
- * del logo y el nav al cargar. En móvil, botón Menú con overlay.
+ * Header del experimento — clon 1:1 de Melon (CSS capturado, 19 Nov 2026):
+ * .topbar fixed, top 22, left/right gutter, z 10, flex space-between,
+ * align flex-start. Logo 110×50. Nav: gap 50, padding-top 13, 18px/400/1,
+ * LS -.01em, enlaces /work /insights /about /contact. Sup del nav:
+ * 10px, opacity .6, margin-left 4px, top -.85em, mono 500.
+ * Móvil: SIN botón Menu (nav visible 15px, gap 18, top 16, logo 77×35,
+ * count oculto). Melon se esconde al bajar (top −74 a 900px de scroll)
+ * y vuelve al subir; aquí translateY −120% con el mismo trigger.
+ * Color por sección (data-tone): negro sobre rojo/crema, blanco sobre
+ * negro. Melon usa mix-blend-mode: difference + velo .f-solid; el tono
+ * por sección es la aproximación equivalente sin velo.
  */
 const NAV = [
-  { id: "exp-work", label: "work", count: 7 },
-  { id: "exp-insights", label: "articles", count: 7 },
-  { id: "exp-manifesto", label: "about", count: null },
-  { id: "exp-contact", label: "contact", count: null },
+  { label: "work", href: "/work", count: 7 },
+  { label: "articles", href: "/insights", count: 7 },
+  { label: "about", href: "/about", count: null },
+  { label: "contact", href: "/contact", count: null },
 ] as const;
 
 // Tono del header según la sección que tiene debajo (negro sobre
@@ -37,7 +39,6 @@ const TONE: Record<string, "light" | "dark"> = {
 };
 
 export default function ExpHeader() {
-  const [open, setOpen] = useState(false);
   const headerRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -85,57 +86,18 @@ export default function ExpHeader() {
   }, []);
 
   return (
-    <>
-      <header className={styles.header} ref={headerRef} data-tone="light">
-        <a className={styles.logo} href="#exp-hero" aria-label="melon studio, back to top">
-          <img src={EXP_LOGO} alt="melon studio" width={110} height={50} />
-        </a>
-        <nav className={styles.nav} aria-label="Main">
-          {NAV.map((item) => (
-            <a className="type-mono" key={item.id} href={`#${item.id}`}>
-              {item.label}
-              {item.count ? <sup className={styles.count}>({item.count})</sup> : null}
-            </a>
-          ))}
-          <button
-            className={"type-mono " + styles.menu}
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-label="Open menu"
-          >
-            Menu
-          </button>
-        </nav>
-      </header>
-
-      {open ? (
-        <div className={styles.overlay} role="dialog" aria-modal="true">
-          <button
-            className={"type-mono " + styles.close}
-            type="button"
-            onClick={() => setOpen(false)}
-            aria-label="Close menu"
-          >
-            Close ✕
-          </button>
-          <nav className={styles.overlayNav} aria-label="Menu">
-            <a className="type-h3" href={MELON_BASE} onClick={() => setOpen(false)}>
-              Home
-            </a>
-            {NAV.map((item) => (
-              <a
-                className="type-h3"
-                key={item.id}
-                href={`#${item.id}`}
-                onClick={() => setOpen(false)}
-              >
-                {item.label}
-                {item.count ? ` (${item.count})` : ""}
-              </a>
-            ))}
-          </nav>
-        </div>
-      ) : null}
-    </>
+    <header className={styles.header} ref={headerRef} data-tone="light">
+      <a className={styles.logo} href="#exp-hero" aria-label="melon studio, back to top">
+        <img src={EXP_LOGO} alt="melon studio" width={110} height={50} />
+      </a>
+      <nav className={styles.nav} aria-label="Main">
+        {NAV.map((item) => (
+          <a className="type-mono" key={item.label} href={item.href}>
+            {item.label}
+            {item.count ? <sup className={styles.count}>({item.count})</sup> : null}
+          </a>
+        ))}
+      </nav>
+    </header>
   );
 }

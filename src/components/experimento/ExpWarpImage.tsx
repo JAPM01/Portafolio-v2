@@ -1,28 +1,44 @@
 "use client";
 
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { tokenHex } from "./colorTokens";
 
 /**
  * Imagen de proyecto deformada como la "cinta" (ribbon) de Melon
- * (revisión técnica, 19 Nov 2026): Melon deforma las tarjetas con un
- * shader WebGL2 (sheet S-curve + lean + dent + luz). Aquí se reproduce
- * la deformación VISIBLE con la misma matemática de la hoja
- * (sheetShape de Melon) en un canvas 2D: la imagen se corta en franjas
- * horizontales y cada franja se proyecta en perspectiva según su
- * profundidad z, con luz/sombra según la pendiente. Sin WebGL.
+ * (config del shader WebGL2 de Melon, ribbon-a.js, 19 Nov 2026):
+ * VEL_NORM 400, V_SMOOTH .35, VTWIST .9, VEL_BULGE .5, DEPTH .12,
+ * SPAN 1.15, DIAG_X .18, BANK -.1, DOOR -.06, DENT .065, SPEC .31,
+ * DIFF .3, GLOSS 48, shadeA .5.
  *
- * sheetShape(q) = mix(1-q², sin(πq), C) * exp(-tail·q²), C=0.5, tail=0.8.
- * warp: progreso del centro de la tarjeta respecto al centro del
- * viewport (-0.6..0.6). La fuerza es mínima en el centro y máxima en
- * los bordes; el sentido se invierte arriba/abajo del centro.
+ * Driver = VELOCIDAD de scroll (no posición): la fuerza es
+ * tanh(vel/400)^2, con signo según la dirección. La S de la hoja es
+ * completa (SHEET_C = 1), no un cuenco. Además: torsión diagonal
+ * (DIAG_X), lean/bank (BANK) y dent bajo el cursor (DENT .065,
+ * radio .24, sigue al puntero). El oscurecimiento al salir por arriba
+ * sí depende de la posición (progreso del centro de la tarjeta).
+ *
+ * sheetShape(q) = mix(1-q², sin(πq), C) * exp(-tail·q²), C=1, tail=0.8.
  */
-export type WarpHandle = { draw: (warp: number) => void };
+export type WarpState = {
+  /** Velocidad de scroll suavizada, px/s (con signo). */
+  vel: number;
+  /** Progreso del centro de la tarjeta vs centro del viewport (-0.6..0.6). */
+  progress: number;
+  /** Posición del puntero dentro de la tarjeta, en px de canvas. */
+  dentX: number;
+  dentY: number;
+  dentActive: boolean;
+};
 
-const SHEET_C = 0.15; // casi cuenco (arco único); la S de Melon es suave
+export type WarpHandle = { draw: (state: WarpState) => void };
+
+const SHEET_C = 1; // S completa de Melon (antes 0.15, casi cuenco)
 const SHEET_TAIL = 0.8;
-const FOCAL = 1200; // perspectiva, como el rotateX anterior
-const AMP = 0.1; // amplitud de la deformación (× alto de la tarjeta)
+const FOCAL = 1200;
+const AMP = 0.12; // DEPTH .12 de Melon (× alto de la tarjeta)
 const STEP = 2; // alto de cada franja en px
+const DENT = 0.065;
+const DENT_R = 0.24;
 
 function sheetShape(q: number): number {
   const bowl = 1 - q * q;
@@ -33,15 +49,15 @@ function sheetShape(q: number): number {
 
 const WarpImage = forwardRef<
   WarpHandle,
-  { src: string; alt: string; className?: string }
->(function WarpImage({ src, alt, className }, ref) {
+  { src: string; alt: string; className?: string; onLoad?: () => void }
+>(function WarpImage({ src, alt, className, onLoad }, ref) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const offRef = useRef<HTMLCanvasElement | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const loadedRef = useRef(false);
 
   useImperativeHandle(ref, () => ({
-    draw(warp: number) {
+    draw(state: WarpState) {
       const canvas = canvasRef.current;
       const off = offRef.current;
       const img = imgRef.current;
@@ -52,27 +68,43 @@ const WarpImage = forwardRef<
       const H = canvas.height;
       if (W === 0 || H === 0) return;
 
-      // Fuerza: la lámina siempre está doblada (también centrada); la
-      // fase de la S viaja con el progreso para que el punto de máxima
-      // curvatura se desplace a lo largo de la tarjeta al hacer scroll.
-      const p = Math.max(-0.6, Math.min(0.6, warp));
-      const strength = 0.7 + 0.3 * Math.min(1, Math.abs(p) / 0.6);
-      const phase = p * 1.2;
+      // Fuerza por velocidad: tanh(vel/400)^2, con signo de dirección.
+      const vSigned = Math.tanh(state.vel / 400);
+      const v = vSigned * vSigned;
+      const dir = state.vel >= 0 ? 1 : -1;
+      // La lámina siempre está doblada; la velocidad la acentúa (bulge .5).
+      const strength = 0.55 + 0.45 * v;
+      const phase = dir * (0.35 + 0.55 * v);
       const D = AMP * H * strength;
-      // Torsión diagonal (Melon: borde sup. e inf. desplazados 30-60px).
-      const twist = p * 0.15;
-      // Oscurecimiento al salir por arriba (Melon: casi negra al salir).
+      // Torsión diagonal (Melon: bordes desplazados 30-60px) y lean/bank.
+      const twistPx = dir * (30 + 30 * v);
+      const bankPx = -0.1 * dir * v * 60;
+      // Oscurecimiento al salir por arriba (posición, no velocidad).
+      const p = Math.max(-0.6, Math.min(0.6, state.progress));
       const darken = 0.45 * Math.max(0, -p / 0.6);
 
-      const zAt = (v: number) => D * sheetShape(v - phase);
+      const zAt = (vv: number, srcY: number) => {
+        let z = D * sheetShape(vv - phase);
+        // Dent bajo el cursor (gaussiana vertical, radio .24 del alto).
+        if (state.dentActive) {
+          const dy = (srcY - state.dentY) / (DENT_R * H);
+          z -= D * DENT * 10 * Math.exp(-dy * dy);
+        }
+        return z;
+      };
+      // Colores resueltos en runtime (ver colorTokens.ts): el canvas NO
+      // resuelve var() en fillStyle y un color-mix con var() se ignora,
+      // dejando negro sólido. Se usa globalAlpha para la opacidad.
+      const whiteHex = tokenHex("--brand-white");
+      const blackHex = tokenHex("--brand-black");
 
       ctx.clearRect(0, 0, W, H);
       const rows = Math.ceil(H / STEP);
       let prevY: number | null = null;
       for (let i = 0; i <= rows; i++) {
         const srcY = Math.min(H, i * STEP);
-        const v = (srcY / H) * 2 - 1;
-        const z = zAt(v);
+        const vv = (srcY / H) * 2 - 1;
+        const z = zAt(vv, srcY);
         const s = FOCAL / (FOCAL + z);
         const yPrime = (srcY - H / 2) * s + H / 2;
         if (prevY === null) {
@@ -85,34 +117,42 @@ const WarpImage = forwardRef<
         const h = y1 - y0;
         if (h <= 0.01) continue;
         // Ancho aparente (la franja se estrecha al alejarse) + torsión
-        // diagonal (desplazamiento lateral según la fila).
+        // diagonal + bank (desplazamiento lateral según la fila).
         const dw = W * s;
-        const dx = (W - dw) / 2 + twist * (srcY - H / 2);
+        const rel = (srcY - H / 2) / H;
+        const dx = (W - dw) / 2 + twistPx * rel + bankPx * rel;
         ctx.drawImage(off, 0, srcY - STEP, W, STEP, dx, y0, dw, h + 1);
         // Luz/sombra por la pendiente (dz/dv): la superficie que se
         // inclina hacia la luz se aclara, la que se aleja se oscurece.
-        // color-mix con tokens (el guard de color prohíbe rgba()).
         const eps = 0.02;
         const slope =
-          (zAt(Math.min(1, v + eps)) - zAt(Math.max(-1, v - eps))) / (2 * eps);
+          (zAt(Math.min(1, vv + eps), srcY) - zAt(Math.max(-1, vv - eps), srcY)) /
+          (2 * eps);
         const light = Math.max(-0.28, Math.min(0.28, -slope * 0.0016));
         if (light > 0.004) {
-          ctx.fillStyle = `color-mix(in oklch, var(--brand-white) ${(light * 100).toFixed(1)}%, transparent)`;
+          ctx.globalAlpha = light;
+          ctx.fillStyle = whiteHex;
           ctx.fillRect(dx, y0, dw, h + 1);
+          ctx.globalAlpha = 1;
         } else if (light < -0.004) {
-          ctx.fillStyle = `color-mix(in oklch, var(--brand-black) ${(-light * 100).toFixed(1)}%, transparent)`;
+          ctx.globalAlpha = -light;
+          ctx.fillStyle = blackHex;
           ctx.fillRect(dx, y0, dw, h + 1);
+          ctx.globalAlpha = 1;
         }
       }
       // Oscurecimiento global al salir por arriba.
       if (darken > 0.004) {
-        ctx.fillStyle = `color-mix(in oklch, var(--brand-black) ${(darken * 100).toFixed(1)}%, transparent)`;
+        ctx.globalAlpha = darken;
+        ctx.fillStyle = blackHex;
         ctx.fillRect(0, 0, W, H);
+        ctx.globalAlpha = 1;
       }
     },
   }));
 
   // Carga la imagen y la dibuja (cover) en el canvas offscreen.
+  // La media es 16/9 y la fuente 1280x720 (16/9): cover = imagen completa.
   useEffect(() => {
     const img = new Image();
     img.decoding = "async";
@@ -127,6 +167,7 @@ const WarpImage = forwardRef<
         canvas.height = Math.round(rect.height * dpr);
       }
       paintOffscreen();
+      onLoad?.();
     };
     img.src = src;
     imgRef.current = img;

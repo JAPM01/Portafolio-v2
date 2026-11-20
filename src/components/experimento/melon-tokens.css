@@ -1,9 +1,24 @@
-/* Tokens del clon 1:1 total de Melon (19 Nov 2026).
-   El rojo es base de marca (--brand-red, #FD241A, medido en vivo).
-   Crema y oscuro se derivan de los tokens vía color-mix (el guard prohíbe
-   hex y nuevas familias --brand-*). Distancias medidas en Chromium:
-   crema 10, oscuro 5 (imperceptibles a simple vista). */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;700&display=swap");
+
+/* Tokens del clon 1:1 de Melon (19 Nov 2026, corrección por auditorías).
+   Melon literal: --black #0f0000, --white #f6efed, --red red. Las bases
+   del sitio (#010101 / #FEFEFE / #FD241A) NO se tocan: crema y oscuro
+   se derivan por color-mix (distancia medida 10 y 5, imperceptible).
+   Gutters de Melon: 40px desktop / 20px móvil (no 24/16 del sitio).
+   Familias de Melon: early-sans (propietaria, no disponible) -> Inter
+   300 como equivalente cercano; Geist Mono para la mono de Melon. */
 :root {
   --melon-cream: color-mix(in oklch, var(--brand-white) 94%, var(--brand-red));
   --melon-dark: color-mix(in oklch, var(--brand-black) 90%, var(--brand-red));
+  --melon-sans: "Inter", "Google Sans", ui-sans-serif, system-ui, sans-serif;
+  --melon-mono: "Geist Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --page-margin: 20px;
+  --grid-gutter: 20px;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --page-margin: 40px;
+    --grid-gutter: 40px;
+  }
 }

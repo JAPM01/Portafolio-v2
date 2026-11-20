@@ -1,8 +1,11 @@
-/* Header del experimento — clon 1:1 de Melon: barra superior plana,
-   logotipo a la izquierda, navegación a la derecha, ~90px de alto.
-   Sin píldora, sin glass, sin velo. FIXED: se desliza fuera de la vista
-   al bajar y vuelve al subir. El color se adapta al fondo (data-tone):
-   negro sobre rojo/crema, blanco sobre negro. */
+/* Header del experimento — clon 1:1 de Melon (CSS capturado, 19 Nov 2026):
+   .topbar fixed, top 22, left/right gutter, z 10, flex space-between,
+   align flex-start. Logo 110×50. Nav: gap 50, padding-top 13, 18px/400/1,
+   LS -.01em. Sup: 10px, opacity .6, margin-left 4px, top -.85em.
+   Móvil: nav visible 15px, gap 18, top 16, logo 77×35, count oculto.
+   FIXED: se desliza fuera de la vista al bajar y vuelve al subir.
+   Sin fill forwards en la animación de entrada: con fill `both` el
+   transform del keyframe final tapaba el transform de .hidden. */
 
 .header {
   position: fixed;
@@ -14,7 +17,7 @@
   align-items: flex-start;
   justify-content: space-between;
   transition: transform 0.45s cubic-bezier(0.11, 0.06, 0.18, 1);
-  animation: headerIn 0.7s cubic-bezier(0.11, 0.06, 0.18, 1) both;
+  animation: headerIn 0.7s cubic-bezier(0.11, 0.06, 0.18, 1);
 }
 
 @keyframes headerIn {
@@ -29,14 +32,13 @@
 }
 
 .header.hidden {
-  transform: translateY(-120%);
+  transform: translateY(-192%);
 }
 
 /* Tono claro (sobre rojo/crema): texto negro y logo invertido. El guard
    tipográfico solo admite color: var(--type-*) o transparent, así que el
    negro se logra con background + background-clip: text. */
-.header[data-tone="light"] .nav a,
-.header[data-tone="light"] .menu {
+.header[data-tone="light"] .nav a {
   background: var(--melon-dark);
   background-clip: text;
   -webkit-background-clip: text;
@@ -59,22 +61,23 @@
   height: 50px;
 }
 
-/* Contador del nav (Melon: "work (7)", "articles (7)"). El <sup> ya se
-   achica por estilo UA; no se fija font-size (el guard tipográfico solo
-   admite var(--type-*) y rechaza em). */
-.count {
-  line-height: 0;
-}
-
+/* Nav: Melon 18px/400/1, LS -.01em. El token meta (24px desktop) se
+   lleva a 18px con zoom (el guard tipográfico prohíbe font-size). */
 .nav {
   display: flex;
   align-items: center;
-  gap: var(--space-6);
+  gap: 50px;
+  padding-top: 13px;
 }
 
 .nav a {
   color: var(--type-ink);
   text-decoration: none;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  zoom: 0.75;
 }
 
 .nav a:hover {
@@ -82,52 +85,45 @@
   text-underline-offset: var(--space-1);
 }
 
-.menu {
-  display: none;
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--type-ink);
-  cursor: pointer;
+/* Contador del nav: Melon 10px, opacity .6, margin-left 4px,
+   top -.85em, mono 500. Zoom 0.417 sobre el token meta (24px) = 10px. */
+.count {
+  line-height: 0;
+  font-weight: 500;
+  opacity: 0.6;
+  margin-left: 4px;
+  position: relative;
+  top: -0.85em;
+  zoom: 0.417;
 }
 
 @media (max-width: 1023px) {
+  .header {
+    top: 16px;
+  }
+
+  /* Móvil: el header mide 35px; para esconderlo del todo (top −80 como
+     Melon) hace falta translateY(−274%). */
+  .header.hidden {
+    transform: translateY(-274%);
+  }
+
+  .logo img {
+    width: 77px;
+    height: 35px;
+  }
+
+  /* Móvil: nav visible, 15px, gap 18, count oculto. Token meta móvil
+     14px * zoom 1.071 = 15px. */
+  .nav {
+    gap: 18px;
+  }
+
   .nav a {
+    zoom: 1.071;
+  }
+
+  .count {
     display: none;
   }
-
-  .menu {
-    display: block;
-  }
-}
-
-.overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: var(--melon-dark);
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-6) var(--page-margin);
-}
-
-.close {
-  align-self: flex-end;
-  background: none;
-  border: none;
-  padding: 0;
-  color: var(--type-ink);
-  cursor: pointer;
-}
-
-.overlayNav {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  margin-top: var(--space-16);
-}
-
-.overlayNav a {
-  color: var(--type-ink);
-  text-decoration: none;
 }

@@ -1,119 +1,127 @@
-/* Trabajo seleccionado — clon 1:1 TOTAL de Melon (medido en vivo, 19 Nov 2026).
-   Melon: fondo crema, título gigante en gótica roja ("Latest Work") con
-   "Show all" a la derecha en la misma línea, UNA columna de artículos;
-   cada artículo es una rejilla de 2 columnas: título/meta a la IZQUIERDA,
-   alineados a la derecha, a la altura de la parte superior de la imagen;
-   imagen a la DERECHA (~530px de alto). Brecha entre artículos ~64px.
-   Sin blurbs, sin "Más proyectos" (Melon no lo tiene en la home).
-   Animación 3D ligada al scroll: la imagen se deforma (rotateX sobre
-   perspectiva, --tilt/--bend fijados por JS según la posición en el
-   viewport) y nunca es un rectángulo plano al hacer scroll. */
-
-/* Texto oscuro sobre fondo claro: el guard tipográfico solo admite
-   color: var(--type-*) (claros) o transparent, así que el color se
-   logra con background + background-clip: text. */
-.ink {
-  background: var(--melon-dark);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-.inkMuted {
-  background: color-mix(in oklch, var(--melon-dark) 55%, var(--melon-cream));
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-/* Título de sección en gótica roja (Melon: "Latest Work" en gótica roja).
-   Reveal liquid ligado al scroll (useLiquidReveal): entra borroso
-   (hasta 40px) y se enfoca; --liq-blur / --liq-op los fija el hook. */
-.inkRed {
-  background: var(--brand-red);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  font-family: var(--font-gothic);
-  font-weight: 400;
-  filter: blur(var(--liq-blur, 40px));
-  opacity: var(--liq-op, 0);
-}
+/* Trabajo seleccionado — clon 1:1 de Melon (CSS capturado, 19 Nov 2026).
+   Melon: fondo NEGRO (#0f0000), título "Latest Work" blanco sans 300
+   clamp(4rem, 12vw, 11rem)/.86, LS -.05em = 176px desktop / 58.5px móvil.
+   Head: padding 7svh, gutter 6svh; sección padding-bottom 16svh
+   (16.5svh móvil). Tarjetas centradas, width min(52vw, 92svh) = 993px,
+   aspect 16/9 (993×559), row-gap 3.5rem desktop / 5.5rem móvil.
+   Caption ABSOLUTA a la izquierda (top 0, right calc(100% + 24px + 8px),
+   18px/1, derecha; móvil: debajo, top calc(100% + 14px), 15px).
+   "Show all": 500 13px mono, subrayado 1px, roll SOLO en hover,
+   flechas SVG 16×16 que se deslizan en hover. */
 
 .section {
-  background: var(--melon-cream);
-  padding-block: var(--space-16);
-  padding-inline: var(--page-margin);
+  background: var(--melon-dark);
+  padding: 7svh var(--page-margin) 16.5svh;
+}
+
+/* Sin row-gap entre head y lista (Melon no lo tiene: el hueco es el
+   margin-bottom del headRow). */
+.grid {
+  row-gap: 0;
 }
 
 @media (min-width: 1024px) {
   .section {
-    padding-block: var(--space-32);
+    padding-bottom: 16svh;
   }
 }
 
+/* Título: token h2 (156px desktop / 60px móvil) llevado a 176px / 58.5px
+   con zoom (el guard tipográfico prohíbe font-size). Reveal liquid:
+   --liq-blur / --liq-op los fija el hook; el canvas de pixelación se
+   superpone con el color final blanco. */
 .heading {
   margin: 0;
+  font-family: var(--melon-sans);
+  font-weight: 300;
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  color: var(--type-ink);
+  filter: blur(var(--liq-blur, 40px));
+  opacity: var(--liq-op, 0);
+  zoom: 0.975;
 }
 
-/* Fila del título: título a la izquierda, "Ver todo" a la derecha
-   (Melon: "Latest Work" + "Show all" en la misma línea). */
+@media (min-width: 1024px) {
+  .heading {
+    zoom: 1.128;
+  }
+}
+
+/* Fila del título: título a la izquierda, "Show all" a la derecha,
+   flex space-between, padding-bottom 6svh (desktop) / 27px (móvil,
+   medido). Sin row-gap entre head y lista (la retícula .site-grid
+   aporta 40/20px que Melon no tiene). */
 .headRow {
   grid-column: 1 / -1;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: var(--space-8);
-  margin: 0 0 var(--space-16);
+  gap: 24px;
+  margin: 0 0 27px;
 }
 
 @media (min-width: 1024px) {
   .headRow {
-    margin-block-end: var(--space-32);
+    margin-bottom: 6svh;
+  }
+}
+
+@media (max-width: 1023px) {
+  .headRow {
+    align-items: flex-end;
   }
 }
 
 .showAll {
   flex: none;
-  text-decoration: none;
   display: inline-flex;
   align-items: baseline;
-  gap: var(--space-2);
+  gap: 8px;
+  padding-block: 8px;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--brand-white);
+  text-underline-offset: 4px;
+  /* Blanco sobre negro con el truco background-clip (el guard solo
+     admite color: var(--type-*) o transparent). Las flechas toman el
+     color por `stroke` en CSS, no currentColor. */
+  background: var(--brand-white);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-family: var(--melon-mono);
+  font-weight: 500;
+  line-height: 1.35;
+  zoom: 0.929;
 }
 
-/* "Show all" con texto que rueda (Melon: .f-roll con dos copias) y
-   flechas que entran (autoAlpha 0 → 1, x). */
+@media (min-width: 1024px) {
+  .showAll {
+    zoom: 0.542;
+  }
+}
+
+.showAll svg path {
+  stroke: var(--brand-white);
+}
+
+/* "Show all" con texto que rueda (Melon: .f-roll con dos copias) SOLO
+   en hover, y flechas que se deslizan en hover. */
 .roll {
   display: inline-block;
   overflow: hidden;
   vertical-align: baseline;
+  height: 1.35em;
 }
 
 .rollIn {
   display: block;
-  animation: rollIn 0.9s cubic-bezier(0.11, 0.06, 0.18, 1) 0.2s both;
-}
-
-@keyframes rollIn {
-  from {
-    transform: translateY(-100%);
-  }
-  to {
-    transform: translateY(0);
-  }
+  transition: transform 0.45s cubic-bezier(0.11, 0.06, 0.18, 1);
 }
 
 .showAll:hover .rollIn {
-  animation: rollHover 0.5s cubic-bezier(0.11, 0.06, 0.18, 1) both;
-}
-
-@keyframes rollHover {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-100%);
-  }
+  transform: translateY(-100%);
 }
 
 .rollT {
@@ -122,120 +130,112 @@
 
 .arrs {
   display: inline-flex;
+  gap: 4px;
   overflow: hidden;
-  animation: arrsIn 0.9s cubic-bezier(0.11, 0.06, 0.18, 1) 0.35s both;
 }
 
-@keyframes arrsIn {
-  from {
-    opacity: 0;
-    transform: translateX(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.arrs svg {
+  flex: none;
+  transition: transform 0.45s cubic-bezier(0.11, 0.06, 0.18, 1);
 }
 
-.arr {
-  display: inline-block;
-}
-
-.arr + .arr {
-  margin-left: var(--space-1);
+.showAll:hover .arrs svg {
+  transform: translateX(4px);
 }
 
 .list {
   grid-column: 1 / -1;
-  display: grid;
-  row-gap: var(--space-16);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  row-gap: 5.5rem;
+}
+
+@media (min-width: 1024px) {
+  .list {
+    row-gap: 3.5rem;
+  }
 }
 
 .card {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--grid-gutter);
-  align-items: start;
+  position: relative;
+  width: calc(100vw - 48px);
 }
 
+@media (min-width: 1024px) {
+  .card {
+    width: min(52vw, 92svh);
+  }
+}
+
+/* Caption: absoluta a la izquierda de la tarjeta, a la altura del top.
+   Título 400 18px/1, LS -.01em; kind 55%, margin-top 10px.
+   Móvil: debajo de la tarjeta, 15px, max-width 70%. */
 .text {
-  grid-column: 1 / -1;
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 0;
+  width: auto;
+  max-width: 70%;
   text-align: left;
-  margin-bottom: var(--space-4);
-  will-change: transform, opacity;
-}
-
-/* Caption que sigue al cursor (Melon: .proj__cap fixed + will-change).
-   Al pasar sobre la tarjeta, el caption se fija junto al cursor. */
-.text.follow {
-  position: fixed;
-  z-index: 5;
-  left: var(--cx, 0px);
-  top: var(--cy, 0px);
-  transform: translate(24px, -50%);
-  margin: 0;
-  text-align: left;
-  pointer-events: none;
-  animation: capIn 0.25s ease both;
-}
-
-@keyframes capIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  will-change: opacity;
+  z-index: 2;
 }
 
 @media (min-width: 1024px) {
   .text {
-    grid-column: 1 / 4;
+    top: 0;
+    left: auto;
+    right: calc(100% + 24px + 8px);
+    width: max-content;
+    max-width: none;
     text-align: right;
-    margin-bottom: 0;
   }
 }
 
 .title {
   margin: 0;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--type-ink);
+  zoom: 0.625;
+}
+
+@media (min-width: 1024px) {
+  .title {
+    zoom: 0.5625;
+  }
 }
 
 .meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-1);
-  margin: var(--space-2) 0 0;
+  margin: 10px 0 0;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  /* Kind al 55% de blanco con color-mix (sin hex ni rgba). */
+  background: color-mix(in oklch, var(--brand-white) 55%, transparent);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  zoom: 0.9375;
 }
 
 @media (min-width: 1024px) {
   .meta {
-    align-items: flex-end;
+    zoom: 0.5625;
   }
-}
-
-.caseLink {
-  text-decoration: underline;
-  text-underline-offset: var(--space-1);
-  text-decoration-color: color-mix(in oklch, var(--melon-dark) 55%, var(--melon-cream));
 }
 
 .media {
-  grid-column: 1 / -1;
   margin: 0;
   overflow: hidden;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   /* La deformación vive en el canvas (ExpWarpImage); el marco solo
      recorta (border-radius 6px, overflow clip) como Melon. */
   border-radius: 6px;
-}
-
-@media (min-width: 1024px) {
-  .media {
-    grid-column: 4 / 13;
-    aspect-ratio: auto;
-    height: 530px;
-  }
 }
 
 .media a {

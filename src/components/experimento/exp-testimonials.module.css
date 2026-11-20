@@ -1,31 +1,60 @@
-/* Testimonios — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
-   Melon: "What people say" (sin etiqueta), cita a la IZQUIERDA en
-   columna con comilla gigante, atribución con guion + nombre + cargo,
-   enlace "case study", paginación ← 01/03 → abajo a la izquierda.
-   El bloque rojo se oscurece abajo (fade a negro). */
+/* Testimonios — clon 1:1 de Melon (CSS capturado, 19 Nov 2026).
+   .f-rv padding 19vh 0 10.5vh (móvil 13.5/7.5vh); título 300
+   clamp(4rem, 12vw, 11rem)/.86 = 176px (móvil 58.5px); box grid 4/−1,
+   max-width 58rem, margin-top 7vh; cita --f-rv-q clamp(1.6rem, 2.9vw,
+   3.25rem) = 52px (móvil 25.6px), --f-rv-m = q×4 = 208px; marca absolute
+   (top q×.257 − m×.03, right 100% + q×.34 − m×.05, height m×.297,
+   font 300 m/1; móvil relative, margin 0 0 q×.3 m×−.07).
+   Fondo: .f-kw-grain con kind-words-grain-desktop.webp (phone en móvil),
+   width 131.875%, left −17.2917%, bottom −27px, mask fade últimos 120px.
+   La sección no tiene fondo propio: el rojo viene del grain (el fondo
+   rojo aquí es solo fallback si la imagen no carga). */
 
 .section {
   position: relative;
   background: var(--brand-red);
-  padding-block: var(--space-16);
-  padding-inline: var(--page-margin);
+  padding: 13.5vh var(--page-margin) 7.5vh;
   overflow: hidden;
 }
 
 @media (min-width: 1024px) {
   .section {
-    padding-block: var(--space-32);
+    padding: 19vh var(--page-margin) 10.5vh;
   }
 }
 
-/* Fade a negro en la parte inferior del bloque rojo (Melon). */
-.fade {
+/* Mancha roja con grain (Melon .f-kw-grain, CSS literal): fondo
+   estirado 100%×100% (NO cover/center), inset 0 auto 0 −17.2917%
+   (sin extender 27px abajo), mask fade solo en los últimos 120px.
+   Sin `black` literal: el guard de color prohíbe nombres de color;
+   var(--melon-dark) es opaco (alpha 1) igual que black. */
+.grain {
   position: absolute;
-  inset-inline: 0;
+  left: -17.2917%;
+  top: 0;
   bottom: 0;
-  height: 45%;
-  background: linear-gradient(180deg, transparent, var(--melon-dark) 90%);
+  width: 131.875%;
+  background: url("https://melon.studio/brand/kind-words-grain-desktop.webp") 0 0 / 100% 100%
+    no-repeat;
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    var(--melon-dark) 0,
+    var(--melon-dark) calc(100% - 120px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    var(--melon-dark) 0,
+    var(--melon-dark) calc(100% - 120px),
+    transparent 100%
+  );
   pointer-events: none;
+}
+
+@media (max-width: 1023px) {
+  .grain {
+    background-image: url("https://melon.studio/brand/kind-words-grain-phone.webp");
+  }
 }
 
 .content {
@@ -33,92 +62,170 @@
   z-index: 1;
 }
 
+/* Sin row-gap entre título y box (Melon no lo tiene: el hueco es el
+   margin-top 7vh del box). */
+.grid {
+  row-gap: 0;
+}
+
+/* Título: 176px desktop / 58.5px móvil (token h2 156px / 60px). */
 .heading {
   grid-column: 1 / -1;
-  margin: 0 0 var(--space-16);
-  /* Reveal liquid ligado al scroll (useLiquidReveal): entra borroso en
-     rosa pálido sobre rojo y queda blanco nítido. */
+  margin: 0;
+  font-family: var(--melon-sans);
+  font-weight: 300;
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  color: var(--type-ink);
+  /* Reveal liquid ligado al scroll (useLiquidReveal). */
   filter: blur(var(--liq-blur, 40px));
   opacity: var(--liq-op, 0);
+  zoom: 0.975;
 }
 
 @media (min-width: 1024px) {
   .heading {
-    margin-block-end: var(--space-32);
+    zoom: 1.128;
   }
 }
 
 .box {
   grid-column: 1 / -1;
   position: relative;
+  margin-top: 7vh;
 }
 
 @media (min-width: 1024px) {
   .box {
-    grid-column: 1 / 10;
+    grid-column: 4 / -1;
+    max-width: 58rem;
   }
 }
 
+/* Marca: desktop absolute a la izquierda de la cita (q=52, m=208:
+   top 7.12px, right calc(100% + 7.28px), height 61.8px, font 208px);
+   móvil relative, margin 0 0 7.68px -7.17px, font 102.4px, altura
+   m×.297 = 30px (el glifo desborda: solo se ve su parte superior).
+   Base: type-h1 (184px desktop / 76px móvil) con zoom 1.13 / 1.35. */
 .mark {
   display: block;
-  line-height: 0.5;
-  margin-bottom: var(--space-4);
+  position: relative;
+  height: 30px;
+  margin: 0 0 8px -7px;
+  line-height: 1;
 }
 
 .markIn {
   font-family: var(--font-display);
+  font-weight: 300;
   font-size: var(--type-h1-size);
-  line-height: 0.5;
+  line-height: 1;
   color: var(--type-ink);
+  zoom: 1.35;
+}
+
+@media (min-width: 1024px) {
+  .mark {
+    position: absolute;
+    top: 7px;
+    right: calc(100% + 7px);
+    height: 62px;
+    margin: 0;
+  }
+
+  .markIn {
+    zoom: 1.13;
+  }
+}
+
+/* Las 3 citas apiladas en grid-area 1/1, crossfade, sin auto-advance. */
+.items {
+  display: grid;
 }
 
 .item {
+  grid-area: 1 / 1;
   margin: 0;
-  animation: itemIn 0.5s ease both;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s;
 }
 
-@keyframes itemIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.itemActive {
+  opacity: 1;
+  visibility: visible;
 }
 
+/* Cita: 52px desktop / 25.6px móvil (token h3 48px / 40px). Ancho
+   máximo 58rem de Melon = 928px: en em (17.85em) para que el zoom no
+   lo encoja (754px × zoom 1.083 medía 817px en vez de 928px). */
 .text {
   margin: 0;
-  max-width: 754px;
+  max-width: 17.85em;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1.16;
+  letter-spacing: -0.02em;
+  color: var(--type-ink);
+  zoom: 0.64;
 }
 
+@media (min-width: 1024px) {
+  .text {
+    zoom: 1.083;
+  }
+}
+
+/* Atribución: grid auto 1fr, gap 12px, margin-top 24px. El dash va en
+   la columna 1 y el texto (nombre + rol en línea) en la columna 2:
+   en desktop queda en una línea y en móvil el texto fluye a 3 líneas
+   (nombre, rol en 2) como Melon. El dash se centra en la primera línea
+   con margin-top 12px. */
 .who {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  margin-top: var(--space-8);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 12px;
+  align-items: start;
+  margin-top: 24px;
 }
 
 .dash {
+  flex: none;
   display: block;
   width: 32px;
   height: 1px;
+  margin-top: 12px;
   background: var(--type-ink);
-  margin-bottom: var(--space-4);
 }
 
+.whoText {
+  grid-column: 2;
+}
+
+/* Nombre/rol: 18px (token body 32px / 16px). El nombre lleva
+   margin-right 12px (gap con el rol en desktop; en móvil cae al final
+   de su línea y no indenta el rol). */
 .name {
   margin: 0;
+  margin-right: 12px;
   font-weight: 800;
+  zoom: 1.125;
 }
 
 .role {
   margin: 0;
+  zoom: 1.125;
+}
+
+@media (min-width: 1024px) {
+  .name,
+  .role {
+    zoom: 0.5625;
+  }
 }
 
 .case {
-  margin: var(--space-6) 0 0;
+  margin: 8px 0 0 44px;
 }
 
 .caseLink {

@@ -1,125 +1,167 @@
-/* Preloader estilo Moisez (v2 con motion), medido en vivo: pantalla azul
-   con disco negro que rebota (asterisco + anillo) y salida en 12 franjas
-   verticales que suben escalonadas de izquierda a derecha. */
+/* Preloader de Melon (.f-ld, CSS capturado, 19 Nov 2026).
+   Fixed inset 0, z 200, height 100dvh, visible solo con html.f-loading.
+   Sheet rojo absoluto + panel negro absoluto encima. Mark 154×70
+   centrado, máscara Logo-melon.svg contain, ghost opacity .2 + fill
+   con clip-path que se revela con el conteo. Labels "Loading"/"Ready"
+   500 12px/1 mono, LS .08em, uppercase, bottom 45, left gutter.
+   Count 400 clamp(72px, 12.5vw, 216px)/.78 mono, LS -.06em,
+   tabular-nums, bottom 40, right gutter, "%" a .26em opacity .55.
+   Bar roja height 6px, scaleX(0→1), origin 0, bottom 0. Móvil: mark
+   110×50, labels bottom 32 left 16, count clamp(64px, 24vw, 120px)
+   bottom 30 right 16. Salida: panel negro sube, luego el sheet rojo. */
 
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: 200;
+  height: 100dvh;
+  visibility: hidden;
   pointer-events: none;
 }
 
-.strips {
+:global(html.f-loading) .overlay {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.sheet {
   position: absolute;
   inset: 0;
-  display: flex;
+  background: var(--brand-red);
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1) 0.15s;
 }
 
-.strip {
-  flex: 1;
-  background: var(--brand-blue);
-  animation: stripUp 0.8s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+.panel {
+  position: absolute;
+  inset: 0;
+  background: var(--melon-dark);
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-@keyframes stripUp {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(-101%);
-  }
+.done .panel {
+  transform: translateY(-100%);
 }
 
-/* Disco negro con asterisco de 8 puntas y anillo fino (Moisez: la pelota
-   que rebota mientras suben las franjas). */
-.ball {
+.done .sheet {
+  transform: translateY(-100%);
+}
+
+/* Mark 154×70 centrado (translate −50%). */
+.mark {
   position: absolute;
   left: 50%;
-  bottom: 12%;
-  width: 155px;
-  height: 155px;
-  animation: bounce 0.9s ease-in-out infinite;
+  top: 50%;
+  width: 110px;
+  height: 50px;
+  transform: translate(-50%, -50%);
 }
 
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateX(-50%) translateY(0) scale(1, 1);
-  }
-  35% {
-    transform: translateX(-50%) translateY(-64px) scale(1, 1);
-  }
-  55% {
-    transform: translateX(-50%) translateY(0) scale(1.15, 0.85);
-  }
-  75% {
-    transform: translateX(-50%) translateY(-28px) scale(1, 1);
+@media (min-width: 1024px) {
+  .mark {
+    width: 154px;
+    height: 70px;
   }
 }
 
-.disc {
+.markGhost,
+.markFill {
+  position: absolute;
+  inset: 0;
   display: block;
-  width: 100%;
-  height: 100%;
+  background: var(--brand-white);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
 }
 
-.discFill {
-  fill: var(--brand-black);
+.markGhost {
+  opacity: 0.2;
 }
 
-.discRing {
-  fill: none;
-  stroke: var(--brand-blue);
-  stroke-width: 1.5;
-}
-
-.discStar {
-  stroke: var(--brand-blue);
-  stroke-width: 8;
-  stroke-linecap: round;
-}
-
-/* Sombra suave y difusa bajo la pelota. */
-.shadow {
+/* Labels "Loading"/"Ready": apiladas en grid-area 1/1. */
+.labels {
   position: absolute;
-  left: 50%;
-  bottom: -18px;
-  width: 120px;
-  height: 16px;
-  border-radius: 50%;
-  background: color-mix(in oklch, var(--brand-black) 45%, transparent);
-  filter: blur(8px);
-  transform: translateX(-50%);
-  animation: shadowPulse 0.9s ease-in-out infinite;
+  bottom: 32px;
+  left: 16px;
+  display: grid;
 }
 
-@keyframes shadowPulse {
-  0%,
-  100% {
-    opacity: 0.8;
-    transform: translateX(-50%) scale(1, 1);
+.label {
+  grid-area: 1 / 1;
+  font-family: var(--melon-mono);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--type-ink);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  zoom: 0.857;
+}
+
+.labelActive {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (min-width: 1024px) {
+  .labels {
+    bottom: 45px;
+    left: var(--page-margin);
   }
-  35% {
-    opacity: 0.3;
-    transform: translateX(-50%) scale(0.6, 0.6);
+
+  .label {
+    zoom: 0.5;
   }
-  55% {
-    opacity: 0.9;
-    transform: translateX(-50%) scale(1.1, 1);
+}
+
+/* Count: 400 clamp(64px, 24vw, 120px)/.78 mono, LS -.06em,
+   tabular-nums, bottom 30, right 16. Base: type-h1 (76px móvil). */
+.count {
+  position: absolute;
+  bottom: 30px;
+  right: 16px;
+  font-family: var(--melon-mono);
+  font-weight: 400;
+  font-size: var(--type-h1-size);
+  line-height: 0.78;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--type-ink);
+  zoom: 1.23;
+}
+
+.percent {
+  zoom: 0.26;
+  opacity: 0.55;
+}
+
+@media (min-width: 1024px) {
+  .count {
+    bottom: 40px;
+    right: var(--page-margin);
+    zoom: 1.174;
   }
-  75% {
-    opacity: 0.4;
-    transform: translateX(-50%) scale(0.75, 0.75);
-  }
+}
+
+/* Bar roja: height 6px, scaleX(0→1), origin 0, bottom 0. */
+.bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 6px;
+  background: var(--brand-red);
+  transform-origin: 0 50%;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .strip {
-    animation: none;
-  }
-
-  .ball,
-  .shadow {
-    animation: none;
+  .sheet,
+  .panel {
+    transition: none;
   }
 }

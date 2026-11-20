@@ -1,77 +1,93 @@
-/* Insights — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
-   Melon: fondo crema, "Insights" + "All notes" a la derecha; split
-   1/3–2/3: imagen del artículo activo a la izquierda, filas con
-   hairlines a la derecha. Hover: la fila se vuelve roja con texto
-   blanco y la imagen cambia. */
+/* Insights — clon 1:1 de Melon (CSS capturado, 19 Nov 2026).
+   Fondo crema, título 140px sans + "All notes" a la derecha (grid 1/9
+   y 9/−1). Peek grid 1/5, sticky top 14vh, margin-top 10vh, frame
+   aspect 4/5, imágenes apiladas absolutas. Lista grid 6/−1,
+   margin-top 10vh; fila grid 88px 1fr 136px, padding 26px 22px 30px,
+   column-gap 24; fecha/meta 13px mono color 62%, padding-top .45em;
+   título 400 30.4px/1.16, LS -.02em; extracto 400 16px/1.45, color 55%,
+   margin-top 10px, max-width 56ch; meta en columna a la derecha,
+   gap 12; flecha SVG 14×14. Hover: barrido rojo con clip-path inset
+   izquierda→derecha + texto blanco. Móvil: oculta extracto, miniatura
+   72px por fila. */
 
 /* Texto oscuro sobre fondo claro: el guard tipográfico solo admite
    color: var(--type-*) (claros) o transparent, así que el color se
-   logra con background + background-clip: text. */
-.ink {
-  background: var(--melon-dark);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-.inkMuted {
-  background: color-mix(in oklch, var(--melon-dark) 55%, var(--melon-cream));
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-/* Título de sección en gótica roja (Melon: títulos de sección en crema). */
-.inkRed {
-  background: var(--brand-red);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  font-family: var(--font-gothic);
-  font-weight: 400;
-}
+   logra con background + background-clip: text (ver .title, .date,
+   .excerpt, .metaText, .allNotes, .heading). */
 
 .section {
   background: var(--melon-cream);
-  padding-block: var(--space-16);
-  padding-inline: var(--page-margin);
+  padding: 14vh var(--page-margin) 12vh;
 }
 
 @media (min-width: 1024px) {
   .section {
-    padding-block: var(--space-32);
+    padding: 18vh var(--page-margin) 15vh;
   }
 }
 
+/* Título: 140px desktop / 58.5px móvil (token h2 156px / 60px). */
 .heading {
   margin: 0;
-  /* Reveal liquid ligado al scroll (useLiquidReveal). */
+  font-family: var(--melon-sans);
+  font-weight: 300;
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  background: var(--melon-dark);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  /* Reveal liquid ligado al scroll (useLiquidReveal, color final oscuro). */
   filter: blur(var(--liq-blur, 40px));
   opacity: var(--liq-op, 0);
+  zoom: 0.975;
 }
 
+@media (min-width: 1024px) {
+  .heading {
+    zoom: 0.897;
+  }
+}
+
+/* Head: título a la izquierda, "All notes" a la derecha, misma línea
+   en desktop y móvil (flex baseline space-between). */
 .headRow {
   grid-column: 1 / -1;
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: var(--space-8);
-  margin: 0 0 var(--space-16);
+  gap: 24px;
+}
+
+/* "All notes": 500 13px mono, subrayado (token meta). */
+.allNotes {
+  flex: none;
+  align-self: end;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--melon-dark);
+  text-underline-offset: 4px;
+  font-family: var(--melon-mono);
+  font-weight: 500;
+  line-height: 1.35;
+  background: var(--melon-dark);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  zoom: 0.929;
 }
 
 @media (min-width: 1024px) {
-  .headRow {
-    margin-block-end: var(--space-32);
+  .allNotes {
+    zoom: 0.542;
   }
-}
-
-.allNotes {
-  flex: none;
-  text-decoration: none;
 }
 
 .peek {
   grid-column: 1 / -1;
+  position: relative;
+  /* En móvil Melon no muestra el peek: oculto. */
+  display: none;
   margin: 0 0 var(--space-8);
   overflow: hidden;
   aspect-ratio: 4 / 5;
@@ -80,28 +96,28 @@
 
 @media (min-width: 1024px) {
   .peek {
+    display: block;
     grid-column: 1 / 5;
+    position: sticky;
+    top: 14vh;
+    margin-top: 10vh;
     margin-bottom: 0;
   }
 }
 
 .peekImg {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  animation: peekIn 0.45s ease both;
+  opacity: 0;
+  transition: opacity 0.45s ease;
 }
 
-@keyframes peekIn {
-  from {
-    opacity: 0;
-    transform: scale(1.04);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.peekImgActive {
+  opacity: 1;
 }
 
 .list {
@@ -113,7 +129,8 @@
 
 @media (min-width: 1024px) {
   .list {
-    grid-column: 5 / 13;
+    grid-column: 6 / -1;
+    margin-top: 10vh;
   }
 }
 
@@ -126,68 +143,193 @@
 }
 
 .rowLink {
+  position: relative;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 72px;
   gap: var(--space-2) var(--space-4);
   align-items: start;
-  padding-block: var(--space-6);
+  padding: 20px 0 24px;
   text-decoration: none;
-  transition: background-color 0.3s ease;
+}
+
+/* Barrido rojo de hover: clip-path inset izquierda→derecha. */
+.rowLink::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--brand-red);
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.45s cubic-bezier(0.11, 0.06, 0.18, 1);
+  z-index: 0;
+}
+
+.rowLink:hover::before {
+  clip-path: inset(0 0 0 0);
+}
+
+.rowLink > * {
+  position: relative;
+  z-index: 1;
 }
 
 @media (min-width: 1024px) {
   .rowLink {
-    grid-template-columns: var(--space-16) minmax(0, 1fr) auto;
-    gap: var(--space-4) var(--space-8);
+    grid-template-columns: 88px minmax(0, 1fr) 136px;
+    gap: 24px;
     align-items: baseline;
   }
 }
 
+/* Miniatura móvil 72px a la DERECHA de la fila, centrada verticalmente
+   (oculta en desktop). */
+.thumb {
+  grid-column: 2;
+  grid-row: 1 / 4;
+  align-self: center;
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .thumb {
+    display: none;
+  }
+}
+
+/* Fecha/meta: 13px mono, color 62%, padding-top .45em (token meta). */
 .date {
+  grid-column: 1;
   margin: 0;
   white-space: nowrap;
+  padding-top: 0.45em;
+  font-family: var(--melon-mono);
+  font-weight: 500;
+  line-height: 1.35;
+  background: color-mix(in oklch, var(--melon-dark) 62%, var(--melon-cream));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  zoom: 0.929;
+}
+
+@media (min-width: 1024px) {
+  .date {
+    grid-column: 1;
+    zoom: 0.542;
+  }
 }
 
 .main {
+  grid-column: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 10px;
 }
 
+@media (min-width: 1024px) {
+  .main {
+    grid-column: 2;
+  }
+}
+
+/* Título artículo: 30.4px desktop / 23.2px móvil (token h5 32px / 24px). */
 .title {
   margin: 0;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1.16;
+  letter-spacing: -0.02em;
+  background: var(--melon-dark);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  zoom: 0.967;
 }
 
+@media (min-width: 1024px) {
+  .title {
+    zoom: 0.95;
+  }
+}
+
+/* Extracto: 16px/1.45, color 55%, margin-top 10px, max-width 56ch.
+   Oculto en móvil (token body 32px / 16px). */
 .excerpt {
+  display: none;
   margin: 0;
+  max-width: 56ch;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1.45;
+  background: color-mix(in oklch, var(--melon-dark) 55%, var(--melon-cream));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  zoom: 1;
+}
+
+@media (min-width: 1024px) {
+  .excerpt {
+    display: block;
+    zoom: 0.5;
+  }
 }
 
 .meta {
-  grid-column: 2;
+  grid-column: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-6);
+  gap: 12px;
+  align-items: center;
 }
 
 @media (min-width: 1024px) {
   .meta {
-    grid-column: auto;
+    grid-column: 3;
     flex-direction: column;
     align-items: flex-end;
     text-align: right;
-    gap: var(--space-1);
   }
 }
 
-/* Hover estilo Melon: la fila se vuelve roja con texto blanco. */
-.rowLink:hover {
-  background: var(--brand-red);
+.metaText {
+  font-family: var(--melon-mono);
+  font-weight: 500;
+  line-height: 1.35;
+  background: color-mix(in oklch, var(--melon-dark) 62%, var(--melon-cream));
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  zoom: 0.929;
 }
 
-.rowLink:hover .ink,
-.rowLink:hover .inkMuted {
+@media (min-width: 1024px) {
+  .metaText {
+    zoom: 0.542;
+  }
+}
+
+.meta svg {
+  flex: none;
+}
+
+.meta svg path {
+  stroke: var(--melon-dark);
+}
+
+/* Hover: texto blanco (incluidas fecha, meta y flecha). */
+.rowLink:hover .title,
+.rowLink:hover .date,
+.rowLink:hover .excerpt,
+.rowLink:hover .metaText {
   background: var(--brand-white);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+}
+
+.rowLink:hover .meta svg path {
+  stroke: var(--brand-white);
 }

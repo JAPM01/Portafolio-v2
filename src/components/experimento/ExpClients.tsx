@@ -6,11 +6,16 @@ import styles from "./exp-clients.module.css";
 import { useLiquidReveal } from "./useLiquidReveal";
 
 /**
- * Clientes — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
- * Melon: "Clients" + nota; retícula de 8 columnas, celda ~232×195 px;
- * cada celda: logo en gris (color al hover) + nombre en mono + "Case
- * study" con flecha en los que tienen caso; la última celda es la
- * invitación ("This spot's open. Let's talk ↗").
+ * Clientes — clon 1:1 de Melon (CSS capturado, 19 Nov 2026):
+ * Título clamp(2.4rem, 3.6vw, 4rem) = 64px desktop / 38.4px móvil;
+ * nota 17px. Grid --cl-cols 8 (4 en ≤1099px, 3 en ≤809px),
+ * margin 9vh 0 0 −1px. Celda aspect 1/.82 (móvil 1/1.05, padding
+ * 12px 8px 30px); --logo-u clamp(32px, 3vw, 50px) (29px móvil).
+ * Cap absolute bottom 14, left/right 16, 400 14px/1.2, opacity 0
+ * (en celdas con enlace: opacity 1, color 55%, columna). Hover
+ * INVIERTE la celda (fondo blanco, logo a color, etiqueta negra).
+ * CTA "This spot's open. / Let's talk ↗" 400 clamp(17px, 1.45vw, 22px)/1.15.
+ * Última celda móvil: si es 3n+1 ocupa 1/−1, si 3n+2 span 2.
  */
 export default function ExpClients() {
   const t = EXP_STRINGS.clients;
@@ -19,7 +24,7 @@ export default function ExpClients() {
 
   return (
     <section className={styles.section} id="exp-clients" aria-labelledby="exp-clients-heading">
-      <div className="site-grid">
+      <div className={"site-grid " + styles.grid}>
         <div className={styles.head}>
           <h2 className={"type-h2 " + styles.heading} id="exp-clients-heading" ref={headingRef}>
             {t.heading}
@@ -48,7 +53,7 @@ export default function ExpClients() {
             return (
               <li className={styles.cell} key={client.name}>
                 {client.caseStudy ? (
-                  <a className={styles.cellLink} href={client.caseStudy} target="_blank" rel="noreferrer">
+                  <a className={styles.cellLink} href={client.caseStudy}>
                     {inner}
                   </a>
                 ) : (
@@ -58,9 +63,9 @@ export default function ExpClients() {
             );
           })}
           <li className={styles.cell + " " + styles.ctaCell}>
-            <a className={styles.cta} href={t.ctaHref} target="_blank" rel="noreferrer">
-              <span className="type-mono">{t.ctaTop}</span>
-              <span className="type-mono">
+            <a className={styles.cta} href={t.ctaHref}>
+              <span className={"type-mono " + styles.ctaText}>{t.ctaTop}</span>
+              <span className={"type-mono " + styles.ctaText}>
                 {t.ctaBottom} ↗
               </span>
             </a>

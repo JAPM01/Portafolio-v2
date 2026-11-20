@@ -59,7 +59,7 @@ export const EXP_STRINGS = {
   work: {
     heading: "Latest Work",
     showAll: "Show all",
-    showAllHref: `${MELON_BASE}/work`,
+    showAllHref: "/work",
   },
   about: {
     statementBefore: "I'm Piotr",
@@ -71,7 +71,7 @@ export const EXP_STRINGS = {
       "I'm also a fan of sharing knowledge - whether it's mentoring teams, giving feedback, helping people level up in Figma, or showing how AI can actually make our work smarter, faster, and more fun.",
     ],
     moreAbout: "More about me",
-    moreAboutHref: `${MELON_BASE}/about`,
+    moreAboutHref: "/about",
   },
   experience: {
     heading: "Experience",
@@ -80,7 +80,7 @@ export const EXP_STRINGS = {
   insights: {
     heading: "Insights",
     allNotes: "All notes",
-    allNotesHref: `${MELON_BASE}/insights`,
+    allNotesHref: "/insights",
   },
   clients: {
     heading: "Clients",
@@ -88,7 +88,7 @@ export const EXP_STRINGS = {
     caseStudy: "Case study",
     ctaTop: "This spot's open.",
     ctaBottom: "Let's talk",
-    ctaHref: `${MELON_BASE}/contact`,
+    ctaHref: "/contact",
   },
   testimonials: {
     heading: "What people say",
@@ -102,9 +102,8 @@ export const EXP_STRINGS = {
     education: "Education",
   },
   contact: {
-    heading: "Let's start a project.",
     startProject: "Start a project",
-    startProjectHref: `${MELON_BASE}/contact`,
+    startProjectHref: "/contact",
   },
   footer: {
     contact: "Contact",
@@ -132,49 +131,49 @@ export const EXP_FEATURED: ExpProject[] = [
     meta: "Product design, 2025",
     image: media("/media/projects/mastercard-music/thumbnail.webp"),
     imageAlt: "Mastercard Music: Product design",
-    link: `${MELON_BASE}/work/mastercard-music`,
+    link: "/work/mastercard-music",
   },
   {
     title: "All Aces Games",
     meta: "Brand and website, 2026",
     image: media("/media/projects/allaces-games/thumbnail.webp"),
     imageAlt: "All Aces Games: Brand and website",
-    link: `${MELON_BASE}/work/allaces-games`,
+    link: "/work/allaces-games",
   },
   {
     title: "oneDynamics",
     meta: "Company website, 2026",
     image: media("/media/projects/onedynamics/thumbnail.webp"),
     imageAlt: "oneDynamics: Company website",
-    link: `${MELON_BASE}/work/onedynamics`,
+    link: "/work/onedynamics",
   },
   {
     title: "Sawicki Legal",
     meta: "Law firm website, 2025",
     image: media("/media/projects/sawicki-legal/thumbnail.webp"),
     imageAlt: "Sawicki Legal: Law firm website",
-    link: `${MELON_BASE}/work/sawicki-legal`,
+    link: "/work/sawicki-legal",
   },
   {
     title: "Huuuge Games",
     meta: "Games website, 2024",
     image: media("/media/projects/huuuge-games/thumbnail.webp"),
     imageAlt: "Huuuge Games: Games website",
-    link: `${MELON_BASE}/work/huuuge-games`,
+    link: "/work/huuuge-games",
   },
   {
     title: "Interact",
     meta: "Redesign concept, 2025",
     image: media("/media/projects/ipg-interact/thumbnail.webp"),
     imageAlt: "Interact: Redesign concept",
-    link: `${MELON_BASE}/work/ipg-interact`,
+    link: "/work/ipg-interact",
   },
   {
     title: "HiProMine",
     meta: "Home page design, 2025",
     image: media("/media/projects/hipromine/thumbnail.webp"),
     imageAlt: "HiProMine: Home page design",
-    link: `${MELON_BASE}/work/hipromine`,
+    link: "/work/hipromine",
   },
 ];
 
@@ -228,6 +227,7 @@ export const EXP_FREELANCE = ["Stagwell", "zu.agency", "teacode.io", "brandma.pl
 
 export type ExpInsight = {
   date: string;
+  dateISO: string;
   title: string;
   excerpt: string;
   category: string;
@@ -239,49 +239,54 @@ export type ExpInsight = {
 export const EXP_INSIGHTS: ExpInsight[] = [
   {
     date: "Oct 7",
+    dateISO: "2025-10-07",
     title: "Redefining Navigation for Interact SaaS",
     excerpt:
       "As part of the broader redesign initiative for Interact, an industry-leading SaaS for media planning and campaign management, I was responsible for creating one of the three conceptual directions.",
     category: "Product design",
     read: "3 min read",
     image: media("/media/posts/redefining-navigation-for-interact-saas/homeImage/src.webp"),
-    link: `${MELON_BASE}/insights/redefining-navigation-for-interact-saas`,
+    link: "/insights/redefining-navigation-for-interact-saas",
   },
   {
     date: "Oct 14",
+    dateISO: "2024-10-14",
     title: "Stable Diffusion 3 vs Midjourney and Dall·E 3",
     excerpt: "Understand the differences and choose which one is right for you?",
     category: "AI",
     read: "3 min read",
     image: media("/media/posts/stable-diffusion-3-vs-midjourney-and-dall-e-3/homeImage/src.webp"),
-    link: `${MELON_BASE}/insights/stable-diffusion-3-vs-midjourney-and-dall-e-3`,
+    link: "/insights/stable-diffusion-3-vs-midjourney-and-dall-e-3",
   },
   {
     date: "Oct 14",
+    dateISO: "2024-10-14",
     title: "WebGPU: The future of web applications.",
     excerpt: "Let's analyze what WebGPU is and what impact it can have.",
     category: "Web design",
     read: "Quick read",
     image: media("/media/posts/webgpu-the-future-of-web-applications/homeImage/src.webp"),
-    link: `${MELON_BASE}/insights/webgpu-the-future-of-web-applications`,
+    link: "/insights/webgpu-the-future-of-web-applications",
   },
   {
     date: "Oct 13",
-    title: "Discover New Music with Spotify's Smart Shuffle ✨",
+    dateISO: "2024-10-13",
+    title: "Discover New Music with Spotify’s Smart Shuffle ✨",
     excerpt: "Music that perfectly match your unique vibe. Discover new favorites!",
     category: "AI",
     read: "2 min read",
     image: media("/media/posts/discover-new-music-with-spotifys-smart-shuffle/homeImage/src.webp"),
-    link: `${MELON_BASE}/insights/discover-new-music-with-spotifys-smart-shuffle`,
+    link: "/insights/discover-new-music-with-spotifys-smart-shuffle",
   },
   {
     date: "Oct 13",
-    title: "Valentine's Matchmaker",
+    dateISO: "2024-10-13",
+    title: "Valentine’s Matchmaker",
     excerpt: "Event Design for the SkinsMonkey CS2 Community",
     category: "AI",
     read: "2 min read",
     image: media("/media/posts/valentines-matchmaker/homeImage/src.webp"),
-    link: `${MELON_BASE}/insights/valentines-matchmaker`,
+    link: "/insights/valentines-matchmaker",
   },
 ];
 
@@ -292,28 +297,28 @@ export type ExpClient = {
 };
 
 export const EXP_CLIENTS: ExpClient[] = [
-  { name: "Mastercard", logo: media("/media/logos/mastercard/colour.svg"), caseStudy: `${MELON_BASE}/work/mastercard-music` },
+  { name: "Mastercard", logo: media("/media/logos/mastercard/colour.svg"), caseStudy: "/work/mastercard-music" },
   { name: "Lidl", logo: media("/media/logos/lidl/colour.svg") },
   { name: "Bayer", logo: media("/media/logos/bayer/colour.svg") },
-  { name: "Huuuge Games", logo: media("/media/logos/huuuge/colour.svg"), caseStudy: `${MELON_BASE}/work/huuuge-games` },
+  { name: "Huuuge Games", logo: media("/media/logos/huuuge/colour.svg"), caseStudy: "/work/huuuge-games" },
   { name: "Poczta Polska", logo: media("/media/logos/pocztapolska/colour.svg") },
   { name: "PKP", logo: media("/media/logos/pkp/colour.svg") },
   { name: "Stagwell", logo: media("/media/logos/stagwell/colour.svg") },
-  { name: "Omnicom", logo: media("/media/logos/omnicom/colour.png"), caseStudy: `${MELON_BASE}/work` },
+  { name: "Omnicom", logo: media("/media/logos/omnicom/colour.png"), caseStudy: "/work/ipg-interact" },
   { name: "Enea", logo: media("/media/logos/enea/colour.svg") },
   { name: "Kinesso", logo: media("/media/logos/kinesso/colour.svg") },
-  { name: "All Aces Games", logo: media("/media/logos/allaces/colour.svg"), caseStudy: `${MELON_BASE}/work/allaces-games` },
+  { name: "All Aces Games", logo: media("/media/logos/allaces/colour.svg"), caseStudy: "/work/allaces-games" },
   { name: "WSiP", logo: media("/media/logos/wsip/colour.svg") },
   { name: "Kinderkraft", logo: media("/media/logos/kinderkraft/colour.svg") },
   { name: "Państwowa Inspekcja Pracy", logo: media("/media/logos/pip/colour.svg") },
   { name: "Barter", logo: media("/media/logos/barter/colour.svg") },
-  { name: "HiProMine", logo: media("/media/logos/hipromine/colour.svg"), caseStudy: `${MELON_BASE}/work/hipromine` },
-  { name: "Sawicki Legal", logo: media("/media/logos/sawicki/colour.svg"), caseStudy: `${MELON_BASE}/work/sawicki-legal` },
+  { name: "HiProMine", logo: media("/media/logos/hipromine/colour.svg"), caseStudy: "/work/hipromine" },
+  { name: "Sawicki Legal", logo: media("/media/logos/sawicki/colour.svg"), caseStudy: "/work/sawicki-legal" },
   { name: "John Dog", logo: media("/media/logos/johndog/colour.svg") },
   { name: "Pitbull West Coast", logo: media("/media/logos/pitbull/colour.svg") },
   { name: "Webmetric", logo: media("/media/logos/webmetric/colour.svg") },
   { name: "Froggly", logo: media("/media/logos/froggly/colour.svg") },
-  { name: "oneDynamics", logo: media("/media/logos/onedynamics/colour.svg"), caseStudy: `${MELON_BASE}/work/onedynamics` },
+  { name: "oneDynamics", logo: media("/media/logos/onedynamics/colour.svg"), caseStudy: "/work/onedynamics" },
   { name: "GPD Agency & Film Studio", logo: media("/media/logos/gpd/colour.svg") },
   { name: "teacode.io", logo: media("/media/logos/teacode/colour.svg") },
   { name: "Sisem", logo: media("/media/logos/sisem/colour.svg") },
@@ -339,7 +344,7 @@ export const EXP_TESTIMONIALS: ExpTestimonial[] = [
       "Piotr Brzeziński was responsible for the entire design of Huuuge's new website, and he absolutely nailed it! It was a pleasure working with him, and I hope our paths cross again soon!",
     name: "Agata Rutkowska",
     role: "Brand Identity Manager at Huuuge Games",
-    caseStudy: `${MELON_BASE}/work/huuuge-games`,
+    caseStudy: "/work/huuuge-games",
     caseStudyLabel: "Huuuge Games case study",
   },
   {
@@ -363,9 +368,9 @@ export const EXP_SOCIAL = [
 ] as const;
 
 export const EXP_SERVICES = [
-  { label: "SaaS & product design", href: `${MELON_BASE}/services/saas-product-design` },
-  { label: "Web design", href: `${MELON_BASE}/services/web-design` },
-  { label: "Design for agencies", href: `${MELON_BASE}/services/design-for-agencies` },
+  { label: "SaaS & product design", href: "/services/saas-product-design" },
+  { label: "Web design", href: "/services/web-design" },
+  { label: "Design for agencies", href: "/services/design-for-agencies" },
 ] as const;
 
 export const EXP_LISTENING = {

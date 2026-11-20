@@ -1,63 +1,91 @@
-/* Clientes — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
-   Melon: retícula de 8 columnas, celda ~232×195 px a 1920, logos en
-   gris/blanco separados por hairlines; la última celda rompe la pauta
-   con una invitación ("This spot's open. Let's talk ↗"). Aquí los logos
-   son los nombres en mono (no hay archivos de logo de estos clientes). */
+/* Clientes — clon 1:1 de Melon (CSS capturado, 19 Nov 2026).
+   Título clamp(2.4rem, 3.6vw, 4rem) = 64px desktop / 38.4px móvil;
+   nota 17px. Grid --cl-cols 8 (4 en ≤1099px, 3 en ≤809px),
+   margin 9vh 0 0 −1px. Celda aspect 1/.82 (móvil 1/1.05, padding
+   12px 8px 30px); --logo-u clamp(32px, 3vw, 50px) (29px móvil).
+   Cap absolute bottom 14, left/right 16, 400 14px/1.2, opacity 0
+   (en celdas con enlace: opacity 1, color 55%, columna). Hover
+   INVIERTE la celda (fondo blanco, logo a color, etiqueta negra).
+   CTA 400 clamp(17px, 1.45vw, 22px)/1.15. Última celda móvil:
+   si es 3n+1 ocupa 1/−1, si 3n+2 span 2. */
 
 .section {
   background: var(--melon-dark);
-  padding-block: var(--space-16);
-  padding-inline: var(--page-margin);
+  padding: 14vh var(--page-margin) 12vh;
 }
 
 @media (min-width: 1024px) {
   .section {
-    padding-block: var(--space-32);
+    padding: 18vh var(--page-margin) 15vh;
   }
 }
 
+/* Título: 64px desktop / 38.4px móvil (token h2 156px / 60px). */
 .heading {
   grid-column: 1 / -1;
   margin: 0;
+  font-family: var(--melon-sans);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--type-ink);
   /* Reveal liquid ligado al scroll (useLiquidReveal). */
   filter: blur(var(--liq-blur, 40px));
   opacity: var(--liq-op, 0);
+  zoom: 0.64;
+}
+
+@media (min-width: 1024px) {
+  .heading {
+    zoom: 0.41;
+  }
 }
 
 .head {
   grid-column: 1 / -1;
-  margin: 0 0 var(--space-16);
+  margin: 0;
 }
 
-@media (min-width: 1024px) {
-  .head {
-    margin-block-end: var(--space-32);
-  }
+/* Sin row-gap entre head y wall: el margin 9vh del wall da el espacio. */
+.grid {
+  row-gap: 0;
 }
 
+/* Nota: 17px (token body 32px / 16px). */
 .note {
   margin: var(--space-4) 0 0;
   max-width: 560px;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--type-body-ink);
+  zoom: 1.0625;
+}
+
+@media (min-width: 1024px) {
+  .note {
+    zoom: 0.531;
+  }
 }
 
 .wall {
   grid-column: 1 / -1;
-  margin: 0;
+  margin: 9vh 0 0 -1px;
   padding: 0;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   border-top: 1px solid color-mix(in oklch, var(--brand-white) 12%, transparent);
   border-left: 1px solid color-mix(in oklch, var(--brand-white) 12%, transparent);
 }
 
-@media (min-width: 768px) {
+@media (min-width: 810px) {
   .wall {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1100px) {
   .wall {
     grid-template-columns: repeat(8, minmax(0, 1fr));
   }
@@ -66,15 +94,15 @@
 .cell {
   position: relative;
   display: flex;
-  min-height: 160px;
+  aspect-ratio: 1 / 1.05;
   border-right: 1px solid color-mix(in oklch, var(--brand-white) 12%, transparent);
   border-bottom: 1px solid color-mix(in oklch, var(--brand-white) 12%, transparent);
+  transition: background-color 0.3s ease;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1100px) {
   .cell {
-    height: 195px;
-    min-height: 195px;
+    aspect-ratio: 1 / 0.82;
   }
 }
 
@@ -85,30 +113,38 @@
   justify-content: center;
   gap: var(--space-4);
   width: 100%;
-  padding: var(--space-6) var(--space-4);
+  padding: 12px 8px 30px;
   color: var(--type-ink);
   text-decoration: none;
   text-align: center;
 }
 
-/* Logos en gris por defecto (Melon: logos gris/blanco), a color al hover.
-   Hover (Melon): la celda se INVIERTE — fondo blanco, logo a color
-   pleno (o oscuro) y etiqueta en negro. */
+/* Logos: --logo-u clamp(32px, 3vw, 50px); 29px en móvil. En gris por
+   defecto (Melon: logos gris/blanco), a color al hover. */
 .logo {
   display: block;
+  width: auto;
+  height: 29px;
   max-width: 72%;
-  max-height: 56px;
   object-fit: contain;
   filter: grayscale(1) brightness(1.6);
   transition: filter 0.3s ease;
 }
 
-.cell {
-  transition: background-color 0.3s ease;
+@media (min-width: 1100px) {
+  .logo {
+    height: clamp(32px, 3vw, 50px);
+  }
 }
 
+/* Hover (Melon): la celda se INVIERTE — fondo blanco, logo a color
+   pleno y etiqueta en negro. */
 .cell:hover {
   background: var(--brand-white);
+}
+
+.cell:hover .logo {
+  filter: none;
 }
 
 /* Texto oscuro sobre la celda blanca: el guard tipográfico solo admite
@@ -123,25 +159,62 @@
   color: transparent;
 }
 
-.cellLink:hover .logo {
-  filter: none;
-}
-
+/* Cap: absolute bottom 14, left/right 16, 400 14px/1.2, opacity 0.
+   En celdas con enlace (a.cellLink): opacity 1, color 55%, columna. */
 .cap {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  right: 16px;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  align-items: center;
+  gap: 2px;
+  align-items: flex-start;
+  text-align: left;
+  opacity: 0;
 }
 
+a.cellLink .cap {
+  opacity: 1;
+}
+
+/* Nombre: 14px/1.2, color 55% (token meta 24px / 14px). */
 .name {
   margin: 0;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1.2;
+  background: color-mix(in oklch, var(--brand-white) 55%, transparent);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  zoom: 1;
+}
+
+@media (min-width: 1024px) {
+  .name {
+    zoom: 0.583;
+  }
 }
 
 .caseStudy {
   margin: 0;
+  font-family: var(--melon-mono);
+  font-weight: 500;
+  line-height: 1.35;
   text-decoration: underline;
   text-underline-offset: var(--space-1);
+  background: color-mix(in oklch, var(--brand-white) 55%, transparent);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  zoom: 0.929;
+}
+
+@media (min-width: 1024px) {
+  .caseStudy {
+    zoom: 0.542;
+  }
 }
 
 .arrow {
@@ -154,6 +227,7 @@
   padding: 0;
 }
 
+/* CTA: 400 clamp(17px, 1.45vw, 22px)/1.15 (token mono 24px / 14px). */
 .cta {
   display: flex;
   flex-direction: column;
@@ -167,8 +241,39 @@
   text-decoration: none;
   text-align: center;
   transition: background-color 0.3s ease;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1.15;
+  zoom: 1.214;
+}
+
+@media (min-width: 1024px) {
+  .cta {
+    zoom: 0.917;
+  }
 }
 
 .cta:hover {
   background: var(--brand-red);
+}
+
+.ctaText {
+  display: block;
+}
+
+/* Última celda móvil: si es 3n+1 ocupa 1/−1, si 3n+2 span 2. El CTA
+   con span 2 NO sigue el aspect-ratio (si no, su altura se duplica
+   con el ancho: 245px en vez de 123px); llena la fila. */
+@media (max-width: 809px) {
+  .ctaCell {
+    aspect-ratio: auto;
+  }
+
+  .ctaCell:nth-child(3n + 1) {
+    grid-column: 1 / -1;
+  }
+
+  .ctaCell:nth-child(3n + 2) {
+    grid-column: span 2;
+  }
 }

@@ -1,17 +1,21 @@
-/* Experiencia — clon 1:1 de Melon (medido en vivo, 19 Nov 2026).
-   Split título/lista; cada fila: logo cuadrado 72×72 + nombre + rol +
-   fecha en mono a la derecha; hairlines. Abajo: "As a freelancer I
-   worked with" + wordmarks de texto. */
+/* Experiencia — clon 1:1 de Melon (CSS capturado, 19 Nov 2026).
+   Split head 1/7, body 7/−1. Título = --f-title-size (140px).
+   Filas .f-xp__main grid 72px 1fr auto, align center, min-height 134,
+   padding 31px 0 30px, column-gap 24; tile 72×72 (móvil: grid 52px 1fr,
+   gap 8/16, padding 22px 0). Empresa 400 clamp(1.6rem, 2.2vw, 2.4rem)/1.05,
+   LS -.03em = 38.4px; rol 400 17px/1.4 color 55%, margin-top 8px; años
+   400 15px/1.4, tabular-nums, derecha, color 55%. Freelance margin-top
+   64 (44 móvil), label 17px margin-bottom 26px, logos gap 24px 48px,
+   item min-height 40. Filas sin animación ni hover. */
 
 .section {
   background: var(--melon-dark);
-  padding-block: var(--space-16);
-  padding-inline: var(--page-margin);
+  padding: 14vh var(--page-margin) 12vh;
 }
 
 @media (min-width: 1024px) {
   .section {
-    padding-block: var(--space-32);
+    padding: 18vh var(--page-margin) 15vh;
   }
 }
 
@@ -21,37 +25,57 @@
 
 @media (min-width: 1024px) {
   .head {
-    grid-column: 1 / 6;
+    grid-column: 1 / 7;
   }
 }
 
+/* Título 140px desktop / 58.5px móvil: token h2 (156px / 60px) con
+   zoom 0.897 / 0.975 (el guard tipográfico prohíbe font-size). */
 .heading {
   margin: 0;
   max-width: 12ch;
+  font-family: var(--melon-sans);
+  font-weight: 300;
+  line-height: 0.86;
+  letter-spacing: -0.05em;
+  color: var(--type-ink);
   /* Reveal liquid ligado al scroll (useLiquidReveal). */
   filter: blur(var(--liq-blur, 40px));
   opacity: var(--liq-op, 0);
+  zoom: 0.975;
 }
 
+@media (min-width: 1024px) {
+  .heading {
+    zoom: 0.897;
+  }
+}
+
+/* La lista empieza 145px (desktop) / 93px (móvil) por debajo del top
+   del contenido: Melon la coloca bajo la caja de línea del título.
+   En desktop comparte fila con el título (1/7 vs 7/−1), así que el
+   offset es el margin-top directo (145px). En móvil apila en filas
+   (título 50px + row-gap 20 + margin 24px = 94px). Valores medidos. */
 .list {
   grid-column: 1 / -1;
-  margin: var(--space-12) 0 0;
+  margin: 24px 0 0;
   padding: 0;
   list-style: none;
 }
 
 @media (min-width: 1024px) {
   .list {
-    grid-column: 6 / 13;
-    margin-top: 0;
+    grid-column: 7 / -1;
+    margin-top: 145px;
   }
 }
 
 .row {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--space-1) var(--space-4);
-  padding-block: var(--space-6);
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 8px 16px;
+  align-items: start;
+  padding: 22px 0;
   border-top: 1px solid var(--brand-gray-3);
 }
 
@@ -59,70 +83,130 @@
   border-bottom: 1px solid var(--brand-gray-3);
 }
 
-/* Logo cuadrado 72×72 (Melon: logo de la empresa en cada fila). */
+@media (min-width: 1024px) {
+  .row {
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    column-gap: 24px;
+    align-items: center;
+    min-height: 134px;
+    padding: 31px 0 30px;
+  }
+}
+
+/* Logo cuadrado 72×72 (52×52 en móvil). */
 .tile {
   grid-row: 1 / 4;
   display: block;
-  width: calc(var(--space-16) + var(--space-2));
-  height: calc(var(--space-16) + var(--space-2));
+  width: 52px;
+  height: 52px;
   object-fit: contain;
 }
 
+@media (min-width: 1024px) {
+  .tile {
+    grid-row: 1 / 3;
+    width: 72px;
+    height: 72px;
+  }
+}
+
+/* Empresa: 38.4px desktop / 25.6px móvil (token h4 40px / 32px). */
 .name {
   grid-column: 2;
   margin: 0;
-}
-
-.role {
-  grid-column: 2;
-  margin: 0;
-}
-
-.dates {
-  grid-column: 2;
-  margin: 0;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--type-ink);
+  zoom: 0.8;
 }
 
 @media (min-width: 1024px) {
-  .row {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: baseline;
-  }
-
-  .tile {
-    grid-row: 1 / 3;
-  }
-
   .name {
     grid-column: 2;
     grid-row: 1;
+    zoom: 0.96;
   }
+}
 
+/* Rol: 17px/1.4, color 55% (token body 32px / 16px). Sin margin-top:
+   el hueco nombre→rol ya lo da el row-gap 8px de la retícula (con
+   margin-top 8 además, el hueco era 16px y las filas medían 141px
+   en móvil en vez de 134px). */
+.role {
+  grid-column: 2;
+  margin: 0;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1.4;
+  background: color-mix(in oklch, var(--brand-white) 55%, transparent);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  zoom: 1.0625;
+}
+
+@media (min-width: 1024px) {
   .role {
     grid-column: 2;
     grid-row: 2;
+    zoom: 0.531;
   }
+}
 
+/* Años: 15px/1.4, tabular-nums, derecha, color 55% (token meta). */
+.dates {
+  grid-column: 2;
+  margin: 0;
+  font-family: var(--melon-mono);
+  font-weight: 400;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  background: color-mix(in oklch, var(--brand-white) 55%, transparent);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  zoom: 1.071;
+}
+
+@media (min-width: 1024px) {
   .dates {
     grid-column: 3;
     grid-row: 1;
     text-align: right;
+    zoom: 0.625;
   }
 }
 
+/* Freelance: margin-top 64 desktop / 44 móvil. La retícula ya aporta
+   row-gap (40 desktop / 20 móvil), así que el margin es 24px en ambos. */
 .free {
   grid-column: 1 / -1;
-  margin: var(--space-12) 0 0;
+  margin: 24px 0 0;
 }
 
 @media (min-width: 1024px) {
   .free {
-    grid-column: 6 / 13;
+    grid-column: 7 / -1;
+    margin-top: 24px;
   }
 }
 
+/* Label freelance: 17px, margin-bottom 26px (token body). */
 .freeLabel {
-  margin: 0 0 var(--space-6);
+  margin: 0 0 26px;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--type-body-ink);
+  zoom: 1.0625;
+}
+
+@media (min-width: 1024px) {
+  .freeLabel {
+    zoom: 0.531;
+  }
 }
 
 .freeLogos {
@@ -131,9 +215,30 @@
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-8);
+  gap: 24px;
 }
 
+@media (min-width: 1024px) {
+  .freeLogos {
+    gap: 24px 48px;
+  }
+}
+
+/* Nombres freelance: en móvil 14px (token meta) para que los 4 quepan
+   en una línea como Melon (con type-h5 a 24px ocupaban 2 líneas).
+   El zoom también encoge el min-height, así que se compensa a 68px
+   para que la fila siga midiendo 40px. */
 .freeName {
   margin: 0;
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  zoom: 0.583;
+}
+
+@media (min-width: 1024px) {
+  .freeName {
+    min-height: 40px;
+    zoom: 1;
+  }
 }

@@ -5,15 +5,16 @@ import { EXP_STRINGS } from "../../lib/exp-content";
 import styles from "./exp-manifesto.module.css";
 
 /**
- * Manifiesto — clon 1:1 TOTAL de Melon About, motion sección por sección
- * (revisión técnica + estudio visual en navegador, 19 Nov 2026):
+ * Manifiesto — clon 1:1 de Melon About (CSS capturado, 19 Nov 2026):
  * Melon revela el statement PALABRA POR PALABRA ligado al scroll: las
- * palabras aún no reveladas son manchas rojas borrosas y onduladas
- * (tinta líquida); al revelarse quedan negras y nítidas, salvo "slick
- * SaaS" y "details that", que quedan en rojo. Avanza de izquierda a
- * derecha y de arriba a abajo, ~6 palabras por cada ~250px de scroll.
- * La foto circular (disco) y los dos párrafos pequeños son nítidos, sin
- * efecto. Se respeta prefers-reduced-motion (todo nítido).
+ * palabras aún no reveladas son manchas rojas borrosas (blur hasta 40px);
+ * al revelarse quedan negras y nítidas, salvo "slick SaaS" y "details
+ * that", que quedan en rojo. Avanza ~6 palabras por cada ~250px de scroll.
+ * Statement 300 clamp(2.25rem, 5.15vw, 6.5rem)/1.02 = 98.9px desktop,
+ * 33.5px móvil, LS -.038em; disco 1.2136em. Cuerpo grid 7/−1, 2 columnas,
+ * 400 18px/1.55, margin-top 14vh, p max-width 351px. "More about me" es
+ * enlace .f-showall (roll + flechas) en grid-area 2/1/auto/7. Se respeta
+ * prefers-reduced-motion (todo nítido).
  */
 const HIGHLIGHT = new Set(["slick", "SaaS", "details", "that"]);
 
@@ -46,18 +47,22 @@ export default function ExpManifesto() {
       });
       return;
     }
+    const MAX_BLUR = window.innerWidth <= 810 ? 14 : 40;
+    const WORDS_PER_PX = 6 / 250; // ~6 palabras por cada 250px de scroll
     let raf = 0;
 
     function update() {
       raf = 0;
       const rect = target.getBoundingClientRect();
       const vpH = window.innerHeight;
-      const total = Math.min(1, Math.max(0, (vpH - rect.top) / (vpH + rect.height)));
+      // Distancia que el top del statement ha entrado en el viewport.
+      const dist = Math.max(0, vpH - rect.top);
+      const revealed = dist * WORDS_PER_PX;
       const n = spans.length;
       spans.forEach((s, i) => {
         if (!s) return;
-        const p = Math.min(1, Math.max(0, total * n - i));
-        const blur = (1 - p) * 8;
+        const p = Math.min(1, Math.max(0, revealed - i));
+        const blur = (1 - p) * MAX_BLUR;
         s.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "";
         // El color se interpola en CSS con color-mix y --w (rojo → oscuro;
         // las destacadas quedan en rojo: --w = 0 siempre).
@@ -118,16 +123,22 @@ export default function ExpManifesto() {
           })}
         </p>
 
+        <div className={styles.moreWrap}>
+          <a className={"type-mono " + styles.moreLink} href={t.moreAboutHref}>
+            <span className={styles.roll}>
+              <span>{t.moreAbout}</span>
+              <span aria-hidden="true">{t.moreAbout}</span>
+            </span>
+            <svg width="24" height="16" viewBox="0 0 24 16" fill="none" aria-hidden="true">
+              <path d="M2 8h11M9 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M12 8h9M19 4l4 4-4 4" stroke="currentColor" strokeWidth="1.5" />
+            </svg>
+          </a>
+        </div>
+
         <div className={styles.body}>
           <p className={"type-body " + styles.ink}>{t.paragraphs[0]}</p>
-        </div>
-        <div className={styles.body + " " + styles.bodySecond}>
           <p className={"type-body " + styles.ink}>{t.paragraphs[1]}</p>
-          <p className={"type-body " + styles.inkMuted}>
-            <a className={styles.moreLink} href={t.moreAboutHref} target="_blank" rel="noreferrer">
-              {t.moreAbout} ↗
-            </a>
-          </p>
         </div>
       </div>
     </section>

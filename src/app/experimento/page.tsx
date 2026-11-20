@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import ThemeGate from "../../components/ThemeGate";
 import "../../components/experimento/melon-tokens.css";
 import ExpHeader from "../../components/experimento/ExpHeader";
+import ExpPreloader from "../../components/experimento/ExpPreloader";
 import ExpHero from "../../components/experimento/ExpHero";
 import ExpManifesto from "../../components/experimento/ExpManifesto";
 import ExpWork from "../../components/experimento/ExpWork";
@@ -38,6 +39,7 @@ export default function Experimento() {
         Skip to content
       </a>
       <ThemeGate />
+      <ExpPreloader />
       <ExpHeader />
       <main id="main">
         <ExpHero />

@@ -1,17 +1,21 @@
-/* Hero — clon 1:1 TOTAL de Melon (revisión técnica con dev tools /
-   scraping / DOM, 19 Nov 2026). Melon: alto ~930px; fondo = imagen fija
-   (hero-still-1600.webp, base del gradiente WebGL animado); wordmark
-   VECTORIAL (melon-gradient-tlo.svg) como máscara sobre degradado
-   radial blanco→rojo oscuro, recortado por arriba y por los lados;
-   parallax translate3d(0, scrollY*0.4) + fade a negro ligado al scroll
-   (--hero-fade 0→1 entre el 3% y el 22% del alto); frase con reveal de
-   líneas con máscara y meta con yPercent. Las URLs son remotas de
-   melon.studio; en local se cambian a /Portafolio-v2/exp/melon/... */
+/* Hero — clon 1:1 de Melon (CSS capturado de melon.studio, 19 Nov 2026).
+   Melon: alto max(83svh, .8vh + 32.4vw + 64px) = 896px @1920x1080;
+   móvil max(62svh, .8vh + 58px + 110vw/3.08681 + 16vh + 200px) = 539px
+   @390x844. Fondo = imagen fija (hero-still-1600.webp; 800px en móvil),
+   base del gradiente animado (WebGL .hero__wave: speed .8, scale 1.82,
+   rotation 180, waveAmp .25) — aquí canvas 2D con la misma onda.
+   Wordmark VECTORIAL (melon-gradient-tlo.svg) como máscara sobre
+   degradado radial blanco→rojo oscuro (render medido en vivo; el CSS
+   de Melon declara stops cian/teal con color-dodge, sin resolver).
+   Parallax translate3d(0, scrollY*0.4) + fade a negro (--hero-fade 0→1
+   entre el 3% y el 22% del alto); frase con reveal de líneas y meta
+   con yPercent. */
 
 .section {
   position: relative;
   overflow: hidden;
-  min-height: 100svh;
+  height: max(62svh, calc(0.8vh + 58px + 110vw / 3.08681 + 16vh + 200px));
+  min-height: 539px;
 }
 
 /* La capa interna lleva el fondo y el wordmark; es la que hace parallax
@@ -24,10 +28,27 @@
   will-change: transform;
 }
 
+@media (max-width: 1023px) {
+  .inner {
+    background-image: url("https://melon.studio/brand/hero-still-800.webp");
+  }
+}
+
+/* Onda animada sobre la imagen fija (Melon: .hero__wave con canvas
+   WebGL). Aquí canvas 2D: la misma imagen con desplazamiento senoidal. */
+.wave {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 /* Wordmark vectorial de Melon como máscara sobre el degradado radial
    blanco→rojo oscuro. La máscara es 1920×622 (ratio 3.08681). */
 .wordmark {
   position: absolute;
+  z-index: 1;
   top: 0.8vh;
   left: 0;
   width: 100%;
@@ -64,6 +85,7 @@
    oscuro, blend darken) — da la profundidad de la parte baja. */
 .silhouette {
   position: absolute;
+  z-index: 1;
   top: 0.8vh;
   left: 0;
   width: 100%;
@@ -102,8 +124,7 @@
   pointer-events: none;
 }
 
-/* Fila inferior (frase + meta): posición como Melon (.atf-what) y
-   parallax con --hero-y (mismo desplazamiento que .inner). */
+/* Fila inferior (frase + meta): Melon .atf-what, parallax con --hero-y. */
 .bottomWrap {
   position: absolute;
   z-index: 3;
@@ -114,11 +135,20 @@
   transform: translateY(var(--hero-y, 0px));
 }
 
+/* Frase: Melon 300 clamp(26px, 2.3vw, 40px)/1.08, LS -.025em, max 17em,
+   grid 1/8. El zoom lleva el token body (32px desktop / 16px móvil) a
+   40px / 26px sin declarar font-size (guard tipográfico). */
 .phrase {
   grid-column: 1 / -1;
   margin: 0;
-  max-width: 480px;
+  max-width: 17em;
   overflow: hidden;
+  font-family: var(--melon-sans);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  color: var(--type-ink);
+  zoom: 1.625;
 }
 
 .phraseLine {
@@ -135,12 +165,22 @@
   }
 }
 
+/* Meta: Melon 500 13px/1.5 Geist Mono, grid 9/13, derecha. Primera
+   línea al 72%. Zoom: token meta (24px desktop / 14px móvil) a 13px. */
 .meta {
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 0;
   overflow: hidden;
+  font-family: var(--melon-mono);
+  font-weight: 500;
+  line-height: 1.5;
+  zoom: 0.93;
+}
+
+.metaFirst {
+  opacity: 0.72;
 }
 
 .metaLine {
@@ -150,8 +190,8 @@
 
 @media (min-width: 1024px) {
   .section {
-    height: 930px;
-    min-height: 930px;
+    height: max(83svh, calc(0.8vh + 32.4vw + 64px));
+    min-height: 896px;
   }
 
   /* En desktop el wordmark se recorta por arriba y por los lados como
@@ -168,26 +208,37 @@
   }
 
   .phrase {
-    grid-column: 1 / 7;
+    grid-column: 1 / 8;
+    zoom: 1.25;
   }
 
   .meta {
-    grid-column: 7 / 13;
+    grid-column: 9 / 13;
     align-items: flex-end;
     text-align: right;
+    zoom: 0.542;
+  }
+}
+
+@media (max-width: 1023px) {
+  .wordmark,
+  .silhouette {
+    top: calc(0.8vh + 58px);
   }
 }
 
 .avail {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: 9px;
 }
 
+/* Punto blanco con halo (Melon: .atf-dot, 7px, halo 22%). */
 .dot {
   flex: none;
-  width: var(--space-2);
-  height: var(--space-2);
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--brand-red);
+  background: var(--brand-white);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--brand-white) 22%, transparent);
 }

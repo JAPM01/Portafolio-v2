@@ -1,9 +1,11 @@
-/* Manifiesto — clon 1:1 TOTAL de Melon About (medido en vivo, 19 Nov 2026).
-   Melon: fondo crema, statement gigante a todo lo ancho EN ROJO con un
-   disco rojo con retrato circular incrustado en la frase (aquí disco rojo
-   con "JP" hasta que el retrato entre por git) y debajo dos párrafos en
-   dos columnas + enlace "More about me". Sin principios numerados
-   (eso es Moisez, no Melon). */
+/* Manifiesto — clon 1:1 de Melon About (CSS capturado, 19 Nov 2026).
+   Melon: fondo crema, statement gigante a todo lo ancho en rojo con un
+   disco rojo con retrato circular incrustado en la frase, cuerpo en
+   grid 7/−1 en 2 columnas + enlace "More about me" (.f-showall).
+   Statement 300 clamp(2.25rem, 5.15vw, 6.5rem)/1.02, LS -.038em
+   = 98.9px desktop / 33.5px móvil. Disco 1.2136em. Cuerpo 400 18px/1.55,
+   LS -.005em, margin-top 14vh, p max-width 351px (19.5em).
+   Padding de sección 18vh 0 15vh (móvil 14vh/12vh). */
 
 /* Texto oscuro sobre fondo claro: el guard tipográfico solo admite
    color: var(--type-*) (claros) o transparent, así que el color se
@@ -15,36 +17,33 @@
   color: transparent;
 }
 
-.inkMuted {
-  background: color-mix(in oklch, var(--melon-dark) 55%, var(--melon-cream));
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-/* Statement en rojo (Melon: el statement de About es rojo). */
-.inkRed {
-  background: var(--brand-red);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
 .section {
   background: var(--melon-cream);
-  padding-block: var(--space-16);
-  padding-inline: var(--page-margin);
+  padding: 14vh var(--page-margin) 12vh;
 }
 
 @media (min-width: 1024px) {
   .section {
-    padding-block: var(--space-32);
+    padding: 18vh var(--page-margin) 15vh;
   }
 }
 
+/* Statement: token h2 (156px desktop / 60px móvil) llevado a 98.9px /
+   33.5px con zoom (el guard tipográfico prohíbe font-size). */
 .statement {
   grid-column: 1 / -1;
   margin: 0;
+  font-family: var(--melon-sans);
+  font-weight: 300;
+  line-height: 1.02;
+  letter-spacing: -0.038em;
+  zoom: 0.559;
+}
+
+@media (min-width: 1024px) {
+  .statement {
+    zoom: 0.634;
+  }
 }
 
 /* Cada palabra del statement: el JS fija su blur y --w (progreso del
@@ -63,19 +62,18 @@
   will-change: filter;
 }
 
-/* Disco rojo con el retrato circular (Melon: retrato circular sobre
-   disco rojo incrustado en la frase). */
+/* Disco rojo con el retrato circular (Melon: .f-face 1.2136em, fondo
+   rojo, margin -.101em .055em -.101em .16em). */
 .disc {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: calc(var(--type-h2-size) * 0.85);
-  height: calc(var(--type-h2-size) * 0.85);
-  margin-inline: 0.12em;
+  width: 1.2136em;
+  height: 1.2136em;
+  margin: -0.101em 0.055em -0.101em 0.16em;
   border-radius: 50%;
   background: var(--brand-red);
   overflow: hidden;
-  vertical-align: -0.06em;
 }
 
 .disc img {
@@ -85,32 +83,105 @@
   object-fit: cover;
 }
 
+/* Cuerpo: grid 7/−1, 2 columnas, margin-top 14vh. Texto 400 18px/1.55:
+   token body (32px desktop / 16px móvil) con zoom 0.5625 / 1.125. */
 .body {
   grid-column: 1 / -1;
-  margin: var(--space-16) 0 0;
+  grid-row: 2;
+  margin: 8vh 0 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
 }
 
 .body p {
-  margin: 0 0 var(--space-6);
-}
-
-.body p:last-child {
-  margin-bottom: 0;
+  margin: 0;
+  max-width: 19.5em;
+  font-family: var(--melon-sans);
+  font-weight: 400;
+  line-height: 1.55;
+  letter-spacing: -0.005em;
+  zoom: 1.125;
 }
 
 @media (min-width: 1024px) {
   .body {
-    grid-column: 1 / 7;
+    grid-column: 7 / -1;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 14vh;
   }
 
-  .bodySecond {
-    grid-column: 7 / 13;
-    margin-top: var(--space-16);
+  .body p {
+    zoom: 0.5625;
+  }
+}
+
+/* "More about me": enlace .f-showall de Melon (roll + flechas),
+   grid-area 2/1/auto/7. Token meta (24px desktop / 14px móvil) con
+   zoom 0.542 / 0.93 = 13px en ambos. */
+.moreWrap {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  margin-top: 8vh;
+}
+
+@media (min-width: 1024px) {
+  .moreWrap {
+    grid-column: 1 / 7;
+    grid-row: 2;
+    margin-top: 14vh;
   }
 }
 
 .moreLink {
-  text-decoration: underline;
-  text-underline-offset: var(--space-1);
-  text-decoration-color: color-mix(in oklch, var(--melon-dark) 55%, var(--melon-cream));
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  /* Color oscuro sobre crema con el truco background-clip (el guard
+     tipográfico solo admite color: var(--type-*) o transparent). Las
+     flechas SVG toman el color por `stroke` en CSS, no currentColor. */
+  background: var(--melon-dark);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  font-family: var(--melon-mono);
+  font-weight: 500;
+  line-height: 1.45;
+  zoom: 0.93;
+}
+
+.moreLink svg path {
+  stroke: var(--melon-dark);
+}
+
+@media (min-width: 1024px) {
+  .moreLink {
+    zoom: 0.542;
+  }
+}
+
+.moreLink .roll {
+  display: inline-flex;
+  flex-direction: column;
+  height: 1.45em;
+  overflow: hidden;
+}
+
+.moreLink .roll span {
+  display: block;
+  transition: transform 0.45s cubic-bezier(0.11, 0.06, 0.18, 1);
+}
+
+.moreLink:hover .roll span {
+  transform: translateY(-100%);
+}
+
+.moreLink svg {
+  flex: none;
+  transition: transform 0.45s cubic-bezier(0.11, 0.06, 0.18, 1);
+}
+
+.moreLink:hover svg {
+  transform: translateX(4px);
 }
