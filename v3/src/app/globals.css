@@ -1,0 +1,83 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --color-base: #010101;
+  --color-elevated: #0a0a0a;
+  --color-elevated2: #121212;
+  --color-ink: #fefefe;
+  --color-blue: #000aff;
+  --color-amber: #ff9636;
+  --color-muted: #888888;
+  --font-sans: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+:root {
+  --brand-blue: #000aff;
+  --brand-orange: #ff9636;
+  --brand-black: #010101;
+  --brand-white: #fefefe;
+}
+
+html { background: #010101; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+body {
+  background: #010101;
+  color: #fefefe;
+  font-family: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection { background: #000aff; color: #fefefe; }
+
+.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+/* Fluted glass: vertical ribs over the liquid chrome */
+.fluted {
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.06) 0px,
+    rgba(255, 255, 255, 0.06) 1px,
+    rgba(0, 0, 0, 0) 1px,
+    rgba(0, 0, 0, 0) 14px,
+    rgba(255, 255, 255, 0.03) 14px,
+    rgba(255, 255, 255, 0.03) 15px,
+    rgba(0, 0, 0, 0) 15px,
+    rgba(0, 0, 0, 0) 28px
+  );
+  backdrop-filter: blur(1px);
+}
+
+.dotgrid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.7); }
+}
+.pulse-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track { animation: marquee-x 22s linear infinite; }
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.float-slow { animation: float-slow 6s ease-in-out infinite; }
+
+.work-card { will-change: transform, filter; }
+
+@media (pointer: fine) {
+  .work-card, .work-card * { cursor: none; }
+}

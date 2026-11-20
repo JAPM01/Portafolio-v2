@@ -29,6 +29,9 @@ function files(dir,result=[]){
   if(entry.isDirectory())files(path,result);
   else if(entry.isFile()&&(CSS_EXT.test(entry.name)||CODE_EXT.test(entry.name))){
    const name=relative(ROOT,path).replaceAll("\\","/");
+   // v3 es una app independiente dentro del repo (su propia escala
+   // tipográfica del brief de jprat.studio); el guard del v2 no aplica.
+   if(name.startsWith("v3/"))continue;
    if(!OMIT.has(name))result.push({name,code:readFileSync(path,"utf8")});
   }
  }
