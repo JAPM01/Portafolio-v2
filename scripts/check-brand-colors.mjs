@@ -60,6 +60,10 @@ function findFiles(dir, items = []) {
     if (entry.isDirectory()) findFiles(full, items);
     else if (entry.isFile() && EXTENSIONS.test(entry.name)) {
       const name = relative(ROOT, full).replaceAll("\\", "/");
+      // TEMPORAL experimento Melon: los assets en public/exp/ son de terceros
+      // (wordmark y logos de Melon y de sus clientes, con sus propios colores)
+      // y no forman parte del sistema de marca de Jafet. No se les aplica el guard.
+      if (name.startsWith("public/exp/")) continue;
       if (!SKIP.has(name)) items.push({ name, text: readFileSync(full, "utf8") });
     }
   }
