@@ -16,16 +16,16 @@ export function Footer({ onContact }: { onContact: () => void }) {
   const reduced = useReducedMotion();
   const [ref, onScreen] = useOnScreen<HTMLDivElement>();
   const show3D = tier === "full" || tier === "lite";
-  const phrase = "Let's build something iconic —";
+  const words = ["Let's build something iconic", "Product Design", "UX/UI", "Branding", "Design Systems", "Motion", "Strategy"];
+  const phrase = words.join(" — ") + " — ";
   return (
     <footer id="contact" data-fx className="fx-footer relative overflow-hidden pt-20 pb-8" aria-label="Contacto">
-      <div className="relative grid grid-cols-1 items-center gap-10 px-5 md:grid-cols-[1fr_auto_1fr] md:px-10">
+      <div className="content-shell relative grid grid-cols-1 items-center gap-10 md:grid-cols-[1fr_auto_1fr]">
         <div className="space-y-4 font-mono text-[12px]">
           <button onClick={copyEmail} className="group flex items-center gap-2 font-display text-[22px] font-medium tracking-tight hover:text-muted-foreground md:text-[26px]">
             {CONTACT.email}<Copy size={16} className="opacity-50 group-hover:opacity-100" />
           </button>
           <a href={`tel:${CONTACT.phone.replace(/\s/g, "")}`} className="block hover:text-muted-foreground">{CONTACT.phone}</a>
-          <div className="text-muted-foreground">{CONTACT.coords}</div>
         </div>
         <div ref={ref} className="fx-monogram mx-auto h-[300px] w-[300px] cursor-grab active:cursor-grabbing md:h-[380px] md:w-[380px]">
           {show3D ? (
@@ -35,7 +35,6 @@ export function Footer({ onContact }: { onContact: () => void }) {
           ) : <div className="grid h-full place-items-center"><Fallback /></div>}
         </div>
         <div className="space-y-4 font-mono text-[12px] md:text-right">
-          <span className="inline-flex items-center gap-2 uppercase text-status"><span className="pulse-dot h-1.5 w-1.5 rounded-full bg-status" />Open Q1 2027</span>
           <div className="flex gap-4 md:justify-end">
             <a href="https://read.cv" target="_blank" rel="noreferrer" className="hover:text-muted-foreground">Read.cv</a>
             <span className="text-muted-foreground">·</span>
@@ -48,7 +47,7 @@ export function Footer({ onContact }: { onContact: () => void }) {
       <div className="relative mt-16 overflow-hidden border-t border-foreground/10" aria-hidden>
         <div className="fx-marquee"><div className="kit-mq flex w-max whitespace-nowrap">
           {[0, 1].map((k) => (
-            <span key={k} className="pr-10 text-[clamp(80px,14vw,220px)] font-medium uppercase leading-[0.85] tracking-[-0.06em]">{phrase} {phrase}</span>
+            <span key={k} className="display-text pr-10 text-[clamp(80px,14vw,220px)] uppercase leading-[0.85] tracking-[-0.06em]">{phrase} {phrase}</span>
           ))}
         </div></div>
       </div>

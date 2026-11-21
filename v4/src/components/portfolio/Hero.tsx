@@ -13,14 +13,12 @@ export function Hero() {
   const [secRef, onScreen] = useOnScreen<HTMLElement>();
   const fluteRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const coordRef = useRef<HTMLSpanElement>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const move = (e: PointerEvent) => {
       pointer.x = e.clientX / window.innerWidth;
       pointer.y = e.clientY / window.innerHeight;
-      if (coordRef.current) coordRef.current.textContent = `X ${pointer.x.toFixed(2)} · Y ${pointer.y.toFixed(2)}`;
     };
     window.addEventListener("pointermove", move, { passive: true });
     let raf = 0;
@@ -56,15 +54,9 @@ export function Hero() {
       {!show3D && <div ref={fluteRef} className="flute pointer-events-none absolute inset-0 will-change-transform" aria-hidden />}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-background via-background/60 to-transparent" aria-hidden />
 
-      <div className="relative flex h-full flex-col justify-end px-5 pb-14 pt-28 md:px-10 md:pb-20">
+      <div className="content-shell relative flex h-full flex-col justify-end pb-14 pt-28 md:pb-20">
         <div className="flex flex-wrap gap-3">
-          <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase text-foreground/50">
-            <span className="h-1 w-1 bg-highlight" /><span ref={coordRef}>X 040 · Y 0000</span>
-          </span>
-          <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase text-status">
-            <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-status" />Open Q1 2027
-          </span>
-          <span className="ml-auto hidden font-mono text-[11px] text-foreground/70 md:inline">HG_SHADER · {tier === "lite" ? "LITE" : "60FPS"}</span>
+          <span className="ml-auto hidden font-mono text-xs text-foreground/70 md:inline">HG_SHADER · {tier === "lite" ? "LITE" : "60FPS"}</span>
         </div>
         <h1 ref={titleRef} className="mt-6 text-[clamp(52px,10.4vw,148px)] font-medium uppercase leading-[0.84] tracking-[-0.06em]">
           <span data-line className="block will-change-transform">Senior Product</span>
@@ -75,7 +67,7 @@ export function Hero() {
           <button onClick={copyEmail} className="group inline-flex items-center gap-2 font-mono text-[13px] hover:text-muted-foreground" aria-label={`Copiar email ${CONTACT.email}`}>
             {CONTACT.email}<Copy size={13} className="opacity-50 group-hover:opacity-100" />
           </button>
-          <a href="#work" className="inline-flex items-center gap-2 font-mono text-[11px] uppercase text-foreground/70 hover:text-foreground">
+          <a href="#work" className="inline-flex items-center gap-2 font-mono text-xs uppercase text-foreground/70 hover:text-foreground">
             <ArrowDown size={13} /> Scroll · Trabajo seleccionado
           </a>
         </div>

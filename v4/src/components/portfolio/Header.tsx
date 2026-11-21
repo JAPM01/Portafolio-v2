@@ -2,46 +2,38 @@ import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Magnetic } from "./Magnetic";
 
-function fmt(tz: string) {
-  return new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: tz, hour12: false }).format(new Date());
-}
-
 export function Header({ onContact }: { onContact: () => void }) {
-  const [t, setT] = useState<{ utc: string; bcn: string } | null>(null);
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const tick = () => setT({ utc: fmt("UTC"), bcn: fmt("Europe/Madrid") });
-    tick();
-    const id = setInterval(tick, 15000);
-    return () => clearInterval(id);
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
   const nav = [
-    { href: "#work", label: "01 PROYECTOS" },
-    { href: "#manifesto", label: "02 MANIFIESTO" },
-    { href: "#experience", label: "03 EXPERIENCIA" },
-    { href: "#stack", label: "04 STACK" },
-    { href: "#testimonials", label: "05 TESTIMONIOS" },
+    { href: "#work", label: "01 Proyectos" },
+    { href: "#manifesto", label: "02 Manifiesto" },
+    { href: "#experience", label: "03 Experiencia" },
+    { href: "#stack", label: "04 Stack" },
+    { href: "#testimonials", label: "05 Testimonios" },
   ];
   return (
-    <header className="fixed inset-x-0 top-0 z-40 px-3 pt-3 md:px-4">
-      <div className="kit-bevel grid h-14 grid-cols-[auto_1fr_auto] items-center rounded-lg border-b border-foreground/10 font-mono text-[11px] backdrop-blur-md">
-        <a href="#top" className="flex h-full items-center gap-3 border-r px-3 md:px-5" aria-label="Julia Prat, inicio">
+    <header className={`fixed inset-x-0 top-0 z-40 border-b bg-background transition-colors ${scrolled ? "border-border" : "border-transparent"}`}>
+      <div className="content-shell flex h-16 items-center justify-between gap-6">
+        <a href="#top" className="flex items-center gap-3" aria-label="Julia Prat, inicio">
           <span className="kit-chrome grid h-8 w-8 place-items-center rounded-sm font-display text-[14px] font-semibold tracking-tight text-background">JP</span>
-          <span className="hidden font-display text-[14px] font-semibold tracking-tight sm:inline">Julia Prat</span>
+          <span className="font-display text-[15px] font-semibold tracking-tight">Julia Prat</span>
         </a>
-        <nav className="flex min-w-0 items-center gap-6 px-4 md:px-8" aria-label="Principal">
-          <span className="hidden truncate uppercase text-muted-foreground 2xl:inline">PRODUCT • UX/UI • BRANDING</span>
+        <nav className="hidden items-center gap-7 lg:flex" aria-label="Principal">
           {nav.map((n) => (
-            <a key={n.href} href={n.href} className="hidden transition-colors text-muted-foreground hover:text-foreground lg:inline">{n.label}</a>
+            <a key={n.href} href={n.href} className="font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground">{n.label}</a>
           ))}
-          <span className="hidden text-foreground/60 2xl:inline">41.3874°N 2.1686°E</span>
-          <span className="ml-auto hidden text-foreground/60 xl:inline" suppressHydrationWarning>UTC {t?.utc ?? "--:--"}</span>
-          <span className="hidden text-foreground/60 xl:inline" suppressHydrationWarning>BCN {t?.bcn ?? "--:--"}</span>
         </nav>
-        <div className="flex h-full items-center gap-3 border-l pl-3 pr-2 md:gap-4 md:pl-5">
-          <span className="flex items-center gap-2 text-status">
+        <div className="flex items-center gap-4">
+          <span className="hidden items-center gap-2 font-mono text-xs uppercase text-status sm:flex">
             <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-status" />
-            <span className="hidden sm:inline">AVAILABLE 2027</span><span className="sm:hidden">Q1 2027</span>
+            Available 2027
           </span>
           <Magnetic className="hidden sm:inline-block">
             <button onClick={onContact} className="rounded-md bg-primary px-5 py-2.5 font-display text-[14px] font-semibold text-primary-foreground transition-colors hover:bg-foreground hover:text-background focus-visible:outline-2 focus-visible:outline-ring">
@@ -54,11 +46,13 @@ export function Header({ onContact }: { onContact: () => void }) {
         </div>
       </div>
       {open && (
-        <div className="kit-bevel mt-2 rounded-lg p-4 font-display lg:hidden">
-          {nav.map((n) => (
-            <a key={n.href} href={n.href} onClick={() => setOpen(false)} className="block border-b py-4 text-3xl font-medium uppercase tracking-tighter last:border-0">{n.label}</a>
-          ))}
-          <button onClick={() => { setOpen(false); onContact(); }} className="mt-4 w-full rounded-md bg-primary py-3 text-[15px] font-semibold text-primary-foreground">Contact</button>
+        <div className="border-t border-border bg-background px-5 pb-8 pt-4 lg:hidden">
+          <nav aria-label="Móvil">
+            {nav.map((n) => (
+              <a key={n.href} href={n.href} onClick={() => setOpen(false)} className="display-text block border-b border-border py-4 text-4xl uppercase tracking-tighter last:border-0">{n.label}</a>
+            ))}
+          </nav>
+          <button onClick={() => { setOpen(false); onContact(); }} className="mt-6 w-full rounded-md bg-primary py-3 text-[15px] font-semibold text-primary-foreground">Contact</button>
         </div>
       )}
     </header>

@@ -11,6 +11,12 @@ const pairs = [
   ["assets-b64/work-norda.jpg.b64", "src/assets/work-norda.jpg"],
   ["assets-b64/work-orbital.jpg.b64", "src/assets/work-orbital.jpg"],
   ["assets-b64/favicon.ico.b64", "public/favicon.ico"],
+  ["assets-b64/fonts/GeneralSans-Regular.woff2.b64", "public/fonts/GeneralSans-Regular.woff2"],
+  ["assets-b64/fonts/GeneralSans-Medium.woff2.b64", "public/fonts/GeneralSans-Medium.woff2"],
+  ["assets-b64/fonts/GeneralSans-Semibold.woff2.b64", "public/fonts/GeneralSans-Semibold.woff2"],
+  ["assets-b64/fonts/GeneralSans-Bold.woff2.b64", "public/fonts/GeneralSans-Bold.woff2"],
+  ["assets-b64/fonts/GeistMono-Regular.woff2.b64", "public/fonts/GeistMono-Regular.woff2"],
+  ["assets-b64/fonts/GeistMono-Medium.woff2.b64", "public/fonts/GeistMono-Medium.woff2"],
 ];
 for (const [src, dst] of pairs) {
   const from = join(root, src);
