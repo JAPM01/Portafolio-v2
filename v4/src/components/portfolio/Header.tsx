@@ -27,7 +27,7 @@ export function Header({ onContact }: { onContact: () => void }) {
         </a>
         <nav className="hidden items-center gap-7 lg:flex" aria-label="Principal">
           {nav.map((n) => (
-            <a key={n.href} href={n.href} className="font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground">{n.label}</a>
+            <a key={n.href} href={n.href} className="nav-link font-mono text-xs uppercase tracking-wide text-muted-foreground transition-colors hover:text-foreground">{n.label}</a>
           ))}
         </nav>
         <div className="flex items-center gap-4">
@@ -46,13 +46,13 @@ export function Header({ onContact }: { onContact: () => void }) {
         </div>
       </div>
       {open && (
-        <div className="border-t border-border bg-background px-5 pb-8 pt-4 lg:hidden">
+        <div className="mobile-menu border-t border-border bg-background px-5 pb-8 pt-4 lg:hidden">
           <nav aria-label="Móvil">
-            {nav.map((n) => (
-              <a key={n.href} href={n.href} onClick={() => setOpen(false)} className="display-text block border-b border-border py-4 text-4xl uppercase tracking-tighter last:border-0">{n.label}</a>
+            {nav.map((n, i) => (
+              <a key={n.href} href={n.href} onClick={() => setOpen(false)} style={{ "--k": i } as React.CSSProperties} className="mobile-nav-link display-text block border-b border-border py-4 text-4xl uppercase tracking-tighter last:border-0">{n.label}</a>
             ))}
           </nav>
-          <button onClick={() => { setOpen(false); onContact(); }} className="mt-6 w-full rounded-md bg-primary py-3 text-[15px] font-semibold text-primary-foreground">Contact</button>
+          <button onClick={() => { setOpen(false); onContact(); }} style={{ "--k": nav.length } as React.CSSProperties} className="mobile-nav-link mt-6 w-full rounded-md bg-primary py-3 text-[15px] font-semibold text-primary-foreground">Contact</button>
         </div>
       )}
     </header>

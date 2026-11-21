@@ -11,7 +11,7 @@ const POS: [number, number, number][] = [
 ];
 const TILT = [[0.18, 0], [-0.1, -0.22], [-0.1, 0.22]] as const;
 
-function Lenses({ lite }: { lite: boolean }) {
+function Lenses({ lite, activeLens }: { lite: boolean; activeLens?: number | null }) {
   const group = useRef<THREE.Group>(null);
   const geo = useLensGeometry(1, 0.2, lite ? 48 : 96);
   useFrame((state, delta) => {
@@ -21,7 +21,11 @@ function Lenses({ lite }: { lite: boolean }) {
     const tx = (pointer.sy - 0.5) * 0.45;
     g.rotation.y += (ty - g.rotation.y) * k;
     g.rotation.x += (tx - g.rotation.x) * k;
-    g.children.forEach((m, i) => { m.position.z = (POS[i]?.[2] ?? 0) + Math.sin(state.clock.elapsedTime * 0.6 + i * 2) * 0.06; });
+    g.children.forEach((m, i) => {
+      m.position.z = (POS[i]?.[2] ?? 0) + Math.sin(state.clock.elapsedTime * 0.6 + i * 2) * 0.06;
+      const target = activeLens === i ? 1.08 : 1;
+      m.scale.setScalar(m.scale.x + (target - m.scale.x) * k);
+    });
   });
   return (
     <GlassGroup resolution={lite ? 512 : 1024}>
@@ -36,12 +40,12 @@ function Lenses({ lite }: { lite: boolean }) {
   );
 }
 
-export default function VennLenses({ lite, active }: { lite: boolean; active: boolean }) {
+export default function VennLenses({ lite, active, activeLens }: { lite: boolean; active: boolean; activeLens?: number | null }) {
   return (
     <Canvas dpr={lite ? [0.7, 1] : [1, 1.5]} frameloop={active ? "always" : "never"} camera={{ position: [0, 0, 6.2], fov: 40 }} gl={{ alpha: true, antialias: true }} aria-hidden>
       <GlassLights lite={lite} />
       <GlassBackdrop size={[5, 5]} z={-1.6} />
-      <Lenses lite={lite} />
+      <Lenses lite={lite} activeLens={activeLens} />
     </Canvas>
   );
 }

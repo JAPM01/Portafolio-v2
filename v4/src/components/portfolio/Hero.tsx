@@ -32,7 +32,7 @@ export function Hero() {
         titleRef.current.style.opacity = String(Math.max(0, 1 - y / (window.innerHeight * 0.9)));
       }
       // Without WebGL the smoothing must still advance for the flute parallax
-      pointer.sx += (pointer.x - pointer.sx) * 0.06; pointer.sy += (pointer.y - pointer.sy) * 0.06;
+      pointer.sx += (pointer.x - pointer.sx) * 0.09; pointer.sy += (pointer.y - pointer.sy) * 0.09;
       raf = requestAnimationFrame(loop);
     };
     if (!reduced) raf = requestAnimationFrame(loop);
@@ -55,15 +55,15 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-background via-background/60 to-transparent" aria-hidden />
 
       <div className="content-shell relative flex h-full flex-col justify-end pb-14 pt-28 md:pb-20">
-        <div className="flex flex-wrap gap-3">
+        <div className="hero-fade flex flex-wrap gap-3" style={{ "--d": ".45s" } as React.CSSProperties}>
           <span className="ml-auto hidden font-mono text-xs text-foreground/70 md:inline">HG_SHADER · {tier === "lite" ? "LITE" : "60FPS"}</span>
         </div>
-        <h1 ref={titleRef} className="mt-6 text-[clamp(52px,10.4vw,148px)] font-medium uppercase leading-[0.84] tracking-[-0.06em]">
-          <span data-line className="block will-change-transform">Senior Product</span>
-          <span data-line className="block will-change-transform">Designer</span>
-          <span data-line className="block will-change-transform"><span className="text-highlight">&amp;</span> Brand Architect</span>
+        <h1 ref={titleRef} className="hero-title mt-6 text-[clamp(52px,10.4vw,148px)] font-medium uppercase leading-[0.84] tracking-[-0.06em]">
+          <span data-line className="block will-change-transform"><span className="hero-line-inner">Senior Product</span></span>
+          <span data-line className="block will-change-transform"><span className="hero-line-inner">Designer</span></span>
+          <span data-line className="block will-change-transform"><span className="hero-line-inner"><span className="text-highlight">&amp;</span> Brand Architect</span></span>
         </h1>
-        <div className="mt-8 flex flex-wrap items-center gap-6">
+        <div className="hero-fade mt-8 flex flex-wrap items-center gap-6" style={{ "--d": ".55s" } as React.CSSProperties}>
           <button onClick={copyEmail} className="group inline-flex items-center gap-2 font-mono text-[13px] hover:text-muted-foreground" aria-label={`Copiar email ${CONTACT.email}`}>
             {CONTACT.email}<Copy size={13} className="opacity-50 group-hover:opacity-100" />
           </button>

@@ -30,10 +30,10 @@ export function SkillMap() {
         <svg viewBox="0 0 1200 800" className="skill-radar" fill="none" role="group" aria-label="Radar de seis capacidades">
           <g className="radar-flat">
             <g className="radar-grid">
-              {[100, 75, 50, 25].map(value => <polygon key={value} points={polygon(SKILLS.map(() => value))} />)}
+              {[100, 75, 50, 25].map((value, ri) => <polygon key={value} pathLength={100} style={{ "--k": ri } as React.CSSProperties} points={polygon(SKILLS.map(() => value))} />)}
               {SKILLS.map((skill, i) => { const p = radarPoint(i, 112); return <line key={skill.axis} x1="600" y1="400" x2={p.x} y2={p.y} />; })}
             </g>
-            <polygon className="radar-shape" points={polygon(SKILLS.map(skill => skill.value))} />
+            <polygon className="radar-shape" pathLength={100} points={polygon(SKILLS.map(skill => skill.value))} />
           </g>
           {SKILLS.map((skill, i) => {
             const p = radarPoint(i, skill.value);

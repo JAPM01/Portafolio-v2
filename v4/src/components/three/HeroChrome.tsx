@@ -82,8 +82,8 @@ function Surface({ lite, onReady }: { lite: boolean; onReady?: () => void }) {
   );
   useFrame((_, delta) => {
     const dt = Math.min(delta, 0.05);
-    pointer.sx += (pointer.x - pointer.sx) * (1 - Math.exp(-4 * dt));
-    pointer.sy += (pointer.y - pointer.sy) * (1 - Math.exp(-4 * dt));
+    pointer.sx += (pointer.x - pointer.sx) * (1 - Math.exp(-6 * dt));
+    pointer.sy += (pointer.y - pointer.sy) * (1 - Math.exp(-6 * dt));
     const u = mat.current?.uniforms; if (!u) return;
     const time = u['uTime'], mouse = u['uMouse'], res = u['uRes'];
     if (!time || !mouse || !res) return;

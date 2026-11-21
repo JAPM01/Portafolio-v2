@@ -12,6 +12,7 @@ import { SmoothScroll } from "./components/portfolio/SmoothScroll";
 import { SkillMap } from "./components/portfolio/SkillMap";
 import { Testimonials } from "./components/portfolio/Testimonials";
 import { ScrollFX } from "./components/portfolio/ScrollFX";
+import { CursorDot } from "./components/portfolio/CursorDot";
 import { Toaster } from "./components/ui/sonner";
 
 
@@ -25,6 +26,7 @@ export default function App() {
       <a href="#work" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-20 focus:z-50 focus:rounded-md focus:bg-foreground focus:px-4 focus:py-2 focus:text-background">Saltar al trabajo</a>
       <SmoothScroll />
       <ScrollFX />
+      <CursorDot />
       <Header onContact={openContact} />
       <main>
         <Hero />

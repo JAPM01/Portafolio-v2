@@ -22,10 +22,12 @@ export function Footer({ onContact }: { onContact: () => void }) {
     <footer id="contact" data-fx className="fx-footer relative overflow-hidden pt-20 pb-8" aria-label="Contacto">
       <div className="content-shell relative grid grid-cols-1 items-center gap-10 md:grid-cols-[1fr_auto_1fr]">
         <div className="space-y-4 font-mono text-[12px]">
-          <button onClick={copyEmail} className="group flex items-center gap-2 font-display text-[22px] font-medium tracking-tight hover:text-muted-foreground md:text-[26px]">
-            {CONTACT.email}<Copy size={16} className="opacity-50 group-hover:opacity-100" />
-          </button>
-          <a href={`tel:${CONTACT.phone.replace(/\s/g, "")}`} className="block hover:text-muted-foreground">{CONTACT.phone}</a>
+          <Magnetic>
+            <button onClick={copyEmail} className="group flex items-center gap-2 font-display text-[22px] font-medium tracking-tight hover:text-muted-foreground md:text-[26px]">
+              {CONTACT.email}<Copy size={16} className="opacity-50 group-hover:opacity-100" />
+            </button>
+          </Magnetic>
+          <a href={`tel:${CONTACT.phone.replace(/\s/g, "")}`} className="nav-link block w-fit hover:text-muted-foreground">{CONTACT.phone}</a>
         </div>
         <div ref={ref} className="fx-monogram mx-auto h-[300px] w-[300px] cursor-grab active:cursor-grabbing md:h-[380px] md:w-[380px]">
           {show3D ? (
@@ -36,11 +38,11 @@ export function Footer({ onContact }: { onContact: () => void }) {
         </div>
         <div className="space-y-4 font-mono text-[12px] md:text-right">
           <div className="flex gap-4 md:justify-end">
-            <a href="https://read.cv" target="_blank" rel="noreferrer" className="hover:text-muted-foreground">Read.cv</a>
+            <a href="https://read.cv" target="_blank" rel="noreferrer" className="nav-link hover:text-muted-foreground">Read.cv</a>
             <span className="text-muted-foreground">·</span>
-            <a href="https://dribbble.com" target="_blank" rel="noreferrer" className="hover:text-muted-foreground">Dribbble</a>
+            <a href="https://dribbble.com" target="_blank" rel="noreferrer" className="nav-link hover:text-muted-foreground">Dribbble</a>
           </div>
-          <Magnetic><button onClick={onContact} className="rounded-md bg-primary px-6 py-3 font-display text-[14px] font-semibold text-primary-foreground hover:bg-foreground hover:text-background">Escríbeme</button></Magnetic>
+          <Magnetic><button onClick={onContact} className="footer-cta rounded-md bg-primary px-6 py-3 font-display text-[14px] font-semibold text-primary-foreground hover:bg-foreground hover:text-background">Escríbeme</button></Magnetic>
           <div className="text-muted-foreground">© 2027 JP Studio</div>
         </div>
       </div>

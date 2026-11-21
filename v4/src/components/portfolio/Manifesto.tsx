@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { SectionTitle } from "./SectionTitle";
 import { ScrollWords } from "./ScrollFX";
 import { scrollState } from "../../lib/pointer";
@@ -6,11 +6,11 @@ import { useGpuTier, useInView, useOnScreen, useReducedMotion } from "../../hook
 
 const VennLenses = lazy(() => import("../three/VennLenses"));
 
-function VennFallback() {
+function VennFallback({ activeLens }: { activeLens?: number | null }) {
   return (
     <div className="relative mx-auto aspect-square w-full max-w-[420px]" aria-hidden>
       {[["50%", "30%"], ["32%", "62%"], ["68%", "62%"]].map(([l, t], i) => (
-        <div key={i} className="absolute h-[58%] w-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-foreground/25 bg-gradient-to-br from-foreground/15 via-transparent to-highlight/10 backdrop-blur-sm" style={{ left: l, top: t }} />
+        <div key={i} className={`venn-lens absolute h-[58%] w-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-foreground/25 bg-gradient-to-br from-foreground/15 via-transparent to-highlight/10 backdrop-blur-sm ${activeLens === i ? "venn-lens-active" : ""}`} style={{ left: l, top: t }} />
       ))}
     </div>
   );
@@ -19,6 +19,7 @@ function VennFallback() {
 export function Manifesto() {
   const tier = useGpuTier();
   const reduced = useReducedMotion();
+  const [activeLens, setActiveLens] = useState<number | null>(null);
   const [vennRef, onScreen] = useOnScreen<HTMLDivElement>();
   const [textRef, inView] = useInView<HTMLDivElement>(0.3);
   const secRef = useRef<HTMLElement>(null);
@@ -54,15 +55,26 @@ export function Manifesto() {
           <div ref={vennRef} className="relative mx-auto aspect-square w-full max-w-[560px]">
             {show3D ? (
               
-                <Suspense fallback={<VennFallback />}>
-                  <VennLenses lite={tier === "lite"} active={onScreen && !reduced} />
+                <Suspense fallback={<VennFallback activeLens={activeLens} />}>
+                  <VennLenses lite={tier === "lite"} active={onScreen && !reduced} activeLens={activeLens} />
                 </Suspense>
               
-            ) : <VennFallback />}
+            ) : <VennFallback activeLens={activeLens} />}
             <div className="pointer-events-none absolute inset-0 font-mono text-xs uppercase">
-              <span className="absolute left-1/2 top-[28%] -translate-x-1/2">Producto</span>
-              <span className="absolute left-[34%] top-[61%] -translate-x-1/2">Diseño</span>
-              <span className="absolute left-[66%] top-[61%] -translate-x-1/2">Código</span>
+              {([["Producto", 0, "left-1/2 top-[28%]"], ["Diseño", 1, "left-[34%] top-[61%]"], ["Código", 2, "left-[66%] top-[61%]"]] as const).map(([label, i, pos]) => (
+                <button
+                  key={label}
+                  type="button"
+                  className={`venn-label absolute -translate-x-1/2 ${pos} ${activeLens === i ? "venn-label-active" : ""}`}
+                  onMouseEnter={() => setActiveLens(i)}
+                  onMouseLeave={() => setActiveLens(null)}
+                  onFocus={() => setActiveLens(i)}
+                  onBlur={() => setActiveLens(null)}
+                  aria-label={`Resaltar lente de ${label}`}
+                >
+                  {label}
+                </button>
+              ))}
               <span className="absolute left-1/2 top-[48%] -translate-x-1/2 text-foreground/70">Punto dulce</span>
             </div>
           </div>
